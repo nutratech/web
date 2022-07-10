@@ -45,9 +45,16 @@ lint:	## Lint w/ prettier & ESLint
 	npx prettier --check .
 	npx eslint --max-warnings 0 --ext .ts,.tsx .
 
+.PHONY: _test/ci
+_test/ci:
+_test/ci: JEST_OPT_ARGS=
+_test/ci: export CI=true
+_test/ci: test
+
+JEST_OPT_ARGS ?= --watchAll
 .PHONY: test
 test:	## Run tests
-	npm test -- --watchAll --env=jsdom --coverage
+	npm test -- $(JEST_OPT_ARGS) --env=jsdom --coverage
 
 
 # ----------------------------------------------------------------------

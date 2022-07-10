@@ -26,9 +26,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install requirements
-        run: |
-          npm install --location=global eslint
-          make deps
+        run: make deps
 
       - name: Lint
         run: make lint
@@ -37,6 +35,4 @@ jobs:
         run: make build
 
       - name: Test
-        run: |
-          export CI=true
-          make test
+        run: make _test/ci
