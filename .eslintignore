@@ -1,2 +1,5 @@
 jest.config.ts
+babel.config.js
+.eslintrc.js
+coverage/
 
