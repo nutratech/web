@@ -29,7 +29,7 @@ _format/prettier:
 
 .PHONY: _format/eslint
 _format/eslint:
-	- npx eslint --fix --ext .js,.jsx,.ts,.tsx .
+	- npx eslint --fix --ext .ts,.tsx .
 
 .PHONY: format
 format: _format/prettier _format/eslint
@@ -43,7 +43,7 @@ format:	## Format w/ prettier & ESLint
 .PHONY: lint
 lint:	## Lint w/ prettier & ESLint
 	npx prettier --check .
-	npx eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx .
+	npx eslint --max-warnings 0 --ext .ts,.tsx .
 
 .PHONY: test
 test:	## Run tests, env vars: CI
