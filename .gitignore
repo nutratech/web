@@ -6,6 +6,8 @@
 
 
 # Our ignores
+.vscode/
+.idea/
 package-lock.json
 
 
