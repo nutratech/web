@@ -1,5 +1,5 @@
-jest.config.ts
-babel.config.js
+*.config.js
 .eslintrc.js
+
 coverage/
 

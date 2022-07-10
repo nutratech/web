@@ -46,12 +46,8 @@ lint:	## Lint w/ prettier & ESLint
 	npx eslint --max-warnings 0 --ext .ts,.tsx .
 
 .PHONY: test
-test:	## Run tests, env vars: CI
-ifeq ($(OS),Windows_NT)
-	set CI=true && npm test -- --env=jsdom --coverage
-else
-	CI=true npm test -- --env=jsdom --coverage
-endif
+test:	## Run tests
+	npm test -- --watchAll --env=jsdom --coverage
 
 
 # ----------------------------------------------------------------------

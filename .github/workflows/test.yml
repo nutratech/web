@@ -37,4 +37,4 @@ jobs:
         run: make build
 
       - name: Test
-        run: make test
+        run: CI=true make test
