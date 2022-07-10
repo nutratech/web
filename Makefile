@@ -48,9 +48,9 @@ lint:	## Lint w/ prettier & ESLint
 .PHONY: test
 test:	## Run tests, env vars: CI
 ifeq ($(OS),Windows_NT)
-	set CI=true && npm test
+	set CI=true && npm test -- --env=jsdom --coverage
 else
-	CI=true npm test
+	CI=true npm test -- --env=jsdom --coverage
 endif
 
 
