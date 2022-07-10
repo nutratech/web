@@ -47,20 +47,43 @@ lint:	## Lint w/ prettier & ESLint
 
 .PHONY: test
 test:	## Run tests, env vars: CI
+ifeq ($(OS),Windows_NT)
+	set CI=true && npm test
+else
 	CI=true npm test
+endif
 
 
 # ----------------------------------------------------------------------
-# Build, run
+# Build, run, clean
 # ----------------------------------------------------------------------
 .PHONY: build
 build:	## Create build
+ifeq ($(OS),Windows_NT)
+	set GENERATE_SOURCEMAP=false && npm run build
+else
 	GENERATE_SOURCEMAP=false npm run build
+endif
 
 REACT_APP_SERVER_URL ?= http://localhost:20000
 .PHONY: run
 run:	## Run locally, env vars: REACT_APP_SERVER_URL
+ifeq ($(OS),Windows_NT)
+	set REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) && npm start
+else
 	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
+endif
+
+.PHONY: clean
+clean:	## Removes node_modules/
+ifeq ($(OS),Windows_NT)
+	rmdir /s node_modules
+	del package-lock.json
+else
+	rm -rf node_modules/
+	rm -f package-lock.json
+endif
+
 
 
 # ----------------------------------------------------------------------
