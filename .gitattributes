@@ -1,3 +1,4 @@
 .*.js linguist-documentation
 *.config.js linguist-documentation
+Makefile linguist-documentation
 

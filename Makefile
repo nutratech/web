@@ -97,6 +97,7 @@ extras/cloc:	## Count lines of source code
 	cloc \
 	--exclude-dir=\
 	node_modules,\
+	build,\
 	coverage,\
 	.idea,\
 	.vscode,\
