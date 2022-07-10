@@ -40,5 +40,17 @@ module.exports = {
       },
     ],
     "operator-linebreak": [2, "after"],
+    // ts rules ignore
+    // https://stackoverflow.com/questions/59265981/typescript-eslint-missing-file-extension-ts-import-extensions
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        js: "never",
+        jsx: "never",
+        ts: "never",
+        tsx: "never",
+      },
+    ],
   },
 };
