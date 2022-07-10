@@ -12,20 +12,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install requirements
-        run: |
-          npm i -g eslint
-          make deps
-
-      - name: Lint
-        run: make lint
-
-      - name: Build
-        run: make build
-
-      - name: Test
-        run: make test
-
       - name: Get npm cache directory
         id: npm-cache-dir
         run: |
@@ -38,3 +24,17 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
+      - name: Install requirements
+        run: |
+          npm install --location=global eslint
+          make deps
+
+      - name: Lint
+        run: make lint
+
+      - name: Build
+        run: make build
+
+      - name: Test
+        run: make test
