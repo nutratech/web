@@ -19,9 +19,9 @@ module.exports = {
     // Default prettier-ESLint compatibility rules
     indent: ["error", 2, { SwitchCase: 1 }],
     semi: [2, "always", { omitLastInOneLineBlock: true }],
-    quotes: [2, "double"],
+    "@typescript-eslint/quotes": [2, "double"],
     "object-curly-newline": [2, { minProperties: 10, consistent: true }],
-    "comma-dangle": [
+    "@typescript-eslint/comma-dangle": [
       "error",
       {
         arrays: "always-multiline",
