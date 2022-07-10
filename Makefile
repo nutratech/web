@@ -77,14 +77,16 @@ else
 	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
 endif
 
+CLEAN_DIRS ?= build coverage
+CLEAN_LOCS ?= package-lock.json
 .PHONY: clean
-clean:	## Removes node_modules/
+clean:	## Removes folders: build/ coverage/
 ifeq ($(OS),Windows_NT)
-	rmdir /s node_modules
-	del package-lock.json
+	rmdir /s $(CLEAN_DIRS)
+	del $(CLEAN_LOCS)
 else
-	rm -rf node_modules/
-	rm -f package-lock.json
+	rm -rf $(CLEAN_DIRS)
+	rm -f $(CLEAN_LOCS)
 endif
 
 
