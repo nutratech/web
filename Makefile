@@ -1,0 +1,78 @@
+SHELL=/bin/bash
+.DEFAULT_GOAL := _help
+
+.PHONY: _help
+_help:	## Comments like this, a tab character with two pound signs "<TAB>##" will show up unless you IGNORE_ME
+ifeq ($(OS),Windows_NT)
+	@echo Our Makefile _help command does not support Windows right now!
+	@echo You can view the Makefile to see the targets, they should work for you.
+else
+	@grep -h "##" $(MAKEFILE_LIST) | grep -v IGNORE_ME | sed -e 's/##//' | column -t -s $$'\t'
+endif
+
+
+# ----------------------------------------------------------------------
+# Init & deps
+# ----------------------------------------------------------------------
+.PHONY: deps
+deps:	## Run npm install
+	npm install
+
+
+# ----------------------------------------------------------------------
+# Format
+# ----------------------------------------------------------------------
+
+.PHONY: _format/prettier
+_format/prettier:
+	npx prettier --write .
+
+.PHONY: _format/eslint
+_format/eslint:
+	- npx eslint --fix --ext .js,.jsx,.ts,.tsx .
+
+.PHONY: format
+format: _format/prettier _format/eslint
+format:	## Format w/ prettier & ESLint
+
+
+# ----------------------------------------------------------------------
+# Lint & test
+# ----------------------------------------------------------------------
+
+.PHONY: lint
+lint:	## Lint w/ prettier & ESLint
+	npx prettier --check .
+	npx eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx .
+
+.PHONY: test
+test:	## Run tests
+	npm test
+
+
+# ----------------------------------------------------------------------
+# Build, run
+# ----------------------------------------------------------------------
+.PHONY: build
+build:	## Create build
+	GENERATE_SOURCEMAP=false npm run build
+
+REACT_APP_SERVER_URL ?= http://localhost:20000
+.PHONY: run
+run:	## Run locally, env vars: REACT_APP_SERVER_URL
+	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
+
+
+# ----------------------------------------------------------------------
+# Extras
+# ----------------------------------------------------------------------
+.PHONY: extras/cloc
+extras/cloc:	## Count lines of source code
+	cloc \
+	--exclude-dir=\
+	node_modules,\
+	.idea,\
+	.vscode,\
+	package-lock.json \
+	--by-file-by-lang \
+	.
