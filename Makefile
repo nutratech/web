@@ -46,8 +46,8 @@ lint:	## Lint w/ prettier & ESLint
 	npx eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx .
 
 .PHONY: test
-test:	## Run tests
-	npm test
+test:	## Run tests, env vars: CI
+	CI=true npm test
 
 
 # ----------------------------------------------------------------------

@@ -15,10 +15,16 @@ jobs:
       - name: Install requirements
         run: |
           npm i -g eslint
-          npm i
+          make deps
 
       - name: Lint
-        run: eslint --max-warnings 0
+        run: make lint
+
+      - name: Build
+        run: make build
+
+      - name: Test
+        run: make test
 
       - name: Get npm cache directory
         id: npm-cache-dir
