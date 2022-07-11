@@ -23,10 +23,11 @@ export default class ApiService {
       })
       .catch((err: Error | AxiosError) => {
         if(!axios.isAxiosError(err) || !err.response){
+          console.error("ERROR: Not an Axios error! Inside ApiService");
           throw err;
         }
         if (err.code === "ECONNREFUSED") {
-          console.error("ERROR: Server not running? Can't reach API... exiting!");
+          console.error("ERROR: Server not running? Can't reach API... throwing error!");
           throw err;
         }
         // TODO: better logging, handling of common error codes

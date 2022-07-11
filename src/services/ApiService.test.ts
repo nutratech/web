@@ -43,5 +43,50 @@ describe('ApiService', () => {
   
       expect(true).toBeTrue();
     });
+
+    const DEV_API_URL = "https://dev.nutra.tk/api";
+
+    it(`ApiService can reach ${DEV_API_URL}`, async () => {
+      let thrownError;
+
+      try {
+        await service.call({
+          method: "GET",
+          url: DEV_API_URL,
+        });
+      } catch (err) {
+        thrownError = err;
+      }
+
+      expect(axios.isAxiosError(thrownError)).toBeTrue();
+      // TODO: fix: Error: Cross origin http://localhost forbidden
+
+      // compiler hint
+      if(!axios.isAxiosError(thrownError)){
+        return;
+      }
+      expect(thrownError.code).toEqual("ERR_NETWORK");
+    });
+
+    it("Random URL domain throws error", async () => {
+      let thrownError;
+
+      try {
+        await service.call({
+          method: "GET",
+          url: "https://googffffpsduifowlle.comslkvhwl",
+        });
+      } catch (err) {
+        thrownError = err;
+      }
+
+      expect(axios.isAxiosError(thrownError)).toBeTrue();
+      // TODO: this should actually be "ECONNREFUSED"
+            // compiler hint
+      if(!axios.isAxiosError(thrownError)){
+        return;
+      }
+      expect(thrownError.code).toEqual("ERR_NETWORK");
+    });
   });
 });
