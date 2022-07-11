@@ -17,7 +17,7 @@ async function call<ReturnType>(dict: AxiosRequestConfig): Promise<AxiosResponse
         throw err;
       }
       if (err.code === "ECONNREFUSED") {
-        console.error("ERROR: Server not running? Can't reach API... exiting!");
+        console.error("ERROR: Server not running? Can't reach API... throwing error!");
         throw err;
       }
       // TODO: better logging, handling of common error codes
@@ -26,6 +26,6 @@ async function call<ReturnType>(dict: AxiosRequestConfig): Promise<AxiosResponse
     });
 }
 
-export default {
+export {
   call,
 };
