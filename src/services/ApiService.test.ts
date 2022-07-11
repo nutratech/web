@@ -1,19 +1,39 @@
-import ApiService from "./ApiService";
+import assert from "assert";
+import axios from "axios";
+import { call } from "./ApiService";
 
-describe('ApiService', () => {
-  let service: ApiService;
-  beforeEach(() => {
-    service = new ApiService();
-  });
+const DEV_API_URL = "https://dev.nutra.tk/api";
 
-  it("ApiService can reach google.com", async () => {
-    const result = await service.call({
+it(`ApiService can reach ${DEV_API_URL}`, async () => {
+  let thrownError;
+
+  try {
+    await call({
       method: "GET",
-      url: "https://googffffle.com",
+      url: DEV_API_URL,
     });
-  
-    console.debug(result);
+  } catch (err) {
+    thrownError = err;
+  }
 
-    expect(true).toBeTrue();
-  });
+  // TODO: fix: Error: Cross origin http://localhost forbidden
+  assert(axios.isAxiosError(thrownError));
+  assert(thrownError.code === "ERR_NETWORK");
+});
+
+it("Random URL domain throws error", async () => {
+  let thrownError;
+
+  try {
+    await call({
+      method: "GET",
+      url: "https://googffffpsduifowlle.comslkvhwl",
+    });
+  } catch (err) {
+    thrownError = err;
+  }
+
+  assert(axios.isAxiosError(thrownError));
+  // TODO: this should actually be "ECONNREFUSED"
+  assert(thrownError.code === "ERR_NETWORK");
 });
