@@ -1,11 +1,18 @@
 import assert from "assert";
-import { call } from "./ApiService";
+import ApiService from "./ApiService";
 
-it("ApiService can reach google.com", async () => {
-  const result = await call({
-    method: "GET",
-    url: "https://googffffle.com",
+describe('ApiService', () => {
+  let service: ApiService;
+  beforeEach(() => {
+    service = new ApiService();
   });
 
-  console.debug(result);
+  it("ApiService can reach google.com", async () => {
+    const result = await service.call({
+      method: "GET",
+      url: "https://googffffle.com",
+    });
+  
+    console.debug(result);
+  });
 });
