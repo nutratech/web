@@ -14,6 +14,7 @@ endif
 # ----------------------------------------------------------------------
 # Init & deps
 # ----------------------------------------------------------------------
+
 .PHONY: deps
 deps:	## Run npm install
 	npm install
@@ -51,7 +52,9 @@ _test/ci: JEST_OPT_ARGS=
 _test/ci: export CI=true
 _test/ci: test
 
+
 JEST_OPT_ARGS ?= --watchAll
+
 .PHONY: test
 test:	## Run tests
 	npm test -- $(JEST_OPT_ARGS) --env=jsdom --coverage
@@ -60,15 +63,18 @@ test:	## Run tests
 # ----------------------------------------------------------------------
 # Build, run, clean
 # ----------------------------------------------------------------------
+
 .PHONY: build
 build:	## Create build
 ifeq ($(OS),Windows_NT)
-	set GENERATE_SOURCEMAP=false && npm run build
+	set GENERATE_SOURCEMAP=false && echo %GENERATE_SOURCEMAP%
 else
 	GENERATE_SOURCEMAP=false npm run build
 endif
 
+
 REACT_APP_SERVER_URL ?= http://localhost:20000
+
 .PHONY: run
 run:	## Run locally, env vars: REACT_APP_SERVER_URL
 ifeq ($(OS),Windows_NT)
@@ -77,12 +83,14 @@ else
 	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
 endif
 
+
 CLEAN_DIRS ?= build coverage
 CLEAN_LOCS ?= package-lock.json
+
 .PHONY: clean
 clean:	## Removes folders: build/ coverage/
 ifeq ($(OS),Windows_NT)
-	rmdir /s $(CLEAN_DIRS)
+	- rmdir /s $(CLEAN_DIRS)
 	del $(CLEAN_LOCS)
 else
 	rm -rf $(CLEAN_DIRS)
@@ -90,10 +98,10 @@ else
 endif
 
 
-
 # ----------------------------------------------------------------------
 # Extras
 # ----------------------------------------------------------------------
+
 .PHONY: extras/cloc
 extras/cloc:	## Count lines of source code
 	cloc \
