@@ -1,38 +1,38 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from "axios";
+export type FetchFunction = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
 export default class ApiService {
-  constructor(private axios: AxiosInstance){
+  private fetch: FetchFunction;
 
+  constructor(private window: Window) {
+    this.fetch = this.window.fetch;
   }
 
-  async call<ReturnType>(dict: AxiosRequestConfig): Promise<AxiosResponse | null> {
-    const method = dict.method?.toUpperCase();
-    const { url } = dict;
-    const props = Object.keys(dict).slice(2);
-
-    if(!url){
-      return null;
-    }
-  
-    console.debug(`${method} ${url} with ${props}`);
-  
-    return this.axios.request(dict)
-      .then((response: AxiosResponse<ReturnType, unknown>) => {
-        console.debug(`Got response: ${JSON.stringify(response.data)}`);
-        return response;
+  async call<BodyType>(url: string, method: string, body?: BodyType): Promise<BodyType | null> {
+    return this.fetch(url, {
+      method,
+      body: body ? JSON.stringify(body) : null,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((response: Response) => {
+        if(response.ok){
+          try {
+            return response.json();
+          } catch {
+            return {};
+          }
+        }
+        throw new Error('Response was not 200 OK');
       })
-      .catch((err: Error | AxiosError) => {
-        if(!axios.isAxiosError(err) || !err.response){
-          console.error("ERROR: Not an Axios error! Inside ApiService");
-          throw err;
-        }
-        if (err.code === "ECONNREFUSED") {
-          console.error("ERROR: Server not running? Can't reach API... throwing error!");
-          throw err;
-        }
-        // TODO: better logging, handling of common error codes
-        console.debug(`Got HTTP ${err.response.status} ${JSON.stringify(err.response.data)} `);
-        return err.response;
+      .then((data: unknown) => {
+        return data as BodyType;
+      })
+      .catch((err: Error) => {
+        console.error("Error in API service", {
+          ...err,
+        });
+        throw err;
       });
   }
 };

@@ -1,92 +1,95 @@
-import axios, { AxiosInstance } from "axios";
-import ApiService from "./ApiService";
+import ApiService, { FetchFunction } from "./ApiService";
 
 describe('ApiService', () => {
   describe('unit tests', () => {
     let service: ApiService;
-    let axios: AxiosInstance;
-    beforeEach(() => {
-      axios = {
-        request: async () => {
-          return null;
+    let mockWindow: Window;
+    beforeEach(() => { 
+      mockWindow = {
+        fetch: async () => {
+          return {} as Response;
+        },
+      } as unknown as Window;
+
+      jest.spyOn(mockWindow, 'fetch').mockResolvedValue({
+        ok: true,
+        json: async () => {
+          return {};
         }
-      } as unknown as AxiosInstance;
-      service = new ApiService(axios);
+      } as Response);
+
+      service = new ApiService(mockWindow);
     });
   
-    it('calls axios with the options given', async () => {
-      spyOn(axios, 'request');
-      await service.call({
-        method: "GET",
-        url: "https://googffffle.com",
-      });
-      expect(axios.request).toHaveBeenCalledWith({
-        method: "GET",
-        url: "https://googffffle.com",
-      });
+    it('calls fetch with the options given', async () => {
+      await service.call(
+        "https://googffffle.com",
+        "GET",
+      );
+      expect(mockWindow.fetch).toHaveBeenCalledWith(
+        "https://googffffle.com",
+        {
+          body: null,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'GET',
+        }
+      );
     });
   });
 
   describe('functional tests', () => {
     let service: ApiService;
     beforeEach(() => {
-      service = new ApiService(axios);
+      service = new ApiService(window);
     });
 
     it("can reach google.com", async () => {
-      const result = await service.call({
-        method: "GET",
-        url: "https://googffffle.com",
-      });
-    
-      console.debug(result);
-  
-      expect(true).toEqual(true);
+      let thrownError: Error | null = null;
+
+      try {
+        await service.call(
+          "https://google.com",
+          "GET",
+        );
+      } catch (err) {
+        thrownError = err as Error;
+      }
+
+      expect(thrownError?.name).toEqual("TypeError");
     });
 
     const DEV_API_URL = "https://dev.nutra.tk/api";
 
     it(`ApiService can reach ${DEV_API_URL}`, async () => {
-      let thrownError;
+      let thrownError: Error | null = null;
 
       try {
-        await service.call({
-          method: "GET",
-          url: DEV_API_URL,
-        });
+        await service.call(
+          DEV_API_URL,
+          'GET',
+        );
       } catch (err) {
-        thrownError = err;
+        thrownError = err as Error;
       }
 
-      expect(axios.isAxiosError(thrownError)).toEqual(true);
-      // TODO: fix: Error: Cross origin http://localhost forbidden
-
-      // compiler hint
-      if(!axios.isAxiosError(thrownError)){
-        return;
-      }
-      expect(thrownError.code).toEqual("ERR_NETWORK");
+      expect(thrownError?.name).toEqual("TypeError");
     });
 
     it("Random URL domain throws error", async () => {
-      let thrownError;
+      let thrownError: Error | null = null;
 
       try {
-        await service.call({
-          method: "GET",
-          url: "https://googffffpsduifowlle.comslkvhwl",
-        });
+        await service.call(
+          "https://googffffpsduifowlle.comslkvhwl",
+          'GET',
+        );
       } catch (err) {
-        thrownError = err;
+        thrownError = err as Error;
       }
-
-      expect(axios.isAxiosError(thrownError)).toEqual(true);
-      // TODO: this should actually be "ECONNREFUSED"
-            // compiler hint
-      if(!axios.isAxiosError(thrownError)){
-        return;
-      }
-      expect(thrownError.code).toEqual("ERR_NETWORK");
+      
+      expect(thrownError?.name).toEqual("TypeError");
     });
   });
 });
