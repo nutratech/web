@@ -3,16 +3,11 @@ SHELL=/bin/bash
 
 .PHONY: _help
 _help:	## Comments like this, a tab character with two pound signs "<TAB>##" will show up unless you IGNORE_ME
-ifeq ($(OS),Windows_NT)
-	@echo Our Makefile _help command does not support Windows right now!
-	@echo You can view the Makefile to see the targets, they should work for you.
-else
 	@grep -h "##" $(MAKEFILE_LIST) | grep -v IGNORE_ME | sed -e 's/##//' | column -t -s $$'\t'
-endif
 
 
 # ----------------------------------------------------------------------
-# Init & deps
+# Initialize & install dependencies
 # ----------------------------------------------------------------------
 
 .PHONY: deps
@@ -66,22 +61,14 @@ test:	## Run tests
 
 .PHONY: build
 build:	## Create build
-ifeq ($(OS),Windows_NT)
-	set GENERATE_SOURCEMAP=false && echo %GENERATE_SOURCEMAP%
-else
 	GENERATE_SOURCEMAP=false npm run build
-endif
 
 
 REACT_APP_SERVER_URL ?= http://localhost:20000
 
 .PHONY: run
 run:	## Run locally, env vars: REACT_APP_SERVER_URL
-ifeq ($(OS),Windows_NT)
-	set REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) && npm start
-else
 	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
-endif
 
 
 CLEAN_DIRS ?= build coverage
@@ -89,13 +76,8 @@ CLEAN_LOCS ?= package-lock.json
 
 .PHONY: clean
 clean:	## Removes folders: build/ coverage/
-ifeq ($(OS),Windows_NT)
-	- rmdir /s $(CLEAN_DIRS)
-	del $(CLEAN_LOCS)
-else
 	rm -rf $(CLEAN_DIRS)
 	rm -f $(CLEAN_LOCS)
-endif
 
 
 # ----------------------------------------------------------------------
