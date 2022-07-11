@@ -1,14 +1,22 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from "axios";
 
 export default class ApiService {
-  async call<ReturnType>(dict: AxiosRequestConfig): Promise<AxiosResponse> {
+  constructor(private axios: AxiosInstance){
+
+  }
+
+  async call<ReturnType>(dict: AxiosRequestConfig): Promise<AxiosResponse | null> {
     const method = dict.method?.toUpperCase();
     const { url } = dict;
     const props = Object.keys(dict).slice(2);
+
+    if(!url){
+      return null;
+    }
   
     console.debug(`${method} ${url} with ${props}`);
   
-    return axios(dict)
+    return this.axios.request(dict)
       .then((response: AxiosResponse<ReturnType, unknown>) => {
         console.debug(`Got response: ${JSON.stringify(response.data)}`);
         return response;
