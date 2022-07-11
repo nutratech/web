@@ -41,7 +41,7 @@ describe('ApiService', () => {
     
       console.debug(result);
   
-      expect(true).toBeTrue();
+      expect(true).toEqual(true);
     });
 
     const DEV_API_URL = "https://dev.nutra.tk/api";
@@ -58,7 +58,7 @@ describe('ApiService', () => {
         thrownError = err;
       }
 
-      expect(axios.isAxiosError(thrownError)).toBeTrue();
+      expect(axios.isAxiosError(thrownError)).toEqual(true);
       // TODO: fix: Error: Cross origin http://localhost forbidden
 
       // compiler hint
@@ -80,7 +80,7 @@ describe('ApiService', () => {
         thrownError = err;
       }
 
-      expect(axios.isAxiosError(thrownError)).toBeTrue();
+      expect(axios.isAxiosError(thrownError)).toEqual(true);
       // TODO: this should actually be "ECONNREFUSED"
             // compiler hint
       if(!axios.isAxiosError(thrownError)){
