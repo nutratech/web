@@ -1,4 +1,3 @@
-import assert from "assert";
 import ApiService from "./ApiService";
 
 describe('ApiService', () => {
@@ -14,5 +13,7 @@ describe('ApiService', () => {
     });
   
     console.debug(result);
+
+    expect(true).toBeTrue();
   });
 });
