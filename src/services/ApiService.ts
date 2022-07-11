@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 
-export class ApiService {
+export default class ApiService {
   async call<ReturnType>(dict: AxiosRequestConfig): Promise<AxiosResponse> {
     const method = dict.method?.toUpperCase();
     const { url } = dict;
