@@ -12,22 +12,20 @@ export default class ApiService {
       method,
       body: body ? JSON.stringify(body) : null,
       headers: {
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     })
       .then((response: Response) => {
-        if(response.ok){
+        if (response.ok) {
           try {
             return response.json();
           } catch {
             return {};
           }
         }
-        throw new Error('Response was not 200 OK');
+        throw new Error("Response was not 200 OK");
       })
-      .then((data: unknown) => {
-        return data as BodyType;
-      })
+      .then((data: unknown) => data as BodyType)
       .catch((err: Error) => {
         console.error("Error in API service", {
           ...err,
@@ -35,4 +33,4 @@ export default class ApiService {
         throw err;
       });
   }
-};
+}

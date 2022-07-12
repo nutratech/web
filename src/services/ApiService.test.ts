@@ -1,45 +1,35 @@
 import ApiService, { FetchFunction } from "./ApiService";
 
-describe('ApiService', () => {
-  describe('unit tests', () => {
+describe("ApiService", () => {
+  describe("unit tests", () => {
     let service: ApiService;
     let mockWindow: Window;
-    beforeEach(() => { 
+    beforeEach(() => {
       mockWindow = {
-        fetch: async () => {
-          return {} as Response;
-        },
+        fetch: async () => ({} as Response),
       } as unknown as Window;
 
-      jest.spyOn(mockWindow, 'fetch').mockResolvedValue({
+      jest.spyOn(mockWindow, "fetch").mockResolvedValue({
         ok: true,
-        json: async () => {
-          return {};
-        }
+        json: async () => ({}),
       } as Response);
 
       service = new ApiService(mockWindow);
     });
-  
-    it('calls fetch with the options given', async () => {
-      await service.call(
-        "https://googffffle.com",
-        "GET",
-      );
-      expect(mockWindow.fetch).toHaveBeenCalledWith(
-        "https://googffffle.com",
-        {
-          body: null,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          method: 'GET',
-        }
-      );
+
+    it("calls fetch with the options given", async () => {
+      await service.call("https://googffffle.com", "GET");
+      expect(mockWindow.fetch).toHaveBeenCalledWith("https://googffffle.com", {
+        body: null,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      });
     });
   });
 
-  describe('functional tests', () => {
+  describe("functional tests", () => {
     let service: ApiService;
     beforeEach(() => {
       service = new ApiService(window);
@@ -49,10 +39,7 @@ describe('ApiService', () => {
       let thrownError: Error | null = null;
 
       try {
-        await service.call(
-          "https://google.com",
-          "GET",
-        );
+        await service.call("https://google.com", "GET");
       } catch (err) {
         thrownError = err as Error;
       }
@@ -66,10 +53,7 @@ describe('ApiService', () => {
       let thrownError: Error | null = null;
 
       try {
-        await service.call(
-          DEV_API_URL,
-          'GET',
-        );
+        await service.call(DEV_API_URL, "GET");
       } catch (err) {
         thrownError = err as Error;
       }
@@ -81,14 +65,11 @@ describe('ApiService', () => {
       let thrownError: Error | null = null;
 
       try {
-        await service.call(
-          "https://googffffpsduifowlle.comslkvhwl",
-          'GET',
-        );
+        await service.call("https://googffffpsduifowlle.comslkvhwl", "GET");
       } catch (err) {
         thrownError = err as Error;
       }
-      
+
       expect(thrownError?.name).toEqual("TypeError");
     });
   });
