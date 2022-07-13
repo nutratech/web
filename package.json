@@ -59,5 +59,15 @@
     "jest-environment-jsdom": "^28.1.2",
     "ts-jest": "^28.0.5",
     "ts-node": "^10.8.2"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "statements": 45,
+        "branches": 33,
+        "functions": 66,
+        "lines": 45
+      }
+    }
   }
 }

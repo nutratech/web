@@ -1,95 +1,95 @@
-import ApiService, { FetchFunction } from "./ApiService";
+import { call } from "./ApiService";
 
-describe('ApiService', () => {
-  describe('unit tests', () => {
-    let service: ApiService;
-    let mockWindow: Window;
-    beforeEach(() => { 
-      mockWindow = {
-        fetch: async () => {
-          return {} as Response;
-        },
-      } as unknown as Window;
+describe("Real HTTP calls", () => {
+  // prettier-ignore
+  test(
+    "Real 200 HTTP call to ntserv [JSON res] yields deserializable response",
+    async () => {
+      const res = await call(new Request(
+        "https://dev.nutra.tk/api/pg/version",
+        { method: "GET" }
+      ));
 
-      jest.spyOn(mockWindow, 'fetch').mockResolvedValue({
-        ok: true,
-        json: async () => {
-          return {};
-        }
-      } as Response);
+      const result = await res.json();
+      expect(result.code).toEqual(200);
+      expect(Object.keys(result.data)).toContain("versions");
+    }
+  );
 
-      service = new ApiService(mockWindow);
-    });
-  
-    it('calls fetch with the options given', async () => {
-      await service.call(
-        "https://googffffle.com",
-        "GET",
+  // prettier-ignore
+  test(
+    "Real 200 HTTP call to ntserv WITH body [JSON res] yields deserializable response [from JSON]",
+    async () => {
+      const res = await call(
+        new Request("https://dev.nutra.tk/api/calc/1rm", {
+          method: "POST",
+          body: JSON.stringify({
+            reps: 12,
+            weight: 225,
+          }),
+        })
       );
-      expect(mockWindow.fetch).toHaveBeenCalledWith(
-        "https://googffffle.com",
-        {
-          body: null,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          method: 'GET',
-        }
-      );
-    });
-  });
 
-  describe('functional tests', () => {
-    let service: ApiService;
-    beforeEach(() => {
-      service = new ApiService(window);
-    });
+      const result = await res.json();
+      expect(result.code).toEqual(200);
+      expect(Object.keys(result.data)).toContain("epley");
+    }
+  );
 
-    it("can reach google.com", async () => {
-      let thrownError: Error | null = null;
+  // prettier-ignore
+  test(
+    "Real 401 HTTP call to ntserv [JSON res] yields deserializable response",
+    async () => {
+      const res = await call(new Request(
+        "https://dev.nutra.tk/api/email/change",
+        { method: "GET" }
+      ));
 
-      try {
-        await service.call(
-          "https://google.com",
-          "GET",
-        );
-      } catch (err) {
-        thrownError = err as Error;
-      }
+      const result = await res.json();
+      expect(result.code).toEqual(401);
+      expect(Object.keys(result)).toContain("data");
+    }
+  );
 
-      expect(thrownError?.name).toEqual("TypeError");
-    });
+  // prettier-ignore
+  test(
+    "Real 405 HTTP call to ntserv [TEXT res] yields deserializable response",
+    async () => {
+      const res = await call(new Request(
+        "https://dev.nutra.tk/api/pg/version",
+        { method: "POST" }
+      ));
 
-    const DEV_API_URL = "https://dev.nutra.tk/api";
+      const result = await res.json();
+      expect(result.code).toEqual(405);
+      expect(Object.keys(result)).toContain("data");
+      expect(Object.keys(result.data)).toContain("err_msg");
+      expect(result.data.err_msg).toContain("Method Not Allowed");
+    }
+  );
 
-    it(`ApiService can reach ${DEV_API_URL}`, async () => {
-      let thrownError: Error | null = null;
+  // prettier-ignore
+  test(
+    "Real 200 HTTP call to ntserv [HTML res] yields deserializable response w/ err_msg prop",
+    async () => {
+      const res = await call(new Request("https://dev.nutra.tk/api/nutrients/html"));
 
-      try {
-        await service.call(
-          DEV_API_URL,
-          'GET',
-        );
-      } catch (err) {
-        thrownError = err as Error;
-      }
+      const result = await res.json();
+      expect(result.code).toEqual(200);
+      expect(Object.keys(result)).toContain("data");
+      expect(Object.keys(result.data)).toContain("err_msg");
+      expect(result.data.err_msg).toBeTruthy();
+    }
+  );
 
-      expect(thrownError?.name).toEqual("TypeError");
-    });
+  // prettier-ignore
+  test(
+    "Real ECONNREFUSED call [ERROR res] to unreachable website yields err_msg prop",
+    async () => {
+      const res = await call(new Request("https://googlewoudlx34.wooweowodl"));
 
-    it("Random URL domain throws error", async () => {
-      let thrownError: Error | null = null;
-
-      try {
-        await service.call(
-          "https://googffffpsduifowlle.comslkvhwl",
-          'GET',
-        );
-      } catch (err) {
-        thrownError = err as Error;
-      }
-      
-      expect(thrownError?.name).toEqual("TypeError");
-    });
-  });
+      const result = await res.json();
+      expect(Object.keys(result.data)).toContain("err_msg");
+    }
+  );
 });

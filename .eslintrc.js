@@ -17,10 +17,10 @@ module.exports = {
   plugins: ["react", "@typescript-eslint"],
   rules: {
     // Default prettier-ESLint compatibility rules
+    "max-len": ["warn", 100],
     indent: ["error", 2, { SwitchCase: 1 }],
-    semi: [2, "always", { omitLastInOneLineBlock: true }],
+    semi: ["error", "always", { omitLastInOneLineBlock: true }],
     "@typescript-eslint/quotes": [2, "double"],
-    "object-curly-newline": [2, { minProperties: 10, consistent: true }],
     "@typescript-eslint/comma-dangle": [
       "error",
       {
@@ -32,6 +32,8 @@ module.exports = {
       },
     ],
     "no-console": ["warn", { allow: ["debug", "info", "warn", "error"] }],
+    // Getting weird rules
+    "object-curly-newline": ["error", { minProperties: 10, consistent: true }],
     "space-before-function-paren": [
       "error",
       {
@@ -40,6 +42,6 @@ module.exports = {
         asyncArrow: "always",
       },
     ],
-    "operator-linebreak": [2, "after"],
+    "operator-linebreak": ["error", "after"],
   },
 };
