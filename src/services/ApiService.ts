@@ -1,36 +1,31 @@
-export type FetchFunction = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+// eslint-disable-next-line import/prefer-default-export
+export async function call(dict: Request): Promise<Response> {
+  // prettier-ignore
+  return fetch(dict)
+    .then(async (response: Response) => {
+      console.debug(`Got response: ${JSON.stringify(response)}`);
 
-export default class ApiService {
-  private fetch: FetchFunction;
-
-  constructor(private window: Window) {
-    this.fetch = this.window.fetch;
-  }
-
-  async call<BodyType>(url: string, method: string, body?: BodyType): Promise<BodyType | null> {
-    return this.fetch(url, {
-      method,
-      body: body ? JSON.stringify(body) : null,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response: Response) => {
-        if (response.ok) {
-          try {
-            return response.json();
-          } catch {
-            return {};
+      // Handle Text (non-JSON) Content-Type
+      if (response.headers.get("content-type")?.startsWith("text/")) {
+        const bodyText = await response.text();
+        return new Response(
+          JSON.stringify({ code: response.status, data: { err_msg: bodyText } }),
+          {
+            status: response.status,
+            statusText: bodyText,
           }
-        }
-        throw new Error("Response was not 200 OK");
-      })
-      .then((data: unknown) => data as BodyType)
-      .catch((err: Error) => {
-        console.error("Error in API service", {
-          ...err,
-        });
-        throw err;
+        );
+      }
+
+      // return default
+      return response;
+    })
+    // Bundle the error (with message) as a new Response()
+    .catch((err) => {
+      console.warn("ERROR: General API error. Not connected?");
+      return new Response(JSON.stringify({ code: 418, data: { err_msg: err.message } }), {
+        status: 418,
+        statusText: err.message,
       });
-  }
+    });
 }
