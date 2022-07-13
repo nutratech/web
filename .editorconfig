@@ -16,7 +16,7 @@ ij_javascript_spaces_within_object_literal_braces = true
 ij_javascript_keep_simple_methods_in_one_line = true
 
 
-[*.{js,jsx}]
+[*.js]
 indent_size = 2
 max_line_length = 100
 
@@ -57,4 +57,3 @@ max_line_length = 120
 
 [{COMMIT_EDITMSG,MERGE_MSG,SQUASH_MSG,git-rebase-todo}]
 max_line_length = 72
-
