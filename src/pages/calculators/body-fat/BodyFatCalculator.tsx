@@ -33,51 +33,51 @@ function BodyFatCalculator() {
         </Form.Group>
         <Form.Group>
           <Form.Label>Age</Form.Label>
-          <Form.Control type="text" name="age" placeholder="Age" />
+          <Form.Control type="number" name="age" placeholder="Age" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Height</Form.Label>
-          <Form.Control type="text" name="height" placeholder="Height" />
+          <Form.Control type="number" name="height" placeholder="Height" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Waist</Form.Label>
-          <Form.Control type="text" name="waist" placeholder="Waist" />
+          <Form.Control type="number" name="waist" placeholder="Waist" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Hip</Form.Label>
-          <Form.Control type="text" name="hip" placeholder="Hip" />
+          <Form.Control type="number" name="hip" placeholder="Hip" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Neck</Form.Label>
-          <Form.Control type="text" name="neck" placeholder="Neck" />
+          <Form.Control type="number" name="neck" placeholder="Neck" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Chest</Form.Label>
-          <Form.Control type="text" name="chest" placeholder="Chest" />
+          <Form.Control type="number" name="chest" placeholder="Chest" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Ab</Form.Label>
-          <Form.Control type="text" name="ab" placeholder="Ab" />
+          <Form.Control type="number" name="ab" placeholder="Ab" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Thigh</Form.Label>
-          <Form.Control type="text" name="thigh" placeholder="Thigh" />
+          <Form.Control type="number" name="thigh" placeholder="Thigh" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Tricep</Form.Label>
-          <Form.Control type="text" name="tricep" placeholder="Tricep" />
+          <Form.Control type="number" name="tricep" placeholder="Tricep" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Sub</Form.Label>
-          <Form.Control type="text" name="sub" placeholder="Sub" />
+          <Form.Control type="number" name="sub" placeholder="Sub" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Sup</Form.Label>
-          <Form.Control type="text" name="sup" placeholder="Sup" />
+          <Form.Control type="number" name="sup" placeholder="Sup" />
         </Form.Group>
         <Form.Group>
           <Form.Label>Mid</Form.Label>
-          <Form.Control type="text" name="mid" placeholder="Mid" />
+          <Form.Control type="number" name="mid" placeholder="Mid" />
         </Form.Group>
         <Button variant="primary" type="submit">
           Submit
