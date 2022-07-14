@@ -8,6 +8,7 @@ function BodyFatCalculator() {
   const [bodyFatData, setBodyFatData] = useState({} as BodyFatResponse);
 
   const handleSubmit = (formEvent: React.FormEvent<HTMLFormElement>): void => {
+    formEvent.preventDefault();
     // TODO: dispatch action to trigger API call instead of calling directly
     const form = formEvent.currentTarget;
     const data = new FormData(form);

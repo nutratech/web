@@ -13,8 +13,8 @@ function Header() {
               <Nav className="me-auto">
                 <Nav.Link href="/">Home</Nav.Link>
                 <Nav.Link href="/blog">Blog</Nav.Link>
-                <NavDropdown title="calculators" id="calculators-dropdown">
-                  <NavDropdown.Item href="calculators/body-fat">Bodyfat</NavDropdown.Item>
+                <NavDropdown title="Calculators" id="calculators-dropdown">
+                  <NavDropdown.Item href="/calculators/body-fat">Bodyfat</NavDropdown.Item>
                 </NavDropdown>
               </Nav>
             </Navbar.Collapse>
