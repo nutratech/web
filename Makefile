@@ -84,14 +84,14 @@ else
 endif
 
 
-CLEAN_DIRS ?= build/ coverage/
+CLEAN_DIRS ?= build coverage
 CLEAN_LOCS ?= package-lock.json
 
 .PHONY: clean
 clean:	## Removes folders: build/ coverage/
 ifeq ($(OS),Windows_NT)
-	rmdir /s $(CLEAN_DIRS)
-	del $(CLEAN_LOCS)
+	for %dir in ($(CLEAN_DIRS)) do rmdir /s %dir
+	for %file in ($(CLEAN_LOCS)) do del %file
 else
 	rm -rf $(CLEAN_DIRS)
 	rm -f $(CLEAN_LOCS)
@@ -103,7 +103,7 @@ PURGE_DIRS ?= node_modules/
 .PHONY: purge
 purge:	## Removes folders: node_modules/
 ifeq ($(OS),Windows_NT)
-	rmdir /s $(PURGE_DIRS)
+	for %dir in ($(PURGE_DIRS)) do rmdir /s %dir
 else
 	rm -rf $(PURGE_DIRS)
 endif
