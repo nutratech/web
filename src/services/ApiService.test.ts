@@ -10,8 +10,9 @@ describe("Real HTTP calls", () => {
         { method: "GET" }
       ));
 
+      expect(res.status).toEqual(200);
+
       const result = await res.json();
-      expect(result.code).toEqual(200);
       expect(Object.keys(result.data)).toContain("versions");
     }
   );
@@ -30,8 +31,9 @@ describe("Real HTTP calls", () => {
         })
       );
 
-      const result = await res.json();
-      expect(result.code).toEqual(200);
+      expect(res.status).toEqual(200);
+
+      const result: Response = await res.json();
       expect(Object.keys(result.data)).toContain("epley");
     }
   );
@@ -45,8 +47,9 @@ describe("Real HTTP calls", () => {
         { method: "GET" }
       ));
 
+      expect(res.status).toEqual(401);
+
       const result = await res.json();
-      expect(result.code).toEqual(401);
       expect(Object.keys(result)).toContain("data");
     }
   );
@@ -60,8 +63,9 @@ describe("Real HTTP calls", () => {
         { method: "POST" }
       ));
 
+      expect(res.status).toEqual(405);
+
       const result = await res.json();
-      expect(result.code).toEqual(405);
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
       expect(result.data.err_msg).toContain("Method Not Allowed");
@@ -74,8 +78,9 @@ describe("Real HTTP calls", () => {
     async () => {
       const res = await call(new Request("https://dev.nutra.tk/api/nutrients/html"));
 
+      expect(res.status).toEqual(200);
+
       const result = await res.json();
-      expect(result.code).toEqual(200);
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
       expect(result.data.err_msg).toBeTruthy();
