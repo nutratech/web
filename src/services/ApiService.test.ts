@@ -82,6 +82,7 @@ describe("Real HTTP calls", () => {
     }
   );
 
+  jest.setTimeout(15000);
   // prettier-ignore
   test(
     "Real ECONNREFUSED call [ERROR res] to unreachable website yields err_msg prop",
