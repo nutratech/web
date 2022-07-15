@@ -8,6 +8,7 @@ import reportWebVitals from "./reportWebVitals";
 import Home from "./pages/Home";
 import MainLayout from "./layouts/MainLayout";
 import BodyFatCalculator from "./pages/calculators/body-fat/BodyFatCalculator";
+import Redirect from "./pages/redirect/Redirect";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
@@ -17,6 +18,7 @@ root.render(
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="/calculators/body-fat" element={<BodyFatCalculator />} />
+          <Route path="/blog" element={<Redirect path="/blog" />} />
         </Route>
       </Routes>
     </BrowserRouter>
