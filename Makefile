@@ -3,7 +3,13 @@ SHELL=/bin/bash
 
 .PHONY: _help
 _help:	## Comments like this, a tab character with two pound signs "<TAB>##" will show up unless you IGNORE_ME
-	@grep -h "##" $(MAKEFILE_LIST) | grep -v IGNORE_ME | sed -e 's/##//' | column -t -s $$'\t'
+ifeq ($(OS),Windows_NT)
+	@echo Our make _help command does not support Windows right now!
+	@echo You can try using Git Bash, Linux subsystem,
+	@echo  or looking at the Makefile, to see what targets it offers.
+else
+	@grep -h "##" Makefile | grep -v IGNORE_ME | sed -e 's/##//' | column -t -s $$'\t'
+endif
 
 
 # ----------------------------------------------------------------------
@@ -60,14 +66,22 @@ test:	## Run tests
 
 .PHONY: build
 build:	## Create build
+ifeq ($(OS),Windows_NT)
 	GENERATE_SOURCEMAP=false npm run build
+else
+	set GENERATE_SOURCEMAP=false && npm run build
+endif
 
 
 REACT_APP_SERVER_URL ?= http://localhost:20000
 
 .PHONY: run
 run:	## Run locally, env vars: REACT_APP_SERVER_URL
+ifeq ($(OS),Windows_NT)
 	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
+else
+	set REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) && npm start
+endif
 
 
 CLEAN_DIRS ?= build/ coverage/
@@ -75,15 +89,25 @@ CLEAN_LOCS ?= package-lock.json
 
 .PHONY: clean
 clean:	## Removes folders: build/ coverage/
+ifeq ($(OS),Windows_NT)
+	rmdir /s $(CLEAN_DIRS)
+	del $(CLEAN_LOCS)
+else
 	rm -rf $(CLEAN_DIRS)
 	rm -f $(CLEAN_LOCS)
+endif
 
 
 PURGE_DIRS ?= node_modules/
 
 .PHONY: purge
 purge:	## Removes folders: node_modules/
+ifeq ($(OS),Windows_NT)
+	rmdir /s $(PURGE_DIRS)
+else
 	rm -rf $(PURGE_DIRS)
+endif
+
 
 
 # ----------------------------------------------------------------------
