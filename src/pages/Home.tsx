@@ -2,6 +2,8 @@ import React from "react";
 import { Button, Col } from "react-bootstrap";
 import { useNavigate } from "react-router";
 
+import "./Home.scss";
+
 function Home() {
   const navigate = useNavigate();
 
@@ -13,7 +15,7 @@ function Home() {
     <>
       <section id="hero-banner">
         <div className="px-4 py-5 my-5 text-center">
-          <h1 className="display-5 fw-bold">Check out our calculators</h1>
+          <h1 className="display-5">Check out our calculators</h1>
           <Col lg="6" className="mx-auto">
             <p className="lead mb-4">
               We&apos;ve been working hard to add more calculators to the website.
