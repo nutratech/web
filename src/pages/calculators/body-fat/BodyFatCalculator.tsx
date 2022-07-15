@@ -17,10 +17,7 @@ function BodyFatCalculator() {
   };
 
   const onInputChange = (
-    evt: ChangeEvent<
-    HTMLInputElement |
-    HTMLTextAreaElement |
-    HTMLSelectElement>
+    evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     if (!evt.target.value) {
       return;
@@ -29,9 +26,7 @@ function BodyFatCalculator() {
     setBodyFatForm({
       ...bodyFatForm,
       [evt.target.name]:
-        evt.target.type === "number" ?
-          Number(evt.target.value) :
-          String(evt.target.value),
+        evt.target.type === "number" ? Number(evt.target.value) : String(evt.target.value),
     });
   };
 
