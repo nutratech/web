@@ -99,7 +99,7 @@ else
 endif
 
 
-PURGE_DIRS ?= node_modules/
+PURGE_DIRS ?= node_modules
 
 .PHONY: purge
 purge:	## Removes folders: node_modules/
