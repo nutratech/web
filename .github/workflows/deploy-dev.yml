@@ -1,0 +1,33 @@
+---
+name: deploy-dev
+
+"on":
+  push:
+    # TODO: do this on dev branch
+    branches: ["master"]
+
+jobs:
+  deploy-dev:
+    runs-on: [self-hosted, dev-east]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Clean up
+        run: |
+          make clean
+          rm -rf node_modules package-lock.json
+
+      - name: Install requirements
+        run: make deps
+
+      # NOTE: removing "CI=false" will cause warnings to be treated as errors
+      - name: React Scripts (Build)
+        run: >
+          CI=false
+          make build
+
+      - name: Copy static files over
+        run: |
+          rm -rf /var/www/react_app/*
+          mv build/* /var/www/react_app/
