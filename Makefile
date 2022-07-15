@@ -3,12 +3,12 @@ SHELL=/bin/bash
 
 .PHONY: _help
 _help:	## Comments like this, a tab character with two pound signs "<TAB>##" will show up unless you IGNORE_ME
-ifeq ($(OS),Windows_NT)
+ifneq ($(OS),Windows_NT)
+	@grep -h "##" Makefile | grep -v IGNORE_ME | sed -e 's/##//' | column -t -s $$'\t'
+else
 	@echo Our make _help command does not support Windows right now!
 	@echo You can try using Git Bash, Linux subsystem,
 	@echo  or looking at the Makefile, to see what targets it offers.
-else
-	@grep -h "##" Makefile | grep -v IGNORE_ME | sed -e 's/##//' | column -t -s $$'\t'
 endif
 
 
