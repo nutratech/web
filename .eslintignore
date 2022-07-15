@@ -1,5 +1,5 @@
-*.config.js
-.eslintrc.js
+package-lock.json
 
 build/
 coverage/
+

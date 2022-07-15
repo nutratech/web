@@ -25,7 +25,7 @@ _format/prettier:
 
 .PHONY: _format/eslint
 _format/eslint:
-	- npx eslint --fix --ext .json,.ts,.tsx .
+	- npx eslint --fix --ext .json,.js,.ts,.tsx .
 
 .PHONY: format
 format: _format/prettier _format/eslint
@@ -39,7 +39,7 @@ format:	## Format w/ prettier & ESLint
 .PHONY: lint
 lint:	## Lint w/ prettier & ESLint
 	npx prettier --check .
-	npx eslint --max-warnings 0 --ext .json,.ts,.tsx .
+	npx eslint --max-warnings 0 --ext .json,.js,.ts,.tsx .
 
 .PHONY: _test/ci
 _test/ci: JEST_OPT_ARGS=
