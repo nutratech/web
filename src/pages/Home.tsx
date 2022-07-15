@@ -1,8 +1,36 @@
 import React from "react";
+import { Button, Col } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
 function Home() {
+  const navigate = useNavigate();
+
+  const viewCalculators = () => {
+    navigate("/calculators/body-fat");
+  };
+
   return (
     <>
+      <section id="hero-banner">
+        <div className="px-4 py-5 my-5 text-center">
+          <h1 className="display-5 fw-bold">Check out our calculators</h1>
+          <Col lg="6" className="mx-auto">
+            <p className="lead mb-4">
+              We&apos;ve been working hard to add more calculators to the website.
+              Check your bodyfat today.
+            </p>
+            <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
+              <Button
+                variant="primary"
+                className="btn-lg px-4 gap-3"
+                onClick={() => viewCalculators()}
+              >
+                View calculators
+              </Button>
+            </div>
+          </Col>
+        </div>
+      </section>
       <section id="nutra-blurb">
         <h3>Nutra</h3>
         <p>
