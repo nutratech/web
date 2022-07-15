@@ -4,7 +4,7 @@ import { act } from "react-dom/test-utils";
 import Header from "./Header";
 
 jest.mock("react-router", () => ({
-  useNavigate: (): (() => void) => () => {},
+  useNavigate: (): (() => void) => jest.fn(),
 }));
 
 // eslint-disable-next-line @typescript-eslint/init-declarations
