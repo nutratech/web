@@ -12,7 +12,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(200);
 
-      const result = await res.json();
+      const result = await res.json() as Record<string, never>;
       expect(Object.keys(result.data)).toContain("versions");
     }
   );
@@ -33,7 +33,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(200);
 
-      const result: Response = await res.json();
+      const result: Response = await res.json() as Record<string, never>;
       expect(Object.keys(result.data)).toContain("epley");
     }
   );
@@ -49,7 +49,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(401);
 
-      const result = await res.json();
+      const result = await res.json() as Record<string, never>;
       expect(Object.keys(result)).toContain("data");
     }
   );
@@ -65,7 +65,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(405);
 
-      const result = await res.json();
+      const result = await res.json() as Record<string, never>;
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
       expect(result.data.err_msg).toContain("Method Not Allowed");
@@ -80,7 +80,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(200);
 
-      const result = await res.json();
+      const result = await res.json() as Record<string, never>;
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
       expect(result.data.err_msg).toBeTruthy();
@@ -94,7 +94,7 @@ describe("Real HTTP calls", () => {
     async () => {
       const res = await call(new Request("https://googlewoudlx34.wooweowodl"));
 
-      const result = await res.json();
+      const result = await res.json() as Record<string, never>;
       expect(Object.keys(result.data)).toContain("err_msg");
     }
   );
