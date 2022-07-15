@@ -8,4 +8,4 @@ Homepage and web interface for our domain.
 
 This is a typescript app.
 
-You can view the `Makefile` targets for details on how to setup and run.
+You can view the `Makefile` targets for details on how to set up and run.

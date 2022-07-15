@@ -16,7 +16,7 @@ jobs:
       - name: Clean up
         run: |
           make clean
-          rm -rf node_modules package-lock.json
+          rm -rf node_modules/
 
       - name: Install requirements
         run: make deps
