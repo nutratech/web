@@ -20,7 +20,7 @@ export async function call(dict: Request): Promise<Response> {
       return response;
     })
     // Bundle the error (with message) as a new Response()
-    .catch((err) => {
+    .catch((err: Error) => {
       console.warn("ERROR: General API error. Not connected?");
       return new Response(JSON.stringify({ code: 418, data: { err_msg: err.message } }), {
         status: 418, statusText: err.message,
