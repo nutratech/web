@@ -19,7 +19,10 @@ module.exports = {
     // Default prettier-ESLint compatibility rules
     "max-len": ["warn", 100],
     indent: ["error", 2, { SwitchCase: 1 }],
-    semi: ["error", "always", { omitLastInOneLineBlock: true }],
+    // Semi-colons
+    semi: ["off"],
+    "@typescript-eslint/semi": ["error"],
+    // Quotes & comma-dangle
     "@typescript-eslint/quotes": [2, "double"],
     "@typescript-eslint/comma-dangle": [
       "error",

@@ -39,8 +39,7 @@ function BodyFatCalculator() {
     <section id="body-fat-calculator">
       <h6>
         Result:
-        {" "}
-        { JSON.stringify(bodyFatData) }
+        {JSON.stringify(bodyFatData)}
       </h6>
       <Form onSubmit={(evt) => handleSubmit(evt)}>
         <Form.Group>

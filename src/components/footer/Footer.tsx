@@ -4,9 +4,7 @@ import { Col } from "react-bootstrap";
 function Footer() {
   return (
     <Col lg="12">
-      <footer id="app-footer">
-        &copy; 2022 - Nutra, LLC.
-      </footer>
+      <footer id="app-footer">&copy; 2022 - Nutra, LLC.</footer>
     </Col>
   );
 }
