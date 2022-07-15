@@ -66,7 +66,7 @@ test:	## Run tests
 
 .PHONY: build
 build:	## Create build
-ifeq ($(OS),Windows_NT)
+ifneq ($(OS),Windows_NT)
 	GENERATE_SOURCEMAP=false npm run build
 else
 	set GENERATE_SOURCEMAP=false && npm run build
@@ -77,7 +77,7 @@ REACT_APP_SERVER_URL ?= http://localhost:20000
 
 .PHONY: run
 run:	## Run locally, env vars: REACT_APP_SERVER_URL
-ifeq ($(OS),Windows_NT)
+ifneq ($(OS),Windows_NT)
 	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
 else
 	set REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) && npm start
@@ -89,13 +89,13 @@ CLEAN_LOCS ?= package-lock.json
 
 .PHONY: clean
 clean:	## Removes folders: build/ coverage/
-ifeq ($(OS),Windows_NT)
+ifneq ($(OS),Windows_NT)
+	rm -rf $(CLEAN_DIRS)
+	rm -f $(CLEAN_LOCS)
+else
 	:: This uses a double percent only in Makefile, single percent in cmd.exe
 	for %%i in ($(CLEAN_DIRS)) do rmdir /s %%i
 	for %%i in ($(CLEAN_LOCS)) do del %%i
-else
-	rm -rf $(CLEAN_DIRS)
-	rm -f $(CLEAN_LOCS)
 endif
 
 
@@ -103,10 +103,10 @@ PURGE_DIRS ?= node_modules
 
 .PHONY: purge
 purge:	## Removes folders: node_modules/
-ifeq ($(OS),Windows_NT)
-	for %%i in ($(PURGE_DIRS)) do rmdir /s %%i
-else
+ifneq ($(OS),Windows_NT)
 	rm -rf $(PURGE_DIRS)
+else
+	for %%i in ($(PURGE_DIRS)) do rmdir /s %%i
 endif
 
 
