@@ -42,7 +42,6 @@ lint:	## Lint w/ prettier & ESLint
 	npx eslint --max-warnings 0 --ext .ts,.tsx .
 
 .PHONY: _test/ci
-_test/ci:
 _test/ci: JEST_OPT_ARGS=
 _test/ci: export CI=true
 _test/ci: test
