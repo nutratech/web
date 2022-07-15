@@ -90,8 +90,9 @@ CLEAN_LOCS ?= package-lock.json
 .PHONY: clean
 clean:	## Removes folders: build/ coverage/
 ifeq ($(OS),Windows_NT)
-	for %i in ($(CLEAN_DIRS)) do rmdir /s %i
-	for %i in ($(CLEAN_LOCS)) do del %i
+	:: This uses a double percent only in Makefile, single percent in cmd.exe
+	for %%i in ($(CLEAN_DIRS)) do rmdir /s %%i
+	for %%i in ($(CLEAN_LOCS)) do del %%i
 else
 	rm -rf $(CLEAN_DIRS)
 	rm -f $(CLEAN_LOCS)
@@ -103,7 +104,7 @@ PURGE_DIRS ?= node_modules/
 .PHONY: purge
 purge:	## Removes folders: node_modules/
 ifeq ($(OS),Windows_NT)
-	for %i in ($(PURGE_DIRS)) do rmdir /s %i
+	for %%i in ($(PURGE_DIRS)) do rmdir /s %%i
 else
 	rm -rf $(PURGE_DIRS)
 endif
