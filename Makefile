@@ -70,13 +70,20 @@ run:	## Run locally, env vars: REACT_APP_SERVER_URL
 	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
 
 
-CLEAN_DIRS ?= build coverage
+CLEAN_DIRS ?= build/ coverage/
 CLEAN_LOCS ?= package-lock.json
 
 .PHONY: clean
 clean:	## Removes folders: build/ coverage/
 	rm -rf $(CLEAN_DIRS)
 	rm -f $(CLEAN_LOCS)
+
+
+PURGE_DIRS ?= node_modules/
+
+.PHONY: purge
+purge:	## Removes folders: node_modules/
+	rm -rf $(PURGE_DIRS)
 
 
 # ----------------------------------------------------------------------

@@ -15,10 +15,8 @@ jobs:
       - name: Extras / Count Lines of Source Code
         run: make extras/cloc
 
-      - name: Clean up
-        run: |
-          make clean
-          rm -rf node_modules/
+      - name: Clean up (from previous run)
+        run: make clean purge
 
       - name: Install requirements
         run: make deps
