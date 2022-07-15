@@ -1,15 +1,12 @@
 import React from "react";
 import { Button, Col } from "react-bootstrap";
 import { useNavigate } from "react-router";
+import HomeService from "./Home.service";
 
 import "./Home.scss";
 
 function Home(): JSX.Element {
   const navigate = useNavigate();
-
-  const viewCalculators = (): void => {
-    navigate("/calculators/body-fat");
-  };
 
   return (
     <>
@@ -25,9 +22,7 @@ function Home(): JSX.Element {
               <Button
                 variant="primary"
                 className="btn-lg px-4 gap-3"
-                onClick={(): void => {
-                  viewCalculators();
-                }}
+                onClick={HomeService.viewCalculators.bind(null, navigate)}
               >
                 View calculators
               </Button>
