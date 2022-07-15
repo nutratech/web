@@ -33,7 +33,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(200);
 
-      const result: Response = await res.json() as Record<string, never>;
+      const result = await res.json() as Record<string, never>;
       expect(Object.keys(result.data)).toContain("epley");
     }
   );
@@ -68,6 +68,9 @@ describe("Real HTTP calls", () => {
       const result = await res.json() as Record<string, never>;
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
+      // TODO: resolve TS2339: Property 'err_msg' does not exist on type 'never'.
+      //  maybe it needs a special class e.g. ServerJsonResponse(code, Optional[err_msg], ...)
+      // TODO: why doesn't "make lint" show this error, but WebStorm does?
       expect(result.data.err_msg).toContain("Method Not Allowed");
     }
   );
