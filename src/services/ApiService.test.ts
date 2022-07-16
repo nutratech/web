@@ -1,18 +1,18 @@
-import { call } from "./ApiService";
+import ApiService from "./ApiService";
 
 describe("Real HTTP calls", () => {
   // prettier-ignore
   test(
     "Real 200 HTTP call to ntserv [JSON res] yields deserializable response",
     async () => {
-      const res = await call(new Request(
+      const res = await ApiService.call(new Request(
         "https://dev.nutra.tk/api/pg/version",
         { method: "GET" }
       ));
 
       expect(res.status).toEqual(200);
 
-      const result = await res.json() as { data: { [key: string]: unknown} };
+      const result = await res.json() as { data: Record<string, unknown> };
       expect(Object.keys(result.data)).toContain("versions");
     }
   );
@@ -21,7 +21,7 @@ describe("Real HTTP calls", () => {
   test(
     "Real 200 HTTP call to ntserv WITH body [JSON res] yields deserializable response [from JSON]",
     async () => {
-      const res = await call(
+      const res = await ApiService.call(
         new Request("https://dev.nutra.tk/api/calc/1rm", {
           method: "POST",
           body: JSON.stringify({
@@ -33,7 +33,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(200);
 
-      const result = await res.json() as { data: { [key: string]: unknown} };
+      const result = await res.json() as { data: Record<string, unknown> };
       expect(Object.keys(result.data)).toContain("epley");
     }
   );
@@ -42,14 +42,14 @@ describe("Real HTTP calls", () => {
   test(
     "Real 401 HTTP call to ntserv [JSON res] yields deserializable response",
     async () => {
-      const res = await call(new Request(
+      const res = await ApiService.call(new Request(
         "https://dev.nutra.tk/api/email/change",
         { method: "GET" }
       ));
 
       expect(res.status).toEqual(401);
 
-      const result = await res.json() as { data: { [key: string]: unknown} };
+      const result = await res.json() as { data: Record<string, unknown> };
       expect(Object.keys(result)).toContain("data");
     }
   );
@@ -58,14 +58,14 @@ describe("Real HTTP calls", () => {
   test(
     "Real 405 HTTP call to ntserv [TEXT res] yields deserializable response",
     async () => {
-      const res = await call(new Request(
+      const res = await ApiService.call(new Request(
         "https://dev.nutra.tk/api/pg/version",
         { method: "POST" }
       ));
 
       expect(res.status).toEqual(405);
 
-      const result = await res.json() as { data: { [key: string]: unknown} };
+      const result = await res.json() as { data: Record<string, unknown> };
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
       // TODO: resolve TS2339: Property 'err_msg' does not exist on type 'never'.
@@ -79,11 +79,11 @@ describe("Real HTTP calls", () => {
   test(
     "Real 200 HTTP call to ntserv [HTML res] yields deserializable response w/ err_msg prop",
     async () => {
-      const res = await call(new Request("https://dev.nutra.tk/api/nutrients/html"));
+      const res = await ApiService.call(new Request("https://dev.nutra.tk/api/nutrients/html"));
 
       expect(res.status).toEqual(200);
 
-      const result = await res.json() as { data: { [key: string]: unknown} };
+      const result = await res.json() as { data: Record<string, unknown> };
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
       expect(result.data.err_msg).toBeTruthy();
@@ -95,9 +95,9 @@ describe("Real HTTP calls", () => {
   test(
     "Real ECONNREFUSED call [ERROR res] to unreachable website yields err_msg prop",
     async () => {
-      const res = await call(new Request("https://googlewoudlx34.wooweowodl"));
+      const res = await ApiService.call(new Request("https://googlewoudlx34.wooweowodl"));
 
-      const result = await res.json() as { data: { [key: string]: unknown} };
+      const result = await res.json() as { data: Record<string, unknown> };
       expect(Object.keys(result.data)).toContain("err_msg");
     }
   );

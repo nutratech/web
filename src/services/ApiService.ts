@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/prefer-default-export
-export async function call(dict: Request): Promise<Response> {
+async function call(dict: Request): Promise<Response> {
   // prettier-ignore
   return fetch(dict)
     .then(async (response: Response) => {
@@ -27,3 +26,7 @@ export async function call(dict: Request): Promise<Response> {
       });
     });
 }
+
+export default {
+  call,
+};

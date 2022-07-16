@@ -48,7 +48,7 @@ function BodyFatCalculator(): JSX.Element {
             value={bodyFatForm.gender}
             placeholder="Gender"
             aria-label="Gender"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           >
@@ -64,7 +64,7 @@ function BodyFatCalculator(): JSX.Element {
             name="age"
             value={bodyFatForm.age}
             placeholder="Age"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -76,7 +76,7 @@ function BodyFatCalculator(): JSX.Element {
             name="height"
             value={bodyFatForm.height}
             placeholder="Height"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -88,7 +88,7 @@ function BodyFatCalculator(): JSX.Element {
             name="waist"
             value={bodyFatForm.waist}
             placeholder="Waist"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -100,7 +100,7 @@ function BodyFatCalculator(): JSX.Element {
             name="hip"
             value={bodyFatForm.hip}
             placeholder="Hip"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -112,7 +112,7 @@ function BodyFatCalculator(): JSX.Element {
             name="neck"
             value={bodyFatForm.neck}
             placeholder="Neck"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -124,7 +124,7 @@ function BodyFatCalculator(): JSX.Element {
             name="chest"
             value={bodyFatForm.chest}
             placeholder="Chest"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -136,7 +136,7 @@ function BodyFatCalculator(): JSX.Element {
             name="ab"
             value={bodyFatForm.ab}
             placeholder="Ab"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -148,7 +148,7 @@ function BodyFatCalculator(): JSX.Element {
             name="thigh"
             value={bodyFatForm.thigh}
             placeholder="Thigh"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -160,7 +160,7 @@ function BodyFatCalculator(): JSX.Element {
             name="tricep"
             value={bodyFatForm.tricep}
             placeholder="Tricep"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -172,7 +172,7 @@ function BodyFatCalculator(): JSX.Element {
             name="sub"
             value={bodyFatForm.sub}
             placeholder="Sub"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -184,7 +184,7 @@ function BodyFatCalculator(): JSX.Element {
             name="sup"
             value={bodyFatForm.sup}
             placeholder="Sup"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />
@@ -196,7 +196,7 @@ function BodyFatCalculator(): JSX.Element {
             name="mid"
             value={bodyFatForm.mid}
             placeholder="Mid"
-            onChange={(evt) => {
+            onChange={(evt): void => {
               onInputChange(evt);
             }}
           />

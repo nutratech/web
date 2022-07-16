@@ -4,10 +4,10 @@ import { useNavigate } from "react-router";
 
 import "./Home.scss";
 
-function Home() {
+function Home(): JSX.Element {
   const navigate = useNavigate();
 
-  const viewCalculators = () => {
+  const viewCalculators = (): void => {
     navigate("/calculators/body-fat");
   };
 
@@ -25,7 +25,9 @@ function Home() {
               <Button
                 variant="primary"
                 className="btn-lg px-4 gap-3"
-                onClick={() => viewCalculators()}
+                onClick={(): void => {
+                  viewCalculators();
+                }}
               >
                 View calculators
               </Button>

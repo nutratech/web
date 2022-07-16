@@ -10,8 +10,8 @@ import MainLayout from "./layouts/MainLayout";
 import BodyFatCalculator from "./pages/calculators/body-fat/BodyFatCalculator";
 
 const rootEl = document.getElementById("root");
-if(!rootEl){
-  console.error('Failed to attach to root element, could not find the element');
+if (!rootEl) {
+  console.error("Failed to attach to root element, could not find the element");
 } else {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
@@ -26,9 +26,9 @@ if(!rootEl){
       </BrowserRouter>
     </React.StrictMode>
   );
-  
+
   // If you want to start measuring performance in your app, pass a function
   // to log results (for example: reportWebVitals(console.log))
   // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-  reportWebVitals();
+  void reportWebVitals();
 }
