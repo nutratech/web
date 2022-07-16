@@ -1,20 +1,19 @@
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, ReactNode } from "react";
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import type BodyFatForm from "../../../models/BodyFatForm";
 import type BodyFatResponse from "../../../models/BodyFatResponse";
 import CalculatorService from "../../../services/calculator/CalculatorService";
 
-function BodyFatCalculator() {
+function BodyFatCalculator(): ReactNode {
   const [bodyFatForm, setBodyFatForm] = useState({} as BodyFatForm);
   const [bodyFatData, setBodyFatData] = useState({} as BodyFatResponse);
 
-  const handleSubmit = (formEvent: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (formEvent: React.FormEvent<HTMLFormElement>): Promise<void> => {
     formEvent.preventDefault();
     // TODO: dispatch action to trigger API call instead of calling directly
-    CalculatorService.calculateBodyFatPercentage(bodyFatForm).then((bodyFatResponse) => {
-      setBodyFatData(bodyFatResponse);
-    });
+    const bodyFatResponse = await CalculatorService.calculateBodyFatPercentage(bodyFatForm);
+    setBodyFatData(bodyFatResponse);
   };
 
   const onInputChange = (
@@ -38,8 +37,8 @@ function BodyFatCalculator() {
         {JSON.stringify(bodyFatData)}
       </h6>
       <Form
-        onSubmit={(evt) => {
-          handleSubmit(evt);
+        onSubmit={(evt): void => {
+          void handleSubmit(evt);
         }}
       >
         <Form.Group>
