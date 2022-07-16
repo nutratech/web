@@ -70,9 +70,9 @@ test:	## Run tests
 .PHONY: build
 build:	## Create build
 ifneq ($(OS),Windows_NT)
-	GENERATE_SOURCEMAP=false npm run build
+	TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false npm run build
 else
-	set GENERATE_SOURCEMAP=false && npm run build
+	set TSC_COMPILE_ON_ERROR=true && set GENERATE_SOURCEMAP=false && npm run build
 endif
 
 
@@ -81,9 +81,9 @@ REACT_APP_SERVER_URL ?= http://localhost:20000
 .PHONY: run
 run:	## Run locally, env vars: REACT_APP_SERVER_URL
 ifneq ($(OS),Windows_NT)
-	REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
+	TSC_COMPILE_ON_ERROR=true REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) npm start
 else
-	set REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) && npm start
+	set TSC_COMPILE_ON_ERROR=true && set REACT_APP_SERVER_URL=$(REACT_APP_SERVER_URL) && npm start
 endif
 
 
