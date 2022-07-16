@@ -31,7 +31,7 @@ _format/prettier:
 
 .PHONY: _format/eslint
 _format/eslint:
-	- npx eslint --fix --ext .json,.js,.ts,.tsx .
+	- npx eslint --fix --ext .js,.ts,.tsx .
 
 .PHONY: format
 format: _format/prettier _format/eslint

@@ -15,13 +15,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "react"
   },
-  "include": ["src/**/*"],
-  "overrides": [
-    {
-      "files": ["*.json"],
-      "parser": "eslint-plugin-json"
-    }
-  ]
+  "include": ["src", "public", ".eslintrc.js"]
 }
