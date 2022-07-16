@@ -9,7 +9,7 @@ import Home from "./pages/Home";
 import MainLayout from "./layouts/MainLayout";
 import BodyFatCalculator from "./pages/calculators/body-fat/BodyFatCalculator";
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>
     <BrowserRouter>

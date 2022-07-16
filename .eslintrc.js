@@ -4,17 +4,19 @@ module.exports = {
     es2021: true,
     jest: true,
   },
-  extends: ["plugin:react/recommended", "airbnb", "airbnb-typescript"],
+  extends: [
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/all",
+    "airbnb-base",
+    "airbnb-typescript/base",
+  ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
     ecmaVersion: "latest",
     sourceType: "module",
     project: "./tsconfig.json",
   },
-  plugins: ["react", "@typescript-eslint"],
+  plugins: ["react", "@typescript-eslint", "@typescript-eslint/tslint"],
   rules: {
     // Default prettier-ESLint compatibility rules
     "max-len": ["warn", 100],
@@ -46,5 +48,20 @@ module.exports = {
       },
     ],
     "operator-linebreak": ["error", "after"],
+    // Warning rules [TypeScript - tsc]
+    "import/extensions": ["warn"],
+    "@typescript-eslint/no-floating-promises": ["warn"],
+    "@typescript-eslint/explicit-function-return-type": ["warn"],
+    "@typescript-eslint/explicit-module-boundary-types": ["warn"],
+    "@typescript-eslint/explicit-member-accessibility": ["warn"],
+    "@typescript-eslint/prefer-readonly-parameter-types": ["warn"],
+    "@typescript-eslint/no-non-null-assertion": ["warn"],
+    "@typescript-eslint/strict-boolean-expressions": ["warn"],
+    "@typescript-eslint/no-extraneous-class": ["warn"],
+  },
+  settings: {
+    react: {
+      version: "detect",
+    },
   },
 };

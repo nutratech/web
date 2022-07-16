@@ -1,5 +1,5 @@
-*.config.js
-.eslintrc.js
+*.json
 
 build/
 coverage/
+

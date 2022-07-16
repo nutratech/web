@@ -1,5 +1,5 @@
-import BodyFatForm from "../../models/BodyFatForm";
-import BodyFatResponse from "../../models/BodyFatResponse";
+import type BodyFatForm from "../../models/BodyFatForm";
+import type BodyFatResponse from "../../models/BodyFatResponse";
 import { call } from "../ApiService";
 
 export default class CalculatorService {
@@ -10,7 +10,7 @@ export default class CalculatorService {
         body: JSON.stringify(bodyFatForm),
       })
     );
-    const data = await resp.json();
+    const data = (await resp.json()) as Record<string, never>;
     return data as BodyFatResponse; // just for testing purposes
   }
 }
