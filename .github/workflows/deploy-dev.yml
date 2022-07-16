@@ -23,9 +23,7 @@ jobs:
 
       # NOTE: removing "CI=false" will cause warnings to be treated as errors
       - name: React Scripts (Build)
-        run: >
-          CI=false
-          make build
+        run: CI=false make build
 
       - name: Copy static files over
         run: |
