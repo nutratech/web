@@ -45,9 +45,9 @@ format:	## Format w/ prettier & ESLint
 .PHONY: lint
 lint:	## Lint w/ prettier & ESLint
 	npx prettier --check .
-	# NOTE: ignore errors for now on tsc
-	- npx tsc
-	npx eslint --max-warnings 0 --ext .json,.js,.ts,.tsx .
+	# NOTE: ignore errors for now on ESLint for now, til we resolve tsc
+	- npx eslint --max-warnings 0 --ext .json,.js,.ts,.tsx .
+	npx tsc
 
 .PHONY: _test/ci
 _test/ci: JEST_OPT_ARGS=
