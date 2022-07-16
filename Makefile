@@ -46,7 +46,7 @@ format:	## Format w/ prettier & ESLint
 lint:	## Lint w/ prettier & ESLint
 	npx prettier --check .
 	# NOTE: ignore errors for now on ESLint for now, til we resolve tsc
-	- npx eslint --max-warnings 0 --ext .json,.js,.ts,.tsx .
+	- npx eslint --max-warnings 0 --ext .js,.ts,.tsx .
 	# NOTE: ignore these too, so CI will at least run tests
 	- npx tsc
 
