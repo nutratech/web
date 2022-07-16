@@ -1,5 +1,5 @@
-import BodyFatForm from "../../models/BodyFatForm";
-import BodyFatResponse from "../../models/BodyFatResponse";
+import type BodyFatForm from "../../models/BodyFatForm";
+import type BodyFatResponse from "../../models/BodyFatResponse";
 import { call } from "../ApiService";
 
 export default class CalculatorService {

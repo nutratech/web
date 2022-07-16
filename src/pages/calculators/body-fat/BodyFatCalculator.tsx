@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useState } from "react";
+import type { ChangeEvent } from "react";
+import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-import BodyFatForm from "../../../models/BodyFatForm";
-import BodyFatResponse from "../../../models/BodyFatResponse";
+import type BodyFatForm from "../../../models/BodyFatForm";
+import type BodyFatResponse from "../../../models/BodyFatResponse";
 import CalculatorService from "../../../services/calculator/CalculatorService";
 
 function BodyFatCalculator() {
@@ -17,7 +18,7 @@ function BodyFatCalculator() {
   };
 
   const onInputChange = (
-    evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    evt: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     if (!evt.target.value) {
       return;
@@ -36,7 +37,11 @@ function BodyFatCalculator() {
         Result:
         {JSON.stringify(bodyFatData)}
       </h6>
-      <Form onSubmit={(evt) => handleSubmit(evt)}>
+      <Form
+        onSubmit={(evt) => {
+          handleSubmit(evt);
+        }}
+      >
         <Form.Group>
           <Form.Label>Gender</Form.Label>
           <Form.Select
@@ -44,7 +49,9 @@ function BodyFatCalculator() {
             value={bodyFatForm.gender}
             placeholder="Gender"
             aria-label="Gender"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           >
             <option>Select gender</option>
             <option value="MALE">Male</option>
@@ -58,7 +65,9 @@ function BodyFatCalculator() {
             name="age"
             value={bodyFatForm.age}
             placeholder="Age"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -68,7 +77,9 @@ function BodyFatCalculator() {
             name="height"
             value={bodyFatForm.height}
             placeholder="Height"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -78,7 +89,9 @@ function BodyFatCalculator() {
             name="waist"
             value={bodyFatForm.waist}
             placeholder="Waist"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -88,7 +101,9 @@ function BodyFatCalculator() {
             name="hip"
             value={bodyFatForm.hip}
             placeholder="Hip"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -98,7 +113,9 @@ function BodyFatCalculator() {
             name="neck"
             value={bodyFatForm.neck}
             placeholder="Neck"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -108,7 +125,9 @@ function BodyFatCalculator() {
             name="chest"
             value={bodyFatForm.chest}
             placeholder="Chest"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -118,7 +137,9 @@ function BodyFatCalculator() {
             name="ab"
             value={bodyFatForm.ab}
             placeholder="Ab"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -128,7 +149,9 @@ function BodyFatCalculator() {
             name="thigh"
             value={bodyFatForm.thigh}
             placeholder="Thigh"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -138,7 +161,9 @@ function BodyFatCalculator() {
             name="tricep"
             value={bodyFatForm.tricep}
             placeholder="Tricep"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -148,7 +173,9 @@ function BodyFatCalculator() {
             name="sub"
             value={bodyFatForm.sub}
             placeholder="Sub"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -158,7 +185,9 @@ function BodyFatCalculator() {
             name="sup"
             value={bodyFatForm.sup}
             placeholder="Sup"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Form.Group>
@@ -168,7 +197,9 @@ function BodyFatCalculator() {
             name="mid"
             value={bodyFatForm.mid}
             placeholder="Mid"
-            onChange={(evt) => onInputChange(evt)}
+            onChange={(evt) => {
+              onInputChange(evt);
+            }}
           />
         </Form.Group>
         <Button variant="primary" type="submit">
