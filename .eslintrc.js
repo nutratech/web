@@ -48,6 +48,16 @@ module.exports = {
       },
     ],
     "operator-linebreak": ["error", "after"],
+    // Warning rules [TypeScript - tsc]
+    "import/extensions": ["warn"],
+    "@typescript-eslint/no-floating-promises": ["warn"],
+    "@typescript-eslint/explicit-function-return-type": ["warn"],
+    "@typescript-eslint/explicit-module-boundary-types": ["warn"],
+    "@typescript-eslint/explicit-member-accessibility": ["warn"],
+    "@typescript-eslint/prefer-readonly-parameter-types": ["warn"],
+    "@typescript-eslint/no-non-null-assertion": ["warn"],
+    "@typescript-eslint/strict-boolean-expressions": ["warn"],
+    "@typescript-eslint/no-extraneous-class": ["warn"],
   },
   settings: {
     react: {
