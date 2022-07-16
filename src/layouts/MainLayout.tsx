@@ -6,7 +6,7 @@ import Header from "../components/header/Header";
 
 import "./MainLayout.scss";
 
-function MainLayout() {
+function MainLayout(): JSX.Element {
   return (
     <Container id="app">
       <Header />

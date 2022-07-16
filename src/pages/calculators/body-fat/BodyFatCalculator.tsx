@@ -18,7 +18,7 @@ function BodyFatCalculator(): JSX.Element {
 
   const onInputChange = (
     evt: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
+  ): void => {
     if (!evt.target.value) {
       return;
     }

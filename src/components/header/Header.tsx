@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 
-function Header() {
+function Header(): JSX.Element {
   return (
     <Col lg="12">
       <header id="app-header">
