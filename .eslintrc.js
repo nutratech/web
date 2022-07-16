@@ -49,4 +49,9 @@ module.exports = {
     ],
     "operator-linebreak": ["error", "after"],
   },
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
 };
