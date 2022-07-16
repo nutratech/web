@@ -12,7 +12,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(200);
 
-      const result = await res.json() as Record<string, never>;
+      const result = await res.json() as { data: { [key: string]: unknown} };
       expect(Object.keys(result.data)).toContain("versions");
     }
   );
@@ -33,7 +33,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(200);
 
-      const result = await res.json() as Record<string, never>;
+      const result = await res.json() as { data: { [key: string]: unknown} };
       expect(Object.keys(result.data)).toContain("epley");
     }
   );
@@ -49,7 +49,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(401);
 
-      const result = await res.json() as Record<string, never>;
+      const result = await res.json() as { data: { [key: string]: unknown} };
       expect(Object.keys(result)).toContain("data");
     }
   );
@@ -65,7 +65,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(405);
 
-      const result = await res.json() as Record<string, never>;
+      const result = await res.json() as { data: { [key: string]: unknown} };
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
       // TODO: resolve TS2339: Property 'err_msg' does not exist on type 'never'.
@@ -83,7 +83,7 @@ describe("Real HTTP calls", () => {
 
       expect(res.status).toEqual(200);
 
-      const result = await res.json() as Record<string, never>;
+      const result = await res.json() as { data: { [key: string]: unknown} };
       expect(Object.keys(result)).toContain("data");
       expect(Object.keys(result.data)).toContain("err_msg");
       expect(result.data.err_msg).toBeTruthy();
@@ -97,7 +97,7 @@ describe("Real HTTP calls", () => {
     async () => {
       const res = await call(new Request("https://googlewoudlx34.wooweowodl"));
 
-      const result = await res.json() as Record<string, never>;
+      const result = await res.json() as { data: { [key: string]: unknown} };
       expect(Object.keys(result.data)).toContain("err_msg");
     }
   );

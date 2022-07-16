@@ -10,7 +10,7 @@ export default class CalculatorService {
         body: JSON.stringify(bodyFatForm),
       })
     );
-    const data = (await resp.json()) as Record<string, never>;
-    return data as BodyFatResponse; // just for testing purposes
+    const data = (await resp.json()) as { [key: string]: unknown };
+    return data as unknown as BodyFatResponse; // just for testing purposes
   }
 }

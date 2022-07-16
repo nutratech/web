@@ -1,11 +1,11 @@
-import type { ChangeEvent, ReactNode } from "react";
+import type { ChangeEvent } from "react";
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import type BodyFatForm from "../../../models/BodyFatForm";
 import type BodyFatResponse from "../../../models/BodyFatResponse";
 import CalculatorService from "../../../services/calculator/CalculatorService";
 
-function BodyFatCalculator(): ReactNode {
+function BodyFatCalculator(): JSX.Element {
   const [bodyFatForm, setBodyFatForm] = useState({} as BodyFatForm);
   const [bodyFatData, setBodyFatData] = useState({} as BodyFatResponse);
 
