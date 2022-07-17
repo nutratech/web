@@ -36,9 +36,6 @@ jobs:
       - name: Test
         run: make _test/ci
 
-      - name: Build
-        run: make build
-
   # Windows integration tests: Makefile, Sanic lint/test
   test-win32:
     runs-on: windows-latest
@@ -75,3 +72,6 @@ jobs:
 
       - name: Test
         run: make _test/ci
+
+      - name: Build
+        run: make build
