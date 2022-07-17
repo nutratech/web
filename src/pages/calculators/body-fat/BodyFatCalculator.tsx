@@ -150,13 +150,6 @@ function BodyFatCalculator(): JSX.Element {
                     </Col>
                   ))}
                 </Row>
-                <Row>
-                  <Col lg="12">
-                    <Button variant="primary" type="submit">
-                      Submit
-                    </Button>
-                  </Col>
-                </Row>
               </Form>
             </Col>
           </Row>
