@@ -65,7 +65,7 @@ export const BodyFatFieldOptions: {
       value: "MALE",
     }, {
       name: "Female",
-      value: "Female",
+      value: "FEMALE",
     },
   ],
   age: [],
@@ -84,7 +84,7 @@ export const BodyFatFieldOptions: {
 
 export type BodyFatTestKeyType = "navy" | "sevenSite" | "threeSite";
 
-export const BodyFatTestTypes = [
+export const BodyFatTestTypes: BodyFatTestKeyType[] = [
   "navy",
   "threeSite",
   "sevenSite",
@@ -97,7 +97,29 @@ export const BodyFatTestNames: { [key in BodyFatTestKeyType]: string } = {
 };
 
 export const RequiredFields: { [key in BodyFatTestKeyType]: BodyFatFieldName[] } = {
-  navy: [],
-  threeSite: [],
-  sevenSite: [],
+  navy: [
+    "gender",
+    "neck",
+    "waist",
+    "hip",
+    "height",
+  ],
+  threeSite: [
+    "gender",
+    "age",
+    "abd",
+    "chest",
+    "thigh",
+  ],
+  sevenSite: [
+    "gender",
+    "age",
+    "abd",
+    "chest",
+    "thigh",
+    "mid",
+    "sub",
+    "sup",
+    "tricep",
+  ],
 };
