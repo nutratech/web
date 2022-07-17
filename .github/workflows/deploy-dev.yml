@@ -3,7 +3,7 @@ name: deploy-dev
 
 "on":
   push:
-    branches: ["master"] # TODO: do this on dev branch
+    branches: ["dev"]
 
 jobs:
   deploy-dev:
