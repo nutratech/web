@@ -65,7 +65,7 @@ export const BodyFatFieldOptions: {
       value: "MALE",
     }, {
       name: "Female",
-      value: "Female",
+      value: "FEMALE",
     },
   ],
   age: [],
