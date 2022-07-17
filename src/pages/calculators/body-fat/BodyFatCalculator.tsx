@@ -1,7 +1,8 @@
 import type { ChangeEvent } from "react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import * as calculatorConstants from "../../../constants/calculator-constants";
+import useDebounce from "../../../hooks/debounce";
 import type BodyFatForm from "../../../models/BodyFatForm";
 import type BodyFatResponse from "../../../models/BodyFatResponse";
 import CalculatorService from "../../../services/calculator/CalculatorService";
@@ -9,6 +10,8 @@ import CalculatorService from "../../../services/calculator/CalculatorService";
 function BodyFatCalculator(): JSX.Element {
   const [bodyFatForm, setBodyFatForm] = useState({} as BodyFatForm);
   const [bodyFatData, setBodyFatData] = useState({} as BodyFatResponse);
+
+  const debouncedFormData = useDebounce(bodyFatForm, 500);
 
   const [selectedTestTypes, setSelectedTestTypes] = useState(
     {
@@ -18,6 +21,16 @@ function BodyFatCalculator(): JSX.Element {
     } as {
       [key in calculatorConstants.BodyFatTestKeyType]: boolean;
     }
+  );
+
+  useEffect(
+    () => {
+      // TODO: dispatch action to trigger API call instead of calling directly
+      void CalculatorService.calculateBodyFatPercentage(bodyFatForm).then((bodyFatResponse) => {
+        setBodyFatData(bodyFatResponse);
+      });
+    },
+    [debouncedFormData]
   );
 
   /* eslint-disable @typescript-eslint/indent */
@@ -35,11 +48,8 @@ function BodyFatCalculator(): JSX.Element {
   );
   /* eslint-enable @typescript-eslint/indent */
 
-  const handleSubmit = async (formEvent: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = (formEvent: React.FormEvent<HTMLFormElement>): void => {
     formEvent.preventDefault();
-    // TODO: dispatch action to trigger API call instead of calling directly
-    const bodyFatResponse = await CalculatorService.calculateBodyFatPercentage(bodyFatForm);
-    setBodyFatData(bodyFatResponse);
   };
 
   const onTestTypeSelected = (
@@ -77,7 +87,7 @@ function BodyFatCalculator(): JSX.Element {
             <Col lg="12">
               <Form
                 onSubmit={(evt): void => {
-                  void handleSubmit(evt);
+                  handleSubmit(evt);
                 }}
               >
                 <Row>
