@@ -19,11 +19,15 @@ module.exports = {
   plugins: ["react", "@typescript-eslint", "@typescript-eslint/tslint"],
   rules: {
     // Default prettier-ESLint compatibility rules
+    // ---------------------------------------------
+
     "max-len": ["warn", 100],
     indent: ["error", 2, { SwitchCase: 1 }],
+
     // Semi-colons
     semi: ["off"],
     "@typescript-eslint/semi": ["error"],
+
     // Quotes & comma-dangle
     "@typescript-eslint/quotes": [2, "double"],
     "@typescript-eslint/comma-dangle": [
@@ -37,6 +41,7 @@ module.exports = {
       },
     ],
     "no-console": ["warn", { allow: ["debug", "info", "warn", "error"] }],
+
     // Getting weird rules
     "object-curly-newline": ["error", { minProperties: 10, consistent: true }],
     "space-before-function-paren": [
@@ -47,7 +52,8 @@ module.exports = {
         asyncArrow: "always",
       },
     ],
-    "operator-linebreak": ["error", "after"],
+    "operator-linebreak": ["error", "before"],
+
     // Warning rules [TypeScript - tsc]
     "@typescript-eslint/no-floating-promises": ["warn"],
     "@typescript-eslint/explicit-function-return-type": ["warn"],
@@ -55,6 +61,7 @@ module.exports = {
     "@typescript-eslint/explicit-member-accessibility": ["warn"],
     "@typescript-eslint/no-non-null-assertion": ["warn"],
     "@typescript-eslint/no-extraneous-class": ["warn"],
+
     // Disabled rules
     "no-void": ["off"],
     "@typescript-eslint/prefer-readonly-parameter-types": ["off"],
@@ -65,6 +72,7 @@ module.exports = {
         allowAliases: "in-unions-and-intersections",
       },
     ],
+    "implicit-arrow-linebreak": ["off", "below"],
     "import/extensions": [
       "off",
       "ignorePackages",

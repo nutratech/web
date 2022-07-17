@@ -28,20 +28,19 @@ function BodyFatCalculator(): JSX.Element {
     });
   }, [debouncedFormData]);
 
-  /* eslint-disable @typescript-eslint/indent */
   const requiredFields: calculatorConstants.BodyFatFieldName[] = useMemo(
-    () => Object.keys(selectedTestTypes).reduce<calculatorConstants.BodyFatFieldName[]>(
-      (required, testType) => [
-        ...required,
-        ...(selectedTestTypes[testType as calculatorConstants.BodyFatTestKeyType] ?
-          calculatorConstants.RequiredFields[testType as calculatorConstants.BodyFatTestKeyType] :
-          []),
-      ],
-      []
-    ),
+    () =>
+      Object.keys(selectedTestTypes).reduce<calculatorConstants.BodyFatFieldName[]>(
+        (required, testType) => [
+          ...required,
+          ...(selectedTestTypes[testType as calculatorConstants.BodyFatTestKeyType]
+            ? calculatorConstants.RequiredFields[testType as calculatorConstants.BodyFatTestKeyType]
+            : []),
+        ],
+        []
+      ),
     [selectedTestTypes]
   );
-  /* eslint-enable @typescript-eslint/indent */
 
   const handleSubmit = (formEvent: React.FormEvent<HTMLFormElement>): void => {
     formEvent.preventDefault();
@@ -88,7 +87,6 @@ function BodyFatCalculator(): JSX.Element {
                           key={testType}
                           type="checkbox"
                           name="test-types"
-                          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                           label={calculatorConstants.BodyFatTestNames[testType]}
                           checked={selectedTestTypes[testType]}
                           onChange={(): void => {
@@ -102,10 +100,9 @@ function BodyFatCalculator(): JSX.Element {
                 <Row>
                   {calculatorConstants.BodyFatFieldNames.filter(
                     (fieldName) =>
-                      // eslint-disable-next-line implicit-arrow-linebreak
-                      calculatorConstants.BodyFatFieldOptions[fieldName].length > 0 &&
-                      requiredFields.includes(fieldName)
-                    // eslint-disable-next-line function-paren-newline
+                      // prettier-ignore
+                      calculatorConstants.BodyFatFieldOptions[fieldName].length > 0
+                      && requiredFields.includes(fieldName)
                   ).map((fieldName) => (
                     <Col lg="6" key={fieldName}>
                       <Form.Group>
@@ -122,25 +119,20 @@ function BodyFatCalculator(): JSX.Element {
                           <option>
                             Select {calculatorConstants.BodyFatFieldLabels[fieldName]}
                           </option>
-                          {calculatorConstants.BodyFatFieldOptions[fieldName].map(
-                            (option) => (
-                              // eslint-disable-next-line implicit-arrow-linebreak
-                              <option key={option.value} value={option.value}>
-                                {option.name}
-                              </option>
-                            )
-                            // eslint-disable-next-line function-paren-newline
-                          )}
+                          {calculatorConstants.BodyFatFieldOptions[fieldName].map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.name}
+                            </option>
+                          ))}
                         </Form.Select>
                       </Form.Group>
                     </Col>
                   ))}
                   {calculatorConstants.BodyFatFieldNames.filter(
                     (fieldName) =>
-                      // eslint-disable-next-line implicit-arrow-linebreak
-                      calculatorConstants.BodyFatFieldOptions[fieldName].length <= 0 &&
-                      requiredFields.includes(fieldName)
-                    // eslint-disable-next-line function-paren-newline
+                      // prettier-ignore
+                      calculatorConstants.BodyFatFieldOptions[fieldName].length <= 0
+                      && requiredFields.includes(fieldName)
                   ).map((fieldName) => (
                     <Col lg="6" key={fieldName}>
                       <Form.Group>
