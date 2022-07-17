@@ -18,8 +18,8 @@ function Home(): JSX.Element {
           <h1 className="display-5">Check out our calculators</h1>
           <Col lg="6" className="mx-auto">
             <p className="lead mb-4">
-              We&apos;ve been working hard to add more calculators to the website.
-              Check your bodyfat today.
+              We&apos;ve been working hard to add more calculators to the website. Check your
+              bodyfat today.
             </p>
             <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
               <Button
