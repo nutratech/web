@@ -32,10 +32,10 @@ function BodyFatCalculator(): JSX.Element {
 
   return (
     <section id="body-fat-calculator">
-      <h6>
+      <pre>
         Result:
-        {JSON.stringify(bodyFatData)}
-      </h6>
+        {JSON.stringify(bodyFatData, null, 2)}
+      </pre>
       <Form
         onSubmit={(evt): void => {
           void handleSubmit(evt);
@@ -130,12 +130,12 @@ function BodyFatCalculator(): JSX.Element {
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Adb?</Form.Label>
+          <Form.Label>Abdominal</Form.Label>
           <Form.Control
             type="number"
-            name="adb"
+            name="abd"
             value={bodyFatForm.ab}
-            placeholder="Adb"
+            placeholder="Abd"
             onChange={(evt): void => {
               onInputChange(evt);
             }}
