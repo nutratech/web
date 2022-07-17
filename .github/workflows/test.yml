@@ -23,7 +23,7 @@ jobs:
         id: npm-cache
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -35,6 +35,9 @@ jobs:
 
       - name: Test
         run: make _test/ci
+
+      - name: Build
+        run: make build
 
   # Windows integration tests: Makefile, Sanic lint/test
   test-win32:
@@ -72,8 +75,3 @@ jobs:
 
       - name: Test
         run: make _test/ci
-
-      - name: Build
-        run: |
-          set CI=false
-          make build
