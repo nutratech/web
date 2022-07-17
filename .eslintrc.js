@@ -59,6 +59,12 @@ module.exports = {
     "no-void": ["off"],
     "@typescript-eslint/prefer-readonly-parameter-types": ["off"],
     "@typescript-eslint/strict-boolean-expressions": ["off"],
+    "@typescript-eslint/no-type-alias": [
+      "error",
+      {
+        allowAliases: "in-unions-and-intersections",
+      },
+    ],
     "import/extensions": [
       "off",
       "ignorePackages",

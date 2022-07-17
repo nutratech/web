@@ -1,4 +1,5 @@
 export default interface BodyFatForm {
+  [key: string]: number | string | undefined;
   gender: string;
   age: number;
   height: number;
