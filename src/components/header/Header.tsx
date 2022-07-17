@@ -11,38 +11,47 @@ function Header(): JSX.Element {
       <header id="app-header">
         <Navbar bg="light" expand="lg">
           <Container>
-            <Navbar.Brand id="nav-home-logo" onClick={
-              (): void => {
+            <Navbar.Brand
+              id="nav-home-logo"
+              onClick={(): void => {
                 navigate({
                   pathname: "/",
                 });
-              }
-            }>Nutra, LLC.</Navbar.Brand>
+              }}
+            >
+              Nutra, LLC.
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                <Nav.Link onClick={
-                  (): void => {
+                <Nav.Link
+                  onClick={(): void => {
                     navigate({
                       pathname: "/",
                     });
-                  }
-                }>Home</Nav.Link>
-                <Nav.Link onClick={
-                  (): void => {
+                  }}
+                >
+                  Home
+                </Nav.Link>
+                <Nav.Link
+                  onClick={(): void => {
                     navigate({
                       pathname: "/blog",
                     });
-                  }
-                }>Blog</Nav.Link>
+                  }}
+                >
+                  Blog
+                </Nav.Link>
                 <NavDropdown title="Calculators" id="calculators-dropdown">
-                  <NavDropdown.Item onClick={
-                    (): void => {
+                  <NavDropdown.Item
+                    onClick={(): void => {
                       navigate({
                         pathname: "/calculators/body-fat",
                       });
-                    }
-                  }>Bodyfat</NavDropdown.Item>
+                    }}
+                  >
+                    Bodyfat
+                  </NavDropdown.Item>
                 </NavDropdown>
               </Nav>
             </Navbar.Collapse>
