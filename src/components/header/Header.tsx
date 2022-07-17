@@ -2,6 +2,8 @@ import React from "react";
 import { Col, Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import { useNavigate } from "react-router";
 
+import "./Header.scss";
+
 function Header(): JSX.Element {
   const navigate = useNavigate();
   return (
@@ -9,7 +11,7 @@ function Header(): JSX.Element {
       <header id="app-header">
         <Navbar bg="light" expand="lg">
           <Container>
-            <Navbar.Brand onClick={
+            <Navbar.Brand id="nav-home-logo" onClick={
               (): void => {
                 navigate({
                   pathname: "/",

@@ -130,12 +130,12 @@ function BodyFatCalculator(): JSX.Element {
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Ab</Form.Label>
+          <Form.Label>Adb?</Form.Label>
           <Form.Control
             type="number"
-            name="ab"
+            name="adb"
             value={bodyFatForm.ab}
-            placeholder="Ab"
+            placeholder="Adb"
             onChange={(evt): void => {
               onInputChange(evt);
             }}
