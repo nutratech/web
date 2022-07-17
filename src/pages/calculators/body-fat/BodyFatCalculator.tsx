@@ -1,6 +1,6 @@
 import type { ChangeEvent } from "react";
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Col, Form, Row } from "react-bootstrap";
 import * as calculatorConstants from "../../../constants/calculator-constants";
 import useDebounce from "../../../hooks/debounce";
 import type BodyFatForm from "../../../models/BodyFatForm";
