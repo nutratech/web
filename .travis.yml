@@ -1,0 +1,13 @@
+---
+dist: xenial
+os: ["linux"]
+language: node_js
+node_js:
+  - 12.10.0
+cache: npm
+
+install:
+  - make deps
+
+script:
+  - make _test/ci
