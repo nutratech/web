@@ -1,16 +1,18 @@
 import type BodyFatForm from "../../models/BodyFatForm";
 import type BodyFatResponse from "../../models/BodyFatResponse";
-import { call } from "../ApiService";
+import ApiService from "../ApiService";
 
-export default class CalculatorService {
-  static async calculateBodyFatPercentage(bodyFatForm: BodyFatForm): Promise<BodyFatResponse> {
-    const resp = await call(
-      new Request("https://dev.nutra.tk/api/calc/body-fat", {
-        method: "POST",
-        body: JSON.stringify(bodyFatForm),
-      })
-    );
-    const data = (await resp.json()) as Record<string, never>;
-    return data as BodyFatResponse; // just for testing purposes
-  }
-}
+const calculateBodyFatPercentage = async (bodyFatForm: BodyFatForm): Promise<BodyFatResponse> => {
+  const resp = await ApiService.call(
+    new Request("https://dev.nutra.tk/api/calc/body-fat", {
+      method: "POST",
+      body: JSON.stringify(bodyFatForm),
+    })
+  );
+  const data = (await resp.json()) as Record<string, unknown>;
+  return data as unknown as BodyFatResponse; // just for testing purposes
+};
+
+export default {
+  calculateBodyFatPercentage,
+};

@@ -1,15 +1,19 @@
 ---
-name: CI
+name: test-linux
 
 "on":
   push: {}
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  test-linux:
+    runs-on: ubuntu-22.04
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      # NOTE: Linux job runs experimental NodeJS 18 & Ubuntu 22.04
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
       - name: Get npm cache directory
         id: npm-cache-dir
@@ -22,7 +26,7 @@ jobs:
         id: npm-cache
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -33,4 +37,11 @@ jobs:
         run: make lint
 
       - name: Test
-        run: make _test/ci
+        run: |
+          export CI=true
+          export JEST_OPT_ARGS=
+          make test
+
+      # NOTE: build is only performed on Linux for now
+      - name: Build
+        run: make build

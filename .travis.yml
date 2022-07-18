@@ -1,0 +1,20 @@
+---
+dist: focal
+os: ["linux"]
+language: node_js
+node_js:
+  - 14
+  - 16
+  - 18
+cache: npm
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install libc6
+
+install:
+  - make deps
+
+script:
+  - CI=true JEST_OPT_ARGS=--coverage make test || echo "Coverage probably insufficient!"
+  - if [[ "$(node -v)" =~ "16." ]]; then npx coveralls < coverage/lcov.info; fi

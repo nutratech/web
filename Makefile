@@ -1,6 +1,7 @@
 SHELL=/bin/bash
 .DEFAULT_GOAL := _help
 
+
 .PHONY: _help
 _help:	## Comments like this, a tab character with two pound signs "<TAB>##" will show up unless you IGNORE_ME
 ifneq ($(OS),Windows_NT)
@@ -12,6 +13,7 @@ else
 endif
 
 
+
 # ----------------------------------------------------------------------
 # Initialize & install dependencies
 # ----------------------------------------------------------------------
@@ -19,6 +21,7 @@ endif
 .PHONY: deps
 deps:	## Run npm install
 	npm install
+
 
 
 # ----------------------------------------------------------------------
@@ -38,6 +41,7 @@ format: _format/prettier _format/eslint
 format:	## Format w/ prettier & ESLint
 
 
+
 # ----------------------------------------------------------------------
 # Lint & test
 # ----------------------------------------------------------------------
@@ -45,22 +49,16 @@ format:	## Format w/ prettier & ESLint
 .PHONY: lint
 lint:	## Lint w/ prettier & ESLint
 	npx prettier --check .
-	# NOTE: ignore errors for now on ESLint for now, til we resolve tsc
-	- npx eslint --max-warnings 0 --ext .js,.ts,.tsx .
-	# NOTE: ignore these too, so CI will at least run tests
-	- npx tsc
-
-.PHONY: _test/ci
-_test/ci: JEST_OPT_ARGS=
-_test/ci: export CI=true
-_test/ci: test
+	npx eslint --max-warnings 0 --ext .js,.ts,.tsx .
+	npx tsc
 
 
-JEST_OPT_ARGS ?= --watchAll
+JEST_OPT_ARGS ?= --watchAll --coverage
 
 .PHONY: test
 test:	## Run tests
-	npm test -- $(JEST_OPT_ARGS) --env=jsdom --coverage
+	npm test -- --env=jsdom $(JEST_OPT_ARGS)
+
 
 
 # ----------------------------------------------------------------------
@@ -70,9 +68,9 @@ test:	## Run tests
 .PHONY: build
 build:	## Create build
 ifneq ($(OS),Windows_NT)
-	TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false npm run build
+	GENERATE_SOURCEMAP=false npm run build
 else
-	set TSC_COMPILE_ON_ERROR=true && set GENERATE_SOURCEMAP=false && npm run build
+	set GENERATE_SOURCEMAP=false && npm run build
 endif
 
 
@@ -130,3 +128,4 @@ extras/cloc:	## Count lines of source code
 	package-lock.json \
 	--by-file-by-lang \
 	.
+

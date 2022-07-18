@@ -1,7 +1,7 @@
 import React from "react";
 import { Col } from "react-bootstrap";
 
-function Footer() {
+function Footer(): JSX.Element {
   return (
     <Col lg="12">
       <footer id="app-footer">&copy; 2022 - Nutra, LLC.</footer>

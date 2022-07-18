@@ -1,20 +1,57 @@
 import React from "react";
 import { Col, Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
-function Header() {
+import "./Header.scss";
+
+function Header(): JSX.Element {
+  const navigate = useNavigate();
   return (
     <Col lg="12">
       <header id="app-header">
         <Navbar bg="light" expand="lg">
           <Container>
-            <Navbar.Brand href="#home">Nutra, LLC.</Navbar.Brand>
+            <Navbar.Brand
+              id="nav-home-logo"
+              onClick={(): void => {
+                navigate({
+                  pathname: "/",
+                });
+              }}
+            >
+              Nutra, LLC.
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                <Nav.Link href="/">Home</Nav.Link>
-                <Nav.Link href="/blog">Blog</Nav.Link>
+                <Nav.Link
+                  onClick={(): void => {
+                    navigate({
+                      pathname: "/",
+                    });
+                  }}
+                >
+                  Home
+                </Nav.Link>
+                <Nav.Link
+                  onClick={(): void => {
+                    navigate({
+                      pathname: "/blog",
+                    });
+                  }}
+                >
+                  Blog
+                </Nav.Link>
                 <NavDropdown title="Calculators" id="calculators-dropdown">
-                  <NavDropdown.Item href="/calculators/body-fat">Bodyfat</NavDropdown.Item>
+                  <NavDropdown.Item
+                    onClick={(): void => {
+                      navigate({
+                        pathname: "/calculators/body-fat",
+                      });
+                    }}
+                  >
+                    Bodyfat
+                  </NavDropdown.Item>
                 </NavDropdown>
               </Nav>
             </Navbar.Collapse>
