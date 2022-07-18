@@ -109,7 +109,7 @@ function BodyFatCalculator(): JSX.Element {
                         <Form.Label>{calculatorConstants.BodyFatFieldLabels[fieldName]}</Form.Label>
                         <Form.Select
                           name={fieldName}
-                          value={bodyFatForm[fieldName] ?? ""}
+                          value={bodyFatForm[fieldName]}
                           placeholder={calculatorConstants.BodyFatFieldLabels[fieldName]}
                           onChange={(evt): void => {
                             onInputChange(evt);
@@ -140,7 +140,7 @@ function BodyFatCalculator(): JSX.Element {
                         <Form.Control
                           type={calculatorConstants.BodyFatFieldTypes[fieldName]}
                           name={fieldName}
-                          value={bodyFatForm[fieldName] ?? ""}
+                          value={bodyFatForm[fieldName]}
                           placeholder={calculatorConstants.BodyFatFieldLabels[fieldName]}
                           onChange={(evt): void => {
                             onInputChange(evt);
