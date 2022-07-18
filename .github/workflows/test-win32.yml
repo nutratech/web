@@ -1,22 +1,21 @@
 ---
-name: test-linux
+name: test-win32
 
 "on":
   push: {}
 
 jobs:
-
   test-win32:
     runs-on: windows-latest
 
     steps:
+      # NOTE: Windows has issues with line endings by default
       - name: Configure Line Endings / git / LF
         run: |
           git config --global core.autocrlf input
           git config --global core.eol lf
 
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Get npm cache directory
         id: npm-cache-dir
