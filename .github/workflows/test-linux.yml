@@ -38,8 +38,8 @@ jobs:
 
       - name: Test
         run: |
-          CI=true
-          JEST_OPT_ARGS=
+          export CI=true
+          export JEST_OPT_ARGS=
           make test
 
       # NOTE: build is only performed on Linux for now
