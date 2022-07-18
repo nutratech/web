@@ -6,7 +6,8 @@ name: CI
 
 jobs:
   test-linux:
-    runs-on: ubuntu-latest
+    # NOTE: Linux job runs experimental NodeJS 18 & Ubuntu 22.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v3
