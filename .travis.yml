@@ -3,7 +3,7 @@ dist: xenial
 os: ["linux"]
 language: node_js
 node_js:
-  - 12.10.0
+  - 16
 cache: npm
 
 install:
