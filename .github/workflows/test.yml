@@ -76,6 +76,5 @@ jobs:
       - name: Lint
         run: make lint
 
-      # NOTE: win32 job only requires passing tests; no coverage enforcement
       - name: Test
-        run: make _test/ci-no-cov
+        run: make _test/ci
