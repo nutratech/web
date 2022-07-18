@@ -40,6 +40,6 @@ jobs:
 
       - name: Test
         run: >
-          CI=true
-          JEST_OPT_ARGS=--coverage
+          set CI=true
+          set JEST_OPT_ARGS=--coverage
           make test
