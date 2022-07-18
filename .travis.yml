@@ -8,9 +8,13 @@ node_js:
   - 18
 cache: npm
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install libc6
+
 install:
   - make deps
 
 script:
-  - make _test/ci || echo "Coverage probably insufficient!"
+  - CI=true JEST_OPT_ARGS=--coverage make test || echo "Coverage probably insufficient!"
   - if [[ "$(node -v)" =~ "16." ]]; then npx coveralls < coverage/lcov.info; fi
