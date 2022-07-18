@@ -68,9 +68,9 @@ test:	## Run tests
 .PHONY: build
 build:	## Create build
 ifneq ($(OS),Windows_NT)
-	TSC_COMPILE_ON_ERROR=true GENERATE_SOURCEMAP=false npm run build
+	GENERATE_SOURCEMAP=false npm run build
 else
-	set TSC_COMPILE_ON_ERROR=true && set GENERATE_SOURCEMAP=false && npm run build
+	set GENERATE_SOURCEMAP=false && npm run build
 endif
 
 
