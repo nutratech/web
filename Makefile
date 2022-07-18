@@ -53,16 +53,21 @@ lint:	## Lint w/ prettier & ESLint
 	npx tsc
 
 
-JEST_OPT_ARGS ?= --watchAll
+JEST_OPT_ARGS ?= --watchAll --coverage
 
 .PHONY: test
 test:	## Run tests
-	npm test -- $(JEST_OPT_ARGS) --env=jsdom --coverage
+	npm test -- --env=jsdom $(JEST_OPT_ARGS)
 
 .PHONY: _test/ci
-_test/ci: JEST_OPT_ARGS=
+_test/ci: JEST_OPT_ARGS=--coverage
 _test/ci: export CI=true
 _test/ci: test
+
+.PHONY: _test/ci-no-cov
+_test/ci-no-cov: JEST_OPT_ARGS=
+_test/ci-no-cov: export CI=true
+_test/ci-no-cov: test
 
 
 
