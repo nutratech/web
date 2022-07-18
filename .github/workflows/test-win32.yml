@@ -40,6 +40,6 @@ jobs:
 
       - name: Test
         run: |
-          $env:CI=true
+          $env:CI='true'
           $env:JEST_OPT_ARGS=' '
           make test
