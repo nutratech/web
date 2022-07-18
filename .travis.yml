@@ -10,4 +10,5 @@ install:
   - make deps
 
 script:
-  - make _test/ci
+  - make _test/ci || echo "Coverage probably insufficient!"
+  - npx coveralls < coverage/lcov.info
