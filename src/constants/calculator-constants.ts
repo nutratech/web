@@ -50,17 +50,17 @@ export const BodyFatFieldTypes: { [key in BodyFatFieldName]: FieldType } = {
 export const BodyFatFieldLabels: { [key in BodyFatFieldName]: string } = {
   gender: "Gender",
   age: "Age",
-  height: "Height",
-  waist: "Waist",
-  hip: "Hip",
-  neck: "Neck",
-  chest: "Chest",
-  abd: "Abd",
-  thigh: "Thigh",
-  tricep: "Tricep",
-  sub: "Sub",
-  sup: "Sup",
-  mid: "Mid",
+  height: "Height (cm)",
+  waist: "Waist (cm)",
+  hip: "Hip (cm)",
+  neck: "Neck (cm)",
+  chest: "Chest (mm)",
+  abd: "Abdominal (mm)",
+  thigh: "Thigh (mm)",
+  tricep: "Tricep (mm)",
+  sub: "Sub (mm)",
+  sup: "Sup (mm)",
+  mid: "Mid (mm)",
 };
 
 export const BodyFatFieldOptions: {

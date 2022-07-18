@@ -7,7 +7,7 @@ export default interface BodyFatForm {
   hip: number;
   neck: number;
   chest: number;
-  ab: number;
+  abd: number;
   thigh: number;
   tricep: number;
   sub: number;
