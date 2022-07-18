@@ -13,4 +13,4 @@ install:
 
 script:
   - make _test/ci || echo "Coverage probably insufficient!"
-  - npx coveralls < coverage/lcov.info
+  - if [[ "$(node -v)" =~ "16." ]]; then npx coveralls < coverage/lcov.info; fi
