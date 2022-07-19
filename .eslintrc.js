@@ -6,6 +6,8 @@ module.exports = {
   },
   extends: [
     "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
     "plugin:@typescript-eslint/all",
     "airbnb-base",
     "airbnb-typescript/base",

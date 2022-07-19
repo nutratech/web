@@ -26,7 +26,7 @@ function BodyFatCalculator(): JSX.Element {
     void CalculatorService.calculateBodyFatPercentage(bodyFatForm).then((bodyFatResponse) => {
       setBodyFatData(bodyFatResponse);
     });
-  }, [debouncedFormData]);
+  }, [debouncedFormData, bodyFatForm]);
 
   const requiredFields: calculatorConstants.BodyFatFieldName[] = useMemo(
     () =>

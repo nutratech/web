@@ -23,9 +23,8 @@ jobs:
       - name: Install requirements
         run: make deps
 
-      # NOTE: removing "CI=false" will cause warnings to be treated as errors
       - name: React Scripts (Build)
-        run: CI=false make build
+        run: make build
 
       - name: Copy static files over
         run: |

@@ -8,11 +8,8 @@ node_js:
   - 18
 cache: npm
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install libc6
-
 install:
+  - npm install coveralls
   - make deps
 
 script:
