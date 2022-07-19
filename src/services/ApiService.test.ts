@@ -10,10 +10,9 @@ describe("Real HTTP calls", () => {
     async () => {
       const res = await apiService.get("/pg/version");
 
-      expect(res.status).toEqual(200);
+      expect(res.code).toEqual(200);
 
-      const result = await res.json() as { data: Record<string, unknown> };
-      expect(Object.keys(result.data)).toContain("versions");
+      expect(Object.keys(res.data)).toContain("versions");
     }
   );
 
@@ -30,10 +29,8 @@ describe("Real HTTP calls", () => {
         }
       );
 
-      expect(res.status).toEqual(200);
-
-      const result = await res.json() as { data: Record<string, unknown> };
-      expect(Object.keys(result.data)).toContain("epley");
+      expect(res.code).toEqual(200);
+      expect(Object.keys(res.data)).toContain("epley");
     }
   );
 
@@ -43,10 +40,11 @@ describe("Real HTTP calls", () => {
     async () => {
       const res = await apiService.get("/email/change");
 
-      expect(res.status).toEqual(401);
+      expect(res.code).toEqual(401);
 
-      const result = await res.json() as { data: Record<string, unknown> };
-      expect(Object.keys(result)).toContain("data");
+      expect(Object.keys(res)).toContain("data");
+      expect(Object.keys(res.data)).toContain("errMsg");
+      expect(res.data.errMsg).toBe("KeyError('authorization')");
     }
   );
 
@@ -56,15 +54,11 @@ describe("Real HTTP calls", () => {
     async () => {
       const res = await apiService.post("/pg/version", {});
 
-      expect(res.status).toEqual(405);
+      expect(res.code).toEqual(405);
 
-      const result = await res.json() as { data: Record<string, unknown> };
-      expect(Object.keys(result)).toContain("data");
-      expect(Object.keys(result.data)).toContain("errMsg");
-      // TODO: resolve TS2339: Property 'errMsg' does not exist on type 'never'.
-      //  maybe it needs a special class e.g. ServerJsonResponse(code, Optional[errMsg], ...)
-      // TODO: why doesn't "make lint" show this error, but WebStorm does?
-      expect(result.data.errMsg).toContain("Method Not Allowed");
+      expect(Object.keys(res)).toContain("data");
+      expect(Object.keys(res.data)).toContain("errMsg");
+      expect(res.data.errMsg).toContain("Method Not Allowed");
     }
   );
 
@@ -74,12 +68,11 @@ describe("Real HTTP calls", () => {
     async () => {
       const res = await apiService.get("/nutrients/html");
 
-      expect(res.status).toEqual(200);
+      expect(res.code).toEqual(200);
 
-      const result = await res.json() as { data: Record<string, unknown> };
-      expect(Object.keys(result)).toContain("data");
-      expect(Object.keys(result.data)).toContain("errMsg");
-      expect(result.data.errMsg).toBeTruthy();
+      expect(Object.keys(res)).toContain("data");
+      expect(Object.keys(res.data)).toContain("errMsg");
+      expect(res.data.errMsg).toBeTruthy();
     }
   );
 
@@ -90,8 +83,8 @@ describe("Real HTTP calls", () => {
     async () => {
       const res = await bogusApiService.get("/");
 
-      const result = await res.json() as { data: Record<string, unknown> };
-      expect(Object.keys(result.data)).toContain("errMsg");
+      expect(Object.keys(res.data)).toContain("errMsg");
+      expect(res.data.errMsg).toBe("Network request failed");
     }
   );
 });
