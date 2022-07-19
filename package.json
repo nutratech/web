@@ -23,7 +23,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test:coverage": "cross-env CI=true npm test -- --env=jsdom --coverage"
+    "test:coverage": "npm test -- --env=jsdom --coverage"
   },
   "eslintConfig": {
     "extends": [
@@ -51,7 +51,6 @@
     "@typescript-eslint/eslint-plugin-tslint": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
     "coveralls": "^3.1.1",
-    "cross-env": "^7.0.3",
     "eslint": "^8.20.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
