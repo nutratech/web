@@ -6,14 +6,10 @@ name: test-linux
 
 jobs:
   test-linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
-      # NOTE: Linux job runs experimental NodeJS 18 & Ubuntu 22.04
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
       - name: Get npm cache directory
         id: npm-cache-dir
