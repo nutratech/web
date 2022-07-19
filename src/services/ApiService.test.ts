@@ -8,10 +8,7 @@ describe("Real HTTP calls", () => {
   test(
     "Real 200 HTTP call to ntserv [JSON res] yields deserializable response",
     async () => {
-      const res = await apiService.call(new Request(
-        `${apiService.baseUrl}/pg/version`,
-        { method: "GET" }
-      ));
+      const res = await apiService.get("/pg/version");
 
       expect(res.status).toEqual(200);
 
@@ -20,18 +17,17 @@ describe("Real HTTP calls", () => {
     }
   );
 
+  // TODO: test with post body as unknown[] not as Record<string, unknown>, e.g. body: [1, 2, 3]
   // prettier-ignore
   test(
     "Real 200 HTTP call to ntserv WITH body [JSON res] yields deserializable response [from JSON]",
     async () => {
-      const res = await apiService.call(
-        new Request(`${apiService.baseUrl}/calc/1rm`, {
-          method: "POST",
-          body: JSON.stringify({
-            reps: 12,
-            weight: 225,
-          }),
-        })
+      const res = await apiService.post(
+        "/calc/1rm",
+        {
+          reps: 12,
+          weight: 225,
+        }
       );
 
       expect(res.status).toEqual(200);
