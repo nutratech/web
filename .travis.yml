@@ -9,6 +9,7 @@ node_js:
 cache: npm
 
 install:
+  - npm install coveralls
   - make deps
 
 script:
