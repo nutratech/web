@@ -16,9 +16,7 @@ describe("index", () => {
     jest.spyOn(document, "getElementById").mockReturnValue(el);
     jest.spyOn(console, "error");
     const mockRoot = {
-      render: (): void => {
-
-      },
+      render: (): void => {},
     } as unknown as ReactDOM.Root;
     jest.spyOn(mockRoot, "render");
     jest.spyOn(ReactDOM, "createRoot").mockReturnValue(mockRoot);

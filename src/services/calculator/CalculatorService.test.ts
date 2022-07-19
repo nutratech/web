@@ -7,11 +7,12 @@ describe("CalculatorService", () => {
   describe("calculateBodyFatPercentage", () => {
     it("calls the API endpoint with the given arguments", async () => {
       jest.spyOn(ApiService, "call").mockResolvedValue({
-        json: async (): Promise<BodyFatResponse> => ({
-          navy: 0,
-          "seven-site": 1,
-          "three-site": 2,
-        } as BodyFatResponse),
+        json: async (): Promise<BodyFatResponse> =>
+          ({
+            navy: 0,
+            "seven-site": 1,
+            "three-site": 2,
+          } as BodyFatResponse),
       } as Response);
       await CalculatorService.calculateBodyFatPercentage({} as BodyFatForm);
       expect(ApiService.call).toHaveBeenCalledWith(
