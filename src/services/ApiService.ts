@@ -1,3 +1,4 @@
+// TODO: parse .json() off body into class attribute
 async function handleFetch(request: Request): Promise<Response> {
   // prettier-ignore
   return fetch(request)
@@ -29,13 +30,24 @@ async function handleFetch(request: Request): Promise<Response> {
     });
 }
 
-function requestBuilder(route: string, method: string, body: Record<string, unknown> | unknown[]): Request {
-  return new Request(`${this.baseUrl}${route}`, {
-    method,
-    body: JSON.stringify(body),
-  });
+function requestBuilder(
+  url: string,
+  method: string,
+  body: Record<string, unknown> | unknown[] | undefined = undefined
+): Request {
+  if (body) {
+    return new Request(url, {
+      method,
+      body: JSON.stringify(body),
+    });
+  }
+  // TODO: support query params, headers, etc
+  return new Request(url);
 }
 
+// ------------------------------------------------------
+// CLASS: ApiService
+// ------------------------------------------------------
 export default class ApiService {
   public baseUrl: string;
 
@@ -43,13 +55,19 @@ export default class ApiService {
     this.baseUrl = baseUrl;
   }
 
-  public async post(route: string, body: Record<string, unknown> | unknown[]): Promise<Response> {
-    const request = requestBuilder();
-    //   new Request(`${this.baseUrl}${route}`, {
-    //   method: "POST",
-    //   body: JSON.stringify(body),
-    // });
-
+  // ------------------------------------------------------
+  // HTTP methods
+  // ------------------------------------------------------
+  public async get(route: string): Promise<Response> {
+    // TODO: support query params, headers, etc
+    const request = requestBuilder(`${this.baseUrl}${route}`, "GET");
     return handleFetch(request);
   }
+
+  public async post(route: string, body: Record<string, unknown> | unknown[]): Promise<Response> {
+    const request = requestBuilder(`${this.baseUrl}${route}`, "POST", body);
+    return handleFetch(request);
+  }
+
+  // TODO: PATCH, DELETE, etc
 }
