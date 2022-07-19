@@ -59,7 +59,16 @@ module.exports = {
     // Tweaked rules
     "@typescript-eslint/explicit-member-accessibility": [
       "warn",
-      { accessibility: "explicit", overrides: { constructors: "no-public" } },
+      {
+        accessibility: "explicit",
+        overrides: {
+          accessors: "off",
+          constructors: "no-public",
+          methods: "explicit",
+          properties: "explicit",
+          parameterProperties: "explicit",
+        },
+      },
     ],
 
     // Warning rules [TypeScript - tsc]

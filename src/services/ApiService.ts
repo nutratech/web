@@ -5,7 +5,7 @@ export default class ApiService {
     this.baseUrl = baseUrl;
   }
 
-  async call(request: Request): Promise<Response> {
+  public async call(request: Request): Promise<Response> {
     // prettier-ignore
     return fetch(request)
       .then(async (response: Response) => {
