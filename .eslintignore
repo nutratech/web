@@ -1,5 +1,5 @@
 *.json
 
 build/
-coverage/
+coverage*/
 
