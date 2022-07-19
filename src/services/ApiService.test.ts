@@ -41,10 +41,7 @@ describe("Real HTTP calls", () => {
   test(
     "Real 401 HTTP call to ntserv [JSON res] yields deserializable response",
     async () => {
-      const res = await apiService.call(new Request(
-        `${apiService.baseUrl}/email/change`,
-        { method: "GET" }
-      ));
+      const res = await apiService.get("/email/change");
 
       expect(res.status).toEqual(401);
 
@@ -57,10 +54,7 @@ describe("Real HTTP calls", () => {
   test(
     "Real 405 HTTP call to ntserv [TEXT res] yields deserializable response",
     async () => {
-      const res = await apiService.call(new Request(
-        `${apiService.baseUrl}/pg/version`,
-        { method: "POST" }
-      ));
+      const res = await apiService.post("/pg/version", {});
 
       expect(res.status).toEqual(405);
 
@@ -78,7 +72,7 @@ describe("Real HTTP calls", () => {
   test(
     "Real 200 HTTP call to ntserv [HTML res] yields deserializable response w/ errMsg prop",
     async () => {
-      const res = await apiService.call(new Request(`${apiService.baseUrl}/nutrients/html`));
+      const res = await apiService.get("/nutrients/html");
 
       expect(res.status).toEqual(200);
 
@@ -94,7 +88,7 @@ describe("Real HTTP calls", () => {
   test(
     "Real ECONNREFUSED call [ERROR res] to unreachable website yields errMsg prop",
     async () => {
-      const res = await bogusApiService.call(new Request(bogusApiService.baseUrl));
+      const res = await bogusApiService.get("/");
 
       const result = await res.json() as { data: Record<string, unknown> };
       expect(Object.keys(result.data)).toContain("errMsg");
