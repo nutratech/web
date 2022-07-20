@@ -41,11 +41,7 @@ jobs:
       - name: Submit coverage report / coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run:
-          # TODO: get rid of this, if the above if in YAML works
-          if [[ "$(node -v)" =~ "16." ]];
-          then npx coveralls < coverage/lcov.info;
-          fi
+        run: npx coveralls < coverage/lcov.info
 
       # NOTE: this is only performed in the coveralls report workflow
       - name: Install / "NPM License Checker"
