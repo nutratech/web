@@ -26,32 +26,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # NOTE: this is only performed on Linux
-      - name: Install / "NPM License Checker"
-        env:
-          NPM_LICENSE_CHECKER_VERSION: 25.0.1
-        run: npm i license-checker@$NPM_LICENSE_CHECKER_VERSION
-
-      - name: Check Licenses
-        env:
-          APP_VERSION: 0.1.0
-        run: "npx license-checker --production \
-          --excludePackages nutra-web-v2@$APP_VERSION \
-          --onlyAllow \
-          'MIT;\
-          Apache-2.0;\
-          ISC;\
-          Python-2.0;\
-          MPL-2.0;\
-          Unlicense;\
-          BSD-3-Clause;\
-          BSD-2-Clause;\
-          0BSD;\
-          CC0-1.0;\
-          CC-BY-3.0;\
-          CC-BY-4.0'
-          "
-
       - name: Install requirements
         run: make deps
 
