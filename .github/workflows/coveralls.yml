@@ -1,0 +1,70 @@
+---
+name: coveralls
+"on":
+  push: {}
+
+jobs:
+  cov-submit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - uses: actions/cache@v3
+        # use this to check for `cache-hit` ==>
+        #  if: steps.npm-cache.outputs.cache-hit != 'true'
+        id: npm-cache
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install requirements
+        run: |
+          npm install coveralls
+          make deps
+
+      - name: Test
+        run: |
+          CI=true JEST_OPT_ARGS=--coverage make test || \
+            echo "Coverage probably insufficient!"
+
+      - name: Submit coverage report / coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: npx coveralls < coverage/lcov.info
+
+      # NOTE: this is only performed in the coveralls report workflow
+      - name: Install / "NPM License Checker"
+        env:
+          NPM_LICENSE_CHECKER_VERSION: 25.0.1
+        run: npm i license-checker@$NPM_LICENSE_CHECKER_VERSION
+
+      - name: Check Licenses
+        env:
+          APP_VERSION: 0.1.0
+        run: "npx license-checker --production \
+          --excludePackages nutra-web-v2@$APP_VERSION \
+          --onlyAllow \
+          'MIT;\
+          Apache-2.0;\
+          ISC;\
+          Python-2.0;\
+          MPL-2.0;\
+          Unlicense;\
+          BSD-3-Clause;\
+          BSD-2-Clause;\
+          0BSD;\
+          CC0-1.0;\
+          CC-BY-3.0;\
+          CC-BY-4.0'
+          "
