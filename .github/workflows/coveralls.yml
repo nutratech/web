@@ -1,0 +1,52 @@
+---
+name: coveralls
+"on":
+  push: {}
+
+jobs:
+  cov-submit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - uses: actions/cache@v3
+        # use this to check for `cache-hit` ==>
+        #  if: steps.npm-cache.outputs.cache-hit != 'true'
+        id: npm-cache
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install requirements
+        run: |
+          npm install coveralls
+          make deps
+
+      - name: Test
+        run: |
+          CI=true JEST_OPT_ARGS=--coverage make test || \
+            echo "Coverage probably insufficient!"
+
+      - name: Upload Coverage
+        if: ${{ matrix.node-version }} =~ "16."
+        run:
+          # TODO: get rid of this, if the above if in YAML works
+          if [[ "$(node -v)" =~ "16." ]];
+            then npx coveralls < coverage/lcov.info;
+          fi
+
+      - name: Submit coverage report / coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github
