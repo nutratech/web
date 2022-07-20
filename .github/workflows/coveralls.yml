@@ -40,6 +40,10 @@ jobs:
 
       - name: Upload Coverage
         if: ${{ matrix.node-version }} =~ "16."
+        env:
+          COVERALLS_SERVICE_NAME: github
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_GIT_BRANCH: ${{ github.ref_name }}
         run:
           # TODO: get rid of this, if the above if in YAML works
           if [[ "$(node -v)" =~ "16." ]];
