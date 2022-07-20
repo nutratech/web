@@ -5,7 +5,7 @@ name: test-linux
   push: {}
 
 jobs:
-  test-linux:
+  node:
     runs-on: ubuntu-latest
 
     strategy:
