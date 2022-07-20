@@ -47,7 +47,7 @@ jobs:
         run:
           # TODO: get rid of this, if the above if in YAML works
           if [[ "$(node -v)" =~ "16." ]];
-            then npx coveralls < coverage/lcov.info;
+          then npx coveralls < coverage/lcov.info;
           fi
 
       - name: Submit coverage report / coveralls
