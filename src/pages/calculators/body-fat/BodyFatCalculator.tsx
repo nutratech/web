@@ -6,6 +6,7 @@ import useDebounce from "../../../hooks/debounce";
 import type BodyFatForm from "../../../models/BodyFatForm";
 import type BodyFatResponse from "../../../models/BodyFatResponse";
 import CalculatorService from "../../../services/calculator/CalculatorService";
+import BodyFatCalculatorService from "./BodyFatCalculatorService";
 
 function BodyFatCalculator(): JSX.Element {
   const [bodyFatForm, setBodyFatForm] = useState({} as BodyFatForm);
@@ -29,16 +30,7 @@ function BodyFatCalculator(): JSX.Element {
   }, [debouncedFormData, bodyFatForm]);
 
   const requiredFields: calculatorConstants.BodyFatFieldName[] = useMemo(
-    () =>
-      Object.keys(selectedTestTypes).reduce<calculatorConstants.BodyFatFieldName[]>(
-        (required, testType) => [
-          ...required,
-          ...(selectedTestTypes[testType as calculatorConstants.BodyFatTestKeyType]
-            ? calculatorConstants.RequiredFields[testType as calculatorConstants.BodyFatTestKeyType]
-            : []),
-        ],
-        []
-      ),
+    () => BodyFatCalculatorService.getAllRequiredFieldsFromSelectedTests(selectedTestTypes),
     [selectedTestTypes]
   );
 
@@ -86,12 +78,11 @@ function BodyFatCalculator(): JSX.Element {
                         <Form.Check
                           key={testType}
                           type="checkbox"
+                          id={`test-type-${testType}`}
                           name="test-types"
                           label={calculatorConstants.BodyFatTestNames[testType]}
                           checked={selectedTestTypes[testType]}
-                          onChange={(): void => {
-                            onTestTypeSelected(testType);
-                          }}
+                          onChange={onTestTypeSelected.bind(null, testType)}
                         />
                       ))}
                     </Form.Group>
@@ -111,9 +102,7 @@ function BodyFatCalculator(): JSX.Element {
                           name={fieldName}
                           value={bodyFatForm[fieldName]}
                           placeholder={calculatorConstants.BodyFatFieldLabels[fieldName]}
-                          onChange={(evt): void => {
-                            onInputChange(evt);
-                          }}
+                          onChange={onInputChange.bind(null)}
                           aria-label={calculatorConstants.BodyFatFieldLabels[fieldName]}
                         >
                           <option>
@@ -142,9 +131,7 @@ function BodyFatCalculator(): JSX.Element {
                           name={fieldName}
                           value={bodyFatForm[fieldName]}
                           placeholder={calculatorConstants.BodyFatFieldLabels[fieldName]}
-                          onChange={(evt): void => {
-                            onInputChange(evt);
-                          }}
+                          onChange={onInputChange.bind(null)}
                         />
                       </Form.Group>
                     </Col>
