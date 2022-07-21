@@ -33,6 +33,7 @@ afterEach(() => {
 describe("BodyFatCalculator", () => {
   it("renders", () => {
     (useState as jest.Mock).mockImplementation((x: unknown) => [x, jest.fn()]);
+    (useState as jest.Mock).mockImplementation((x: unknown) => [x, jest.fn()]);
     act(() => {
       render(<BodyFatCalculator />, container);
     });
