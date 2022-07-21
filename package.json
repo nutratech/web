@@ -60,7 +60,8 @@
   },
   "jest": {
     "coveragePathIgnorePatterns": [
-      "reportWebVitals.ts"
+      "reportWebVitals.ts",
+      ".*\\.tsx"
     ],
     "coverageThreshold": {
       "global": {

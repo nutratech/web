@@ -38,6 +38,7 @@ const useDebounce = <T>(value: T, delay: number): T => {
   // State and setters for debounced value
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(
+    /* istanbul ignore next */
     () => effectHandler(setDebouncedValue, value, delay),
     [value, delay] // Only re-call effect if value or delay changes
   );
