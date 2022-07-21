@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useState } from "react";
 import { unmountComponentAtNode, render } from "react-dom";
@@ -15,6 +16,13 @@ jest.mock("react", () => {
   };
 });
 
+=======
+import React from "react";
+import { unmountComponentAtNode, render } from "react-dom";
+import { act } from "react-dom/test-utils";
+import BodyFatCalculator from "./BodyFatCalculator";
+
+>>>>>>> 770c025f0b92cfe1d200dc79de2facf896825fec
 // eslint-disable-next-line @typescript-eslint/init-declarations
 let container: HTMLDivElement;
 
@@ -32,13 +40,17 @@ afterEach(() => {
 
 describe("BodyFatCalculator", () => {
   it("renders", () => {
+<<<<<<< HEAD
     (useState as jest.Mock).mockImplementation((x: unknown) => [x, jest.fn()]);
+=======
+>>>>>>> 770c025f0b92cfe1d200dc79de2facf896825fec
     act(() => {
       render(<BodyFatCalculator />, container);
     });
     const calculator = document.getElementById("body-fat-calculator");
     expect(calculator).not.toBeNull();
   });
+<<<<<<< HEAD
 
   describe("input change", () => {
     it("updates the body fat form", () => {
@@ -69,4 +81,6 @@ describe("BodyFatCalculator", () => {
       } as BodyFatForm);
     });
   });
+=======
+>>>>>>> 770c025f0b92cfe1d200dc79de2facf896825fec
 });
