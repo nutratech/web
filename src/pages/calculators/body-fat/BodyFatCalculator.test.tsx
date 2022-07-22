@@ -54,6 +54,7 @@ describe("BodyFatCalculator", () => {
         render(<BodyFatCalculator />, container);
         const inputs = container.getElementsByTagName("input");
         const input = inputs.namedItem("age");
+        // prettier-ignore
         const nativeInputValueSetter
           // eslint-disable-next-line @typescript-eslint/unbound-method
           = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set;
