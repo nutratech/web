@@ -36,7 +36,7 @@ describe("debounce hook", () => {
   });
 
   describe("effectHandler", () => {
-    it("calls debounce effect handler, returns a cleanup method that takes the resulting ID", () => {
+    it("calls debounce effect handler, return cleanup method that takes the resulting ID", () => {
       const setValue = jest.fn();
       // doesn't work and never will work because Jest is complete shit
       // jest.spyOn(debounce, "debounceEffectHandler");
