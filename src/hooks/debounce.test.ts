@@ -12,9 +12,7 @@ describe("debounce hook", () => {
     (useEffect as jest.Mock).mockImplementation(() => {});
     useDebounce(5, 0);
     expect(useState).toHaveBeenCalled();
-    expect(useEffect).toHaveBeenCalledWith(expect.anything(), [
-      5, 0,
-    ]);
+    expect(useEffect).toHaveBeenCalledWith(expect.anything(), [5, 0]);
   });
 
   describe("debounceEffectHandler", () => {
@@ -38,18 +36,15 @@ describe("debounce hook", () => {
   });
 
   describe("effectHandler", () => {
-    it(
-      "calls debounce effect handler, returns a cleanup method that takes the resulting ID",
-      () => {
-        const setValue = jest.fn();
-        // doesn't work and never will work because Jest is complete shit
-        // jest.spyOn(debounce, "debounceEffectHandler");
-        // jest.spyOn(debounce, "cleanupDebounceEffect");
-        const cleanupFn = debounce.effectHandler(setValue, 5, 0);
-        // expect(debounce.debounceEffectHandler).toHaveBeenCalledWith(setValue, 5, 0);
-        cleanupFn();
-        // expect(debounce.cleanupDebounceEffect).toHaveBeenCalled();
-      }
-    );
+    it("calls debounce effect handler, returns a cleanup method that takes the resulting ID", () => {
+      const setValue = jest.fn();
+      // doesn't work and never will work because Jest is complete shit
+      // jest.spyOn(debounce, "debounceEffectHandler");
+      // jest.spyOn(debounce, "cleanupDebounceEffect");
+      const cleanupFn = debounce.effectHandler(setValue, 5, 0);
+      // expect(debounce.debounceEffectHandler).toHaveBeenCalledWith(setValue, 5, 0);
+      cleanupFn();
+      // expect(debounce.cleanupDebounceEffect).toHaveBeenCalled();
+    });
   });
 });

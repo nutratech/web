@@ -9,9 +9,18 @@ describe("BodyFatCalculatorService", () => {
         sevenSite: false,
         threeSite: true,
       });
-      expect(results).toEqual(
-        ["gender", "neck", "waist", "hip", "height", "gender", "age", "abd", "chest", "thigh"]
-      );
+      expect(results).toEqual([
+        "gender",
+        "neck",
+        "waist",
+        "hip",
+        "height",
+        "gender",
+        "age",
+        "abd",
+        "chest",
+        "thigh",
+      ]);
     });
   });
 });

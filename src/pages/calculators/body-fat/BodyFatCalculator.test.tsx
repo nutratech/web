@@ -45,15 +45,11 @@ describe("BodyFatCalculator", () => {
     it("updates the body fat form", () => {
       const mockFormSetState = jest.fn();
       const mockDataSetState = jest.fn();
-      (useState as jest.Mock).mockImplementationOnce(
-        (x: unknown) => [x, mockFormSetState]
-      ).mockImplementationOnce(
-        (x: unknown) => [x, mockDataSetState]
-      ).mockImplementationOnce(
-        (x: unknown) => [x, jest.fn()]
-      ).mockImplementationOnce(
-        (x: unknown) => [x, jest.fn()]
-      );
+      (useState as jest.Mock)
+        .mockImplementationOnce((x: unknown) => [x, mockFormSetState])
+        .mockImplementationOnce((x: unknown) => [x, mockDataSetState])
+        .mockImplementationOnce((x: unknown) => [x, jest.fn()])
+        .mockImplementationOnce((x: unknown) => [x, jest.fn()]);
       act(() => {
         render(<BodyFatCalculator />, container);
         const inputs = container.getElementsByTagName("input");
