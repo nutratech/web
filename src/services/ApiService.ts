@@ -98,7 +98,3 @@ export default class ApiService {
 
   // TODO: PATCH, DELETE, etc
 }
-
-module.exports = {
-  ApiResponse,
-};
