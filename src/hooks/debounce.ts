@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 
 // exported for testing purposes
-export const debounceEffectHandler = <T>(
+export function debounceEffectHandler<T>(
   setValue: (val: T) => void,
   value: T,
   delay: number
-): NodeJS.Timeout | number | string | undefined =>
+): NodeJS.Timeout | number | string | undefined {
   // Update debounced value after delay
-    setTimeout(() => {
-      setValue(value);
-    }, delay);
+  return setTimeout(() => {
+    setValue(value);
+  }, delay);
+}
 
 // exported for testing purposes
 export const cleanupDebounceEffect = (
