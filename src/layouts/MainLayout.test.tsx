@@ -1,10 +1,15 @@
 import React from "react";
-import { render, unmountComponentAtNode } from "react-dom";
+import { unmountComponentAtNode, render } from "react-dom";
 import { act } from "react-dom/test-utils";
-import Header from "./Header";
+import MainLayout from "./MainLayout";
 
+// TODO: mock Header component so we don't need this
 jest.mock("react-router", () => ({
   useNavigate: (): (() => void) => jest.fn(),
+}));
+
+jest.mock("react-router-dom", () => ({
+  Outlet: (): JSX.Element => <></>,
 }));
 
 // eslint-disable-next-line @typescript-eslint/init-declarations
@@ -22,12 +27,12 @@ afterEach(() => {
   container.remove();
 });
 
-describe("Header", () => {
+describe("MainLayout", () => {
   it("renders", () => {
     act(() => {
-      render(<Header />, container);
+      render(<MainLayout />, container);
     });
-    const homeLogo = document.getElementById("nav-home-logo");
-    expect(homeLogo?.textContent).toEqual("Nutra, LLC.");
+    const app = document.getElementById("app");
+    expect(app).not.toBeNull();
   });
 });

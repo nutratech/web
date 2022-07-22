@@ -1,7 +1,7 @@
 import React from "react";
-import { render, unmountComponentAtNode } from "react-dom";
+import { unmountComponentAtNode, render } from "react-dom";
 import { act } from "react-dom/test-utils";
-import Header from "./Header";
+import Home from "./Home";
 
 jest.mock("react-router", () => ({
   useNavigate: (): (() => void) => jest.fn(),
@@ -22,12 +22,12 @@ afterEach(() => {
   container.remove();
 });
 
-describe("Header", () => {
+describe("Home", () => {
   it("renders", () => {
     act(() => {
-      render(<Header />, container);
+      render(<Home />, container);
     });
-    const homeLogo = document.getElementById("nav-home-logo");
-    expect(homeLogo?.textContent).toEqual("Nutra, LLC.");
+    const banner = document.getElementById("hero-banner");
+    expect(banner).not.toBeNull();
   });
 });
