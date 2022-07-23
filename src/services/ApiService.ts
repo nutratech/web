@@ -1,8 +1,12 @@
+export interface ErrorResponse {
+  errMsg?: string;
+}
+
 // TODO: parse .json() off body into class attribute
 // ------------------------------------------------------
 // CLASS: ApiResponse
 // ------------------------------------------------------
-export interface ApiResponse {
+export interface ApiResponse<ResponseType> {
   program: string;
   version: string;
   release: string;
@@ -10,24 +14,24 @@ export interface ApiResponse {
   timestamp: bigint | number;
   ok: boolean;
   code: bigint;
-  data: Record<string, unknown> | unknown[];
+  data: ResponseType;
   errMsg: string | undefined;
 }
 
 // ------------------------------------------------------
 // Helper methods
 // ------------------------------------------------------
-function buildApiResponse(
+function buildApiResponse<ResponseType>(
   code: bigint | number,
-  data: Record<string, unknown> | unknown[]
-): ApiResponse {
+  data: ResponseType
+): ApiResponse<ResponseType> {
   return {
     code,
     data,
-  } as ApiResponse;
+  } as ApiResponse<ResponseType>;
 }
 
-async function handleFetch(request: Request): Promise<ApiResponse> {
+async function handleFetch<ResponseType>(request: Request): Promise<ApiResponse<ResponseType | ErrorResponse>> {
   // prettier-ignore
   return fetch(request)
     .then(async (response: Response) => {
@@ -36,18 +40,18 @@ async function handleFetch(request: Request): Promise<ApiResponse> {
       // Handle Text (non-JSON) Content-Type
       if (response.headers.get("content-type")?.startsWith("text/")) {
         const errMsg = await response.text();
-        return buildApiResponse(response.status, { errMsg });
+        return buildApiResponse<ErrorResponse>(response.status, { errMsg });
       }
 
       // Handle JSON (default behavior)
       // NOTE: will fail on HTML endpoints, or any server besides ntserv
-      return (await response.json()) as ApiResponse;
+      return (await response.json()) as ApiResponse<ResponseType>;
     })
     // Bundle the error (with message) as a new Response()
     .catch((err: Error) => {
       // TODO: is this proper? 418?
       console.warn("ERROR: General API error. Not connected?");
-      return buildApiResponse(418n, { errMsg: err.message });
+      return buildApiResponse<ErrorResponse>(418n, { errMsg: err.message });
       // return new Response(JSON.stringify({ code: 418, data: { errMsg: err.message } }), {
       //   status: 418, statusText: err.message,
       // });
@@ -82,18 +86,18 @@ export class ApiService {
   // ------------------------------------------------------
   // HTTP class methods
   // ------------------------------------------------------
-  public async get(route: string): Promise<ApiResponse> {
+  public async get<ResponseType>(route: string): Promise<ApiResponse<ResponseType | ErrorResponse>> {
     // TODO: support query params, headers, etc
     const request = requestBuilder(`${this.baseUrl}${route}`, "GET");
-    return handleFetch(request);
+    return handleFetch<ResponseType>(request);
   }
 
-  public async post(
+  public async post<ResponseType>(
     route: string,
     body: Record<string, unknown> | unknown[]
-  ): Promise<ApiResponse> {
+  ): Promise<ApiResponse<ResponseType | ErrorResponse>> {
     const request = requestBuilder(`${this.baseUrl}${route}`, "POST", body);
-    return handleFetch(request);
+    return handleFetch<ResponseType>(request);
   }
 
   // TODO: PATCH, DELETE, etc
