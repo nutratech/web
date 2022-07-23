@@ -32,9 +32,8 @@ jobs:
         run: make deps
 
       - name: Test
-        run: >
-          CI=true
-          npx react-scripts test --env=jsdom --coverage || \
+        run: |
+          make _test/ci || \
             echo "ERROR: Failing tests or insufficient coverage?"
 
       - name: Submit coverage report / coveralls
