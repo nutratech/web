@@ -34,8 +34,7 @@ jobs:
       - name: Test
         run: >
           CI=true
-          JEST_OPT_ARGS=--coverage
-          make test || \
+          npx react-scripts test --env=jsdom --coverage \
             echo "Coverage probably insufficient!"
 
       - name: Submit coverage report / coveralls
