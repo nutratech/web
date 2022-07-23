@@ -34,8 +34,8 @@ jobs:
       - name: Test
         run: >
           CI=true
-          npx react-scripts test --env=jsdom --coverage \
-            echo "Coverage probably insufficient!"
+          npx react-scripts test --env=jsdom --coverage || \
+            echo "ERROR: Failing tests or insufficient coverage?"
 
       - name: Submit coverage report / coveralls
         env:
