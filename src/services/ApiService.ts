@@ -2,7 +2,7 @@
 // ------------------------------------------------------
 // CLASS: ApiResponse
 // ------------------------------------------------------
-interface ApiResponse {
+export interface ApiResponse {
   program: string;
   version: string;
   release: string;
@@ -72,7 +72,7 @@ function requestBuilder(
 // ------------------------------------------------------
 // CLASS: ApiService
 // ------------------------------------------------------
-export default class ApiService {
+export class ApiService {
   public baseUrl: string;
 
   constructor(baseUrl: string) {

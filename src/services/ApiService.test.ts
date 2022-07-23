@@ -1,4 +1,4 @@
-import ApiService from "./ApiService";
+import { ApiService } from "./ApiService";
 
 describe("Real HTTP calls", () => {
   const apiService = new ApiService("https://dev.nutra.tk/api");
