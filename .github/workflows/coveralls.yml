@@ -35,7 +35,9 @@ jobs:
 
       - name: Test
         run: |
-          CI=true JEST_OPT_ARGS=--coverage make test || \
+          export CI=true
+          export JEST_OPT_ARGS=--coverage
+          make test || \
             echo "Coverage probably insufficient!"
 
       - name: Submit coverage report / coveralls
