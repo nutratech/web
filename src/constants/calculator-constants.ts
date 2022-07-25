@@ -63,6 +63,12 @@ export const BodyFatFieldLabels: { [key in BodyFatFieldName]: string } = {
   mid: "Mid (mm)",
 };
 
+// prettier-ignore
+export const enum Gender {
+  Male = "MALE",
+  Female = "FEMALE"
+}
+
 export const BodyFatFieldOptions: {
   [key in BodyFatFieldName]: {
     name: string;
@@ -72,11 +78,11 @@ export const BodyFatFieldOptions: {
   gender: [
     {
       name: "Male",
-      value: "MALE",
+      value: Gender.Male,
     },
     {
       name: "Female",
-      value: "FEMALE",
+      value: Gender.Female,
     },
   ],
   age: [],
@@ -92,6 +98,13 @@ export const BodyFatFieldOptions: {
   sup: [],
   mid: [],
 };
+
+// prettier-ignore
+export enum BodyFatTestType {
+  navy = "navy",
+  threeSite = "threeSite",
+  sevenSite = "sevenSite"
+}
 
 export type BodyFatTestKeyType = "navy" | "sevenSite" | "threeSite";
 

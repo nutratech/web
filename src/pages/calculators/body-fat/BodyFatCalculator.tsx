@@ -4,13 +4,13 @@ import { Col, Form, Row } from "react-bootstrap";
 import * as calculatorConstants from "../../../constants/calculator-constants";
 import useDebounce from "../../../hooks/debounce";
 import type BodyFatForm from "../../../models/BodyFatForm";
-import type BodyFatResponse from "../../../models/BodyFatResponse";
-import CalculatorService from "../../../services/calculator/CalculatorService";
 import BodyFatCalculatorService from "./BodyFatCalculatorService";
+import useStore, { selectBodyFatResults, selectCalculateBodyFat } from "../../../store/calculator";
 
 function BodyFatCalculator(): JSX.Element {
   const [bodyFatForm, setBodyFatForm] = useState({} as BodyFatForm);
-  const [bodyFatData, setBodyFatData] = useState({} as BodyFatResponse);
+  const bodyFatData = useStore(selectBodyFatResults);
+  const calculateBodyFat = useStore(selectCalculateBodyFat);
 
   const debouncedFormData = useDebounce(bodyFatForm, 500);
 
@@ -23,11 +23,8 @@ function BodyFatCalculator(): JSX.Element {
   });
 
   useEffect(() => {
-    // TODO: dispatch action to trigger API call instead of calling directly
-    void CalculatorService.calculateBodyFatPercentage(bodyFatForm).then((bodyFatResponse) => {
-      setBodyFatData(bodyFatResponse);
-    });
-  }, [debouncedFormData, bodyFatForm]);
+    calculateBodyFat(debouncedFormData);
+  }, [debouncedFormData, calculateBodyFat]);
 
   const requiredFields: calculatorConstants.BodyFatFieldName[] = useMemo(
     () => BodyFatCalculatorService.getAllRequiredFieldsFromSelectedTests(selectedTestTypes),
