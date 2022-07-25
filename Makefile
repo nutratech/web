@@ -53,11 +53,14 @@ lint:	## Lint w/ prettier & ESLint
 	npx tsc
 
 
-JEST_OPT_ARGS ?= --watchAll --coverage
-
 .PHONY: test
 test:	## Run tests
-	npm test -- --env=jsdom $(JEST_OPT_ARGS)
+	npm test
+
+
+.PHONY:_test/ci
+_test/ci:
+	CI=true npx react-scripts test --env=jsdom --coverage
 
 
 
@@ -67,11 +70,7 @@ test:	## Run tests
 
 .PHONY: build
 build:	## Create build
-ifneq ($(OS),Windows_NT)
-	GENERATE_SOURCEMAP=false npm run build
-else
-	set GENERATE_SOURCEMAP=false && npm run build
-endif
+	npm run build
 
 
 REACT_APP_SERVER_URL ?= http://localhost:20000
