@@ -72,6 +72,7 @@ module.exports = {
       "error",
       {
         allowAliases: "in-unions-and-intersections",
+        allowCallbacks: "always",
       },
     ],
     "implicit-arrow-linebreak": ["off", "below"],
