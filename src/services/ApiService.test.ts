@@ -44,6 +44,7 @@ describe("Real HTTP calls", () => {
 
       expect(Object.keys(res)).toContain("data");
       expect(Object.keys(res.data)).toContain("errMsg");
+      // @ts-expect-error errMsg prop is not (yet) a proper attribute of ApiResponse.data
       expect(res.data.errMsg).toBe("KeyError('authorization')");
     }
   );
@@ -58,6 +59,7 @@ describe("Real HTTP calls", () => {
 
       expect(Object.keys(res)).toContain("data");
       expect(Object.keys(res.data)).toContain("errMsg");
+      // @ts-expect-error errMsg prop is not (yet) a proper attribute of ApiResponse.data
       expect(res.data.errMsg).toContain("Method Not Allowed");
     }
   );
@@ -72,6 +74,7 @@ describe("Real HTTP calls", () => {
 
       expect(Object.keys(res)).toContain("data");
       expect(Object.keys(res.data)).toContain("errMsg");
+      // @ts-expect-error errMsg prop is not (yet) a proper attribute of ApiResponse.data
       expect(res.data.errMsg).toBeTruthy();
     }
   );
@@ -84,6 +87,7 @@ describe("Real HTTP calls", () => {
       const res = await bogusApiService.get("/");
 
       expect(Object.keys(res.data)).toContain("errMsg");
+      // @ts-expect-error errMsg prop is not (yet) a proper attribute of ApiResponse.data
       expect(res.data.errMsg).toBe("Network request failed");
     }
   );
