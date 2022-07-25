@@ -93,6 +93,12 @@ export const BodyFatFieldOptions: {
   mid: [],
 };
 
+export enum BodyFatTestType {
+  navy = "navy",
+  threeSite = "threeSite",
+  sevenSite = "sevenSite"
+}
+
 export type BodyFatTestKeyType = "navy" | "sevenSite" | "threeSite";
 
 export const BodyFatTestTypes: BodyFatTestKeyType[] = ["navy", "threeSite", "sevenSite"];
