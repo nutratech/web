@@ -63,6 +63,7 @@ export const BodyFatFieldLabels: { [key in BodyFatFieldName]: string } = {
   mid: "Mid (mm)",
 };
 
+// prettier-ignore
 export const enum Gender {
   Male = "MALE",
   Female = "FEMALE"

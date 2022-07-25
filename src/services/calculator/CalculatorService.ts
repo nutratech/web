@@ -12,6 +12,7 @@ export default class CalculatorService {
   }
 
   public calculateNavyBodyFatPercentage({ gender, waist, neck, hip, height }: BodyFatForm): number {
+    // prettier-ignore
     const denominator
       = gender === Gender.Male
         ? 1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)
@@ -28,6 +29,7 @@ export default class CalculatorService {
   }: BodyFatForm): number {
     const st3 = chest + abd + thigh;
 
+    // prettier-ignore
     const denominator
       = gender === Gender.Male
         ? 1.10938 - 0.0008267 * st3 + 0.0000016 * st3 * st3 - 0.0002574 * age
@@ -48,6 +50,7 @@ export default class CalculatorService {
   }: BodyFatForm): number {
     const st7 = chest + abd + thigh + tricep + sub + sup + mid;
 
+    // prettier-ignore
     const denominator
       = gender === Gender.Male
         ? 1.112 - 0.00043499 * st7 + 0.00000055 * st7 * st7 - 0.00028826 * age
