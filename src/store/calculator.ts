@@ -40,7 +40,7 @@ export const selectBodyFatResults = (state: CalculatorState): BodyFatResults =>
   state.bodyFatResults;
 
 // actions
-export const selectCalculateBodyFat
-  = (state: CalculatorActions): CalculateBodyFatFunction => state.calculateBodyFat;
+export const selectCalculateBodyFat = (state: CalculatorActions): CalculateBodyFatFunction =>
+  state.calculateBodyFat;
 
 export default useStore;

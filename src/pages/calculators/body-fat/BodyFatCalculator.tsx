@@ -5,9 +5,7 @@ import * as calculatorConstants from "../../../constants/calculator-constants";
 import useDebounce from "../../../hooks/debounce";
 import type BodyFatForm from "../../../models/BodyFatForm";
 import BodyFatCalculatorService from "./BodyFatCalculatorService";
-import useStore, {
-  selectBodyFatResults, selectCalculateBodyFat,
-} from "../../../store/calculator";
+import useStore, { selectBodyFatResults, selectCalculateBodyFat } from "../../../store/calculator";
 
 function BodyFatCalculator(): JSX.Element {
   const [bodyFatForm, setBodyFatForm] = useState({} as BodyFatForm);
