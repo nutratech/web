@@ -19,9 +19,7 @@ export interface CalculatorActions {
   calculateBodyFat: CalculateBodyFatFunction;
 }
 
-export interface CalculatorStore extends CalculatorState, CalculatorActions {
-
-}
+export interface CalculatorStore extends CalculatorState, CalculatorActions {}
 
 const useStore = create<CalculatorStore>((set) => ({
   bodyFatResults: {
@@ -38,11 +36,11 @@ const useStore = create<CalculatorStore>((set) => ({
 }));
 
 // selectors
-export const selectBodyFatResults
-  = (state: CalculatorState): BodyFatResults => state.bodyFatResults;
+export const selectBodyFatResults = (state: CalculatorState): BodyFatResults =>
+  state.bodyFatResults;
 
 // actions
-export const selectCalculateBodyFat
-  = (state: CalculatorActions): CalculateBodyFatFunction => state.calculateBodyFat;
+export const selectCalculateBodyFat = (state: CalculatorActions): CalculateBodyFatFunction =>
+  state.calculateBodyFat;
 
 export default useStore;
