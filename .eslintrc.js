@@ -76,6 +76,7 @@ module.exports = {
       },
     ],
     "implicit-arrow-linebreak": ["off", "below"],
+    "class-methods-use-this": ["off"],
     "import/extensions": [
       "off",
       "ignorePackages",

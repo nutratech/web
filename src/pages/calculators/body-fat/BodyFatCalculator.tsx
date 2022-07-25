@@ -6,13 +6,13 @@ import useDebounce from "../../../hooks/debounce";
 import type BodyFatForm from "../../../models/BodyFatForm";
 import BodyFatCalculatorService from "./BodyFatCalculatorService";
 import useStore, {
-  selectBodyFatResults, selectCalculateBodyFatAsync,
+  selectBodyFatResults, selectCalculateBodyFat,
 } from "../../../store/calculator";
 
 function BodyFatCalculator(): JSX.Element {
   const [bodyFatForm, setBodyFatForm] = useState({} as BodyFatForm);
   const bodyFatData = useStore(selectBodyFatResults);
-  const calculateBodyFatAsync = useStore(selectCalculateBodyFatAsync);
+  const calculateBodyFat = useStore(selectCalculateBodyFat);
 
   const debouncedFormData = useDebounce(bodyFatForm, 500);
 
@@ -25,8 +25,8 @@ function BodyFatCalculator(): JSX.Element {
   });
 
   useEffect(() => {
-    void calculateBodyFatAsync(debouncedFormData);
-  }, [debouncedFormData, calculateBodyFatAsync]);
+    calculateBodyFat(debouncedFormData);
+  }, [debouncedFormData, calculateBodyFat]);
 
   const requiredFields: calculatorConstants.BodyFatFieldName[] = useMemo(
     () => BodyFatCalculatorService.getAllRequiredFieldsFromSelectedTests(selectedTestTypes),

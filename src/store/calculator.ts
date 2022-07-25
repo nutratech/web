@@ -1,7 +1,7 @@
 import create from "zustand";
 import type { BodyFatTestType } from "../constants/calculator-constants";
 import type BodyFatForm from "../models/BodyFatForm";
-import CalculatorService from "../services/calculator/CalculatorService";
+import DependencyContainer from "../services/container";
 
 export interface BodyFatResults {
   [BodyFatTestType.navy]: number;
@@ -13,10 +13,10 @@ export interface CalculatorState {
   bodyFatResults: BodyFatResults;
 }
 
-export type CalculateBodyFatFunction = (form: BodyFatForm) => Promise<void>;
+export type CalculateBodyFatFunction = (form: BodyFatForm) => void;
 
 export interface CalculatorActions {
-  calculateBodyFatAsync: CalculateBodyFatFunction;
+  calculateBodyFat: CalculateBodyFatFunction;
 }
 
 export interface CalculatorStore extends CalculatorState, CalculatorActions {
@@ -29,8 +29,8 @@ const useStore = create<CalculatorStore>((set) => ({
     sevenSite: 0,
     threeSite: 0,
   },
-  calculateBodyFatAsync: async (form: BodyFatForm): Promise<void> => {
-    const bodyFatResults = await CalculatorService.calculateBodyFatPercentage(form);
+  calculateBodyFat: (form: BodyFatForm): void => {
+    const bodyFatResults = DependencyContainer.calculatorService.calculateBodyFatPercentage(form);
     set({
       bodyFatResults,
     });
@@ -42,7 +42,7 @@ export const selectBodyFatResults
   = (state: CalculatorState): BodyFatResults => state.bodyFatResults;
 
 // actions
-export const selectCalculateBodyFatAsync
-  = (state: CalculatorActions): CalculateBodyFatFunction => state.calculateBodyFatAsync;
+export const selectCalculateBodyFat
+  = (state: CalculatorActions): CalculateBodyFatFunction => state.calculateBodyFat;
 
 export default useStore;
