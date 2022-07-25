@@ -93,6 +93,7 @@ export const BodyFatFieldOptions: {
   mid: [],
 };
 
+// prettier-ignore
 export enum BodyFatTestType {
   navy = "navy",
   threeSite = "threeSite",
