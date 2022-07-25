@@ -6,7 +6,8 @@ import useDebounce from "../../../hooks/debounce";
 import type BodyFatForm from "../../../models/BodyFatForm";
 import BodyFatCalculatorService from "./BodyFatCalculatorService";
 import useStore, {
-  selectBodyFatResults, selectCalculateBodyFatAsync,
+  selectBodyFatResults,
+  selectCalculateBodyFatAsync,
 } from "../../../store/calculator";
 
 function BodyFatCalculator(): JSX.Element {
