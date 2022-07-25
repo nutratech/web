@@ -56,11 +56,25 @@ module.exports = {
     ],
     "operator-linebreak": ["error", "before"],
 
+    // Tweaked rules
+    "@typescript-eslint/explicit-member-accessibility": [
+      "warn",
+      {
+        accessibility: "explicit",
+        overrides: {
+          accessors: "off",
+          constructors: "no-public",
+          methods: "explicit",
+          properties: "explicit",
+          parameterProperties: "explicit",
+        },
+      },
+    ],
+
     // Warning rules [TypeScript - tsc]
     "@typescript-eslint/no-floating-promises": ["warn"],
     "@typescript-eslint/explicit-function-return-type": ["warn"],
     "@typescript-eslint/explicit-module-boundary-types": ["warn"],
-    "@typescript-eslint/explicit-member-accessibility": ["warn"],
     "@typescript-eslint/no-non-null-assertion": ["warn"],
     "@typescript-eslint/no-extraneous-class": ["warn"],
 

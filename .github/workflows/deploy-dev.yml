@@ -3,7 +3,7 @@ name: deploy-dev
 
 "on":
   push:
-    branches: ["dev"]
+    branches: [dev]
 
 concurrency: dev
 
@@ -27,6 +27,4 @@ jobs:
         run: make build
 
       - name: Copy static files over
-        run: |
-          rm -rf /var/www/react_app/*
-          mv build/* /var/www/react_app/
+        run: rm -rf /var/www/react_app/* && mv build/* /var/www/react_app/

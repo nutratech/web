@@ -29,14 +29,12 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install requirements
-        run: |
-          npm install coveralls
-          make deps
+        run: make deps
 
       - name: Test
         run: |
-          CI=true JEST_OPT_ARGS=--coverage make test || \
-            echo "Coverage probably insufficient!"
+          make _test/ci || \
+            echo "ERROR: Failing tests or insufficient coverage?"
 
       - name: Submit coverage report / coveralls
         env:
@@ -44,11 +42,6 @@ jobs:
         run: npx coveralls < coverage/lcov.info
 
       # NOTE: this is only performed in the coveralls report workflow
-      - name: Install / "NPM License Checker"
-        env:
-          NPM_LICENSE_CHECKER_VERSION: 25.0.1
-        run: npm i license-checker@$NPM_LICENSE_CHECKER_VERSION
-
       - name: Check Licenses
         env:
           APP_VERSION: 0.1.0

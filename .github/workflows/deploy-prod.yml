@@ -3,7 +3,7 @@ name: deploy-prod
 
 "on":
   push:
-    branches: ["prod"]
+    branches: [prod]
 
 concurrency: prod
 
@@ -27,6 +27,4 @@ jobs:
         run: make build
 
       - name: Copy static files over
-        run: |
-          rm -rf /var/www/react_app/*
-          mv build/* /var/www/react_app/
+        run: rm -rf /var/www/react_app/* && mv build/* /var/www/react_app/

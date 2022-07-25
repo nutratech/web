@@ -42,10 +42,7 @@ jobs:
         run: make lint
 
       - name: Test
-        run: |
-          export CI=true
-          export JEST_OPT_ARGS=
-          make test
+        run: make _test/ci
 
       # NOTE: build is only performed on Linux for now
       - name: Build
