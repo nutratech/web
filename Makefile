@@ -79,7 +79,7 @@ REMOTE_HEAD ?= origin/master
 .PHONY: _check-git-up-to-date
 _check-git-up-to-date:
 	git branch --show-current
-	git fetch
+	-git fetch
 	# Check that we are in sync with ${REMOTE_HEAD}
 	git diff --quiet ${REMOTE_HEAD}
 
