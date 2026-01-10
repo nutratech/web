@@ -4,9 +4,9 @@ import legacy from '@vitejs/plugin-legacy';
 
 export default defineConfig({
 	plugins: [
-		sveltekit(),
-		legacy({
-			targets: ['defaults', 'not IE 11']
-		})
+		// legacy({
+		// 	targets: ['defaults', 'not IE 11']
+		// }),
+		sveltekit()
 	]
 });
