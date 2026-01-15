@@ -1,6 +1,7 @@
 <script>
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import { PUBLIC_CV_URL } from '$env/static/public';
 </script>
 
 <svelte:head>
@@ -15,7 +16,7 @@
 				<li><a href="/blog">Blog</a></li>
 				<li><a href="/portfolio">Portfolio</a></li>
 				<li><a href="https://github.com/shane">GitHub</a></li>
-				<li><a href="/cv.pdf">CV</a></li>
+				<li><a href={PUBLIC_CV_URL}>CV</a></li>
 			</ul>
 		</nav>
 	</header>

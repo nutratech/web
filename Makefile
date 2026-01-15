@@ -2,16 +2,20 @@
 
 .PHONY: lint
 lint:	##@ Run linter
-	npm run check --workspace=web
-	npm run lint --workspaces
+	npm run check
+	# npm run lint
+
+.PHONY: format
+format:	##@ Format code
+	npm run format
 
 .PHONY: test
 test:	##@ Run tests
-	npm run check --workspace=web
+	npm run check
 
 .PHONY: build
 build:	##@ Build the project
-	npm run build --workspace=web
+	npm run build
 
 # --- WIP SECTION ---
 # TODO: add "PHONY:" tags
