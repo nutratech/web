@@ -1,6 +1,8 @@
 ---
 title: My First Post
-date: 2026-01-15
+date: "2026-01-15"
+description: A short summary of my first post.
+author: Shane
 ---
 
 # Hello World

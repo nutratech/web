@@ -19,12 +19,3 @@
 		<li>Legacy Browser Support Consulting</li>
 	</ul>
 </section>
-
-<nav>
-	<ul>
-		<li><a href="/blog">Blog</a></li>
-		<li><a href="/portfolio">Portfolio</a></li>
-		<li><a href="https://github.com/shane">GitHub</a></li>
-		<li><a href="/cv.pdf">My CV</a></li>
-	</ul>
-</nav>
