@@ -7,6 +7,6 @@ export default defineConfig({
     legacy({
       targets: ["ie 11"],
     }),
-    sveltekit(),
+    /** @type {any} */ (sveltekit())
   ],
 });
