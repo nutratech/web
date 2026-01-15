@@ -9,9 +9,9 @@ export default defineConfig({
     }),
     /** @type {any} */ (sveltekit()),
   ],
-	server: {
-		fs: {
-			allow: ['..']
-		}
-	}
+  server: {
+    fs: {
+      allow: [".."],
+    },
+  },
 });

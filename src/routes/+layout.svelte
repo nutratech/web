@@ -10,22 +10,16 @@
 		const savedTheme = localStorage.getItem('theme');
 		if (savedTheme) {
 			theme = savedTheme;
-			document.documentElement.setAttribute('data-theme', theme);
 		} else {
 			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 			theme = prefersDark ? 'dark' : 'light';
 		}
+		document.documentElement.setAttribute('data-theme', theme);
 	});
 
 	function toggleTheme() {
-		if (theme === 'system') {
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			theme = prefersDark ? 'light' : 'dark';
-		} else if (theme === 'dark') {
-			theme = 'light';
-		} else {
-			theme = 'dark';
-		}
+		const newTheme = theme === 'dark' ? 'light' : 'dark';
+		theme = newTheme;
 		document.documentElement.setAttribute('data-theme', theme);
 		localStorage.setItem('theme', theme);
 	}
