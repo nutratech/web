@@ -7,6 +7,11 @@ export default defineConfig({
     legacy({
       targets: ["ie 11"],
     }),
-    /** @type {any} */ (sveltekit())
+    /** @type {any} */ (sveltekit()),
   ],
+	server: {
+		fs: {
+			allow: ['..']
+		}
+	}
 });

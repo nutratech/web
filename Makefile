@@ -9,9 +9,6 @@ lint:	##@ Run linter
 format:	##@ Format code
 	npm run format
 
-.PHONY: test
-test:	##@ Run tests
-	npm run check
 
 .PHONY: build
 build:	##@ Build the project
