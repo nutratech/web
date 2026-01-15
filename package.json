@@ -12,8 +12,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-static": "^3.0.1",
-		"@sveltejs/kit": "^2.5.0",
+		"@sveltejs/adapter-static": "file:../svelte-kit/packages/adapter-static",
+		"@tg-svelte/kit": "file:../svelte-kit/packages/kit",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@vitejs/plugin-legacy": "^5.2.0",
 		"mdsvex": "^0.12.6",
