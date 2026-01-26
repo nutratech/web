@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.png';
 	import { PUBLIC_CV_URL } from '$env/static/public';
 
 	let theme = 'system';
@@ -36,7 +36,8 @@
 				<li><a href="/">Home</a></li>
 				<li><a href="/blog">Blog</a></li>
 				<li><a href="/portfolio">Portfolio</a></li>
-				<li><a href="https://github.com/shane">GitHub</a></li>
+				<li><a href="https://github.com/gamesguru">GitHub</a></li>
+				<li><a href="https://git.nutra.tk">Gitea</a></li>
 				<li><a href={PUBLIC_CV_URL}>CV</a></li>
 				<li>
 					<button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle Theme">
