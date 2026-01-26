@@ -14,6 +14,8 @@ declare global {
       author?: string;
     }
   }
+
+  const __COMMIT_HASH__: string;
 }
 
 export {};
