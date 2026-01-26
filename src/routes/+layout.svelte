@@ -34,7 +34,12 @@
 	function handleAnchorClick(event) {
 		if (!(event.target instanceof Element)) return;
 		const target = event.target.closest('a');
-		if (target && target.href && !target.href.startsWith(window.location.origin)) {
+		const cvUrl = new URL(PUBLIC_CV_URL, window.location.origin).href;
+		if (
+			target &&
+			target.href &&
+			(!target.href.startsWith(window.location.origin) || target.href === cvUrl)
+		) {
 			if (!confirm('Are you sure you want to leave the site?')) {
 				event.preventDefault();
 			}
@@ -70,4 +75,23 @@
 	<main>
 		<slot />
 	</main>
+
+	<footer>
+		<p>
+			Built from commit: <a
+				href="https://github.com/gamesguru/my-website/commit/{__COMMIT_HASH__}"
+				target="_blank"
+				rel="noopener noreferrer">{__COMMIT_HASH__}</a
+			>
+		</p>
+	</footer>
 </div>
+
+<style>
+	footer {
+		text-align: center;
+		padding: 1rem;
+		font-size: 0.8rem;
+		opacity: 0.7;
+	}
+</style>

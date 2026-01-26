@@ -1,5 +1,10 @@
 .SHELL=/bin/bash
 
+# Default environment is "dev"
+VPS_USER ?= gg
+ENV ?= dev
+VPS ?= $(VPS_USER)@$(ENV)
+
 .PHONY: lint
 lint:	##@ Run linter
 	pnpm run check
@@ -13,36 +18,35 @@ format:	##@ Format code
 .PHONY: build
 build:	##@ Build the project (dist)
 	pnpm run build
+	tar -czvf $(DEPLOY_TAR) build/
 
 .PHONY: pack
 pack:	##@ Pack the project (src)
 	pnpm pack --pack-destination build/
 
+
 .PHONY: clean
 clean:	##@ Clean build artifacts
 	rm -rf build .svelte-kit .vite
+
 
 .PHONY: serve
 serve:	##@ Build and serve the project
 	pnpm run serve || python3 -m http.server -d build
 
-# Default environment is "dev"
-VPS_USER ?= gg
-ENV ?= dev
-VPS ?= $(VPS_USER)@$(ENV)
 
 # Deploy environment variables
-DEPLOYS_DIR ?= /tmp/deploys
-NAME := $(shell node -p "require('./package.json').name")
-VERSION := $(shell node -p "require('./package.json').version")
-DEPLOY_TAR := $(NAME)-$(VERSION).tgz
+DEPLOYS_DIR_TMP ?= /tmp/deploys
+NAME ?= $(shell node -p "require('./package.json').name")
+VERSION ?= $(shell node -p "require('./package.json').version")
+DEPLOY_TAR ?= $(NAME)-$(VERSION).tar.gz
 
 .PHONY: deploy
 deploy:	##@ Deploy the project
 	@echo "Deploying $(ENV) to /var/www/app..."
-	ssh $(VPS) 'mkdir -p $(DEPLOYS_DIR)'
-	scp build/$(DEPLOY_TAR) $(VPS):$(DEPLOYS_DIR)/$(DEPLOY_TAR)
-	ssh $(VPS) 'cd $(DEPLOYS_DIR) && \
+	ssh $(VPS) 'mkdir -p $(DEPLOYS_DIR_TMP)'
+	scp $(DEPLOY_TAR) $(VPS):$(DEPLOYS_DIR_TMP)/$(DEPLOY_TAR)
+	ssh $(VPS) 'cd $(DEPLOYS_DIR_TMP) && \
 		mkdir -p extracted-$(VERSION) && \
 		tar -xzf $(DEPLOY_TAR) -C extracted-$(VERSION) && \
 		rm -rf /var/www/app/* && \
