@@ -11,8 +11,11 @@ format:	##@ Format code
 
 
 .PHONY: build
-build:	##@ Build the project
+build:	##@ Build the project (dist)
 	pnpm run build
+
+.PHONY: pack
+pack:	##@ Pack the project (src)
 	pnpm pack --pack-destination build/
 
 .PHONY: clean
@@ -30,21 +33,21 @@ VPS ?= $(VPS_USER)@$(ENV)
 
 # Deploy environment variables
 DEPLOYS_DIR ?= /tmp/deploys
-DEPLOY_TAR ?= nutra.tk-0.0.1-rc.1.tgz
+NAME := $(shell node -p "require('./package.json').name")
+VERSION := $(shell node -p "require('./package.json').version")
+DEPLOY_TAR := $(NAME)-$(VERSION).tgz
 
 .PHONY: deploy
 deploy:	##@ Deploy the project
 	@echo "Deploying $(ENV) to /var/www/app..."
-	# Ensure temp dir exists on remote
 	ssh $(VPS) 'mkdir -p $(DEPLOYS_DIR)'
-	# Scp the packed tarball
 	scp build/$(DEPLOY_TAR) $(VPS):$(DEPLOYS_DIR)/$(DEPLOY_TAR)
-	# Extract and sync
 	ssh $(VPS) 'cd $(DEPLOYS_DIR) && \
-		tar -xzf $(DEPLOY_TAR) && \
+		mkdir -p extracted-$(VERSION) && \
+		tar -xzf $(DEPLOY_TAR) -C extracted-$(VERSION) && \
 		rm -rf /var/www/app/* && \
-		cp -r package/build/* /var/www/app/ && \
-		rm -rf package $(DEPLOY_TAR)'
+		cp -r extracted-$(VERSION)/* /var/www/app/ && \
+		rm -rf extracted-$(VERSION) $(DEPLOY_TAR)'
 	@echo "✓ Deployed UI homepage to $(ENV)."
 
 # --- WIP SECTION ---
