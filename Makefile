@@ -2,35 +2,50 @@
 
 .PHONY: lint
 lint:	##@ Run linter
-	npm run check
-	# npm run lint
+	pnpm run check
+	pnpm run lint
 
 .PHONY: format
 format:	##@ Format code
-	npm run format
+	pnpm run format
 
 
 .PHONY: build
 build:	##@ Build the project
-	npm run build
+	pnpm run build
+	pnpm pack --pack-destination build/
 
 .PHONY: clean
 clean:	##@ Clean build artifacts
 	rm -rf build .svelte-kit .vite
 
 .PHONY: serve
-serve: build	##@ Build and serve the project
-	npx serve build || python3 -m http.server -d build
+serve:	##@ Build and serve the project
+	pnpm run serve || python3 -m http.server -d build
 
 # Default environment is "dev"
+VPS_USER ?= gg
 ENV ?= dev
+VPS ?= $(VPS_USER)@$(ENV)
+
+# Deploy environment variables
+DEPLOYS_DIR ?= /tmp/deploys
+DEPLOY_TAR ?= nutra.tk-0.0.1-rc.1.tgz
 
 .PHONY: deploy
-deploy: build	##@ Deploy the project
-	@echo "Deploying $${ENV} to /var/www/app..."
-	ssh gg@$${ENV} 'rm -rf /var/www/app/*'
-	scp -r build/* gg@$${ENV}:/var/www/app
-	@echo "✓ Deployed UI homepage to $${ENV}."
+deploy:	##@ Deploy the project
+	@echo "Deploying $(ENV) to /var/www/app..."
+	# Ensure temp dir exists on remote
+	ssh $(VPS) 'mkdir -p $(DEPLOYS_DIR)'
+	# Scp the packed tarball
+	scp build/$(DEPLOY_TAR) $(VPS):$(DEPLOYS_DIR)/$(DEPLOY_TAR)
+	# Extract and sync
+	ssh $(VPS) 'cd $(DEPLOYS_DIR) && \
+		tar -xzf $(DEPLOY_TAR) && \
+		rm -rf /var/www/app/* && \
+		cp -r package/build/* /var/www/app/ && \
+		rm -rf package $(DEPLOY_TAR)'
+	@echo "✓ Deployed UI homepage to $(ENV)."
 
 # --- WIP SECTION ---
 # TODO: add "PHONY:" tags
