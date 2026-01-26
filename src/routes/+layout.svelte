@@ -24,22 +24,19 @@
 		localStorage.setItem('theme', theme);
 	}
 
-	/** @param {BeforeUnloadEvent} event */
-	function handleBeforeUnload(event) {
-		event.preventDefault();
-		event.returnValue = '';
-	}
+
 
 	/** @param {MouseEvent} event */
 	function handleAnchorClick(event) {
 		if (!(event.target instanceof Element)) return;
 		const target = event.target.closest('a');
-		const cvUrl = new URL(PUBLIC_CV_URL, window.location.origin).href;
-		if (
-			target &&
+		if (!target) return;
+
+		const isExternal =
 			target.href &&
-			(!target.href.startsWith(window.location.origin) || target.href === cvUrl)
-		) {
+			!target.href.startsWith(window.location.origin);
+
+		if (isExternal) {
 			if (!confirm('Are you sure you want to leave the site?')) {
 				event.preventDefault();
 			}
@@ -51,7 +48,7 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<svelte:window on:beforeunload={handleBeforeUnload} on:click={handleAnchorClick} />
+<svelte:window on:click={handleAnchorClick} />
 
 <div class="container">
 	<header>

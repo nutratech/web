@@ -10,6 +10,9 @@ lint:	##@ Run linter
 	pnpm run check
 	pnpm run lint
 
+# .PHONY: test
+# test: # TODO: this
+
 .PHONY: format
 format:	##@ Format code
 	pnpm run format
@@ -18,7 +21,7 @@ format:	##@ Format code
 .PHONY: build
 build:	##@ Build the project (dist)
 	pnpm run build
-	tar -czvf $(DEPLOY_TAR) build/
+	tar -C build -czvf $(DEPLOY_TAR) .
 
 .PHONY: pack
 pack:	##@ Pack the project (src)
@@ -51,6 +54,7 @@ deploy:	##@ Deploy the project
 		tar -xzf $(DEPLOY_TAR) -C extracted-$(VERSION) && \
 		rm -rf /var/www/app/* && \
 		cp -r extracted-$(VERSION)/* /var/www/app/ && \
+		chmod -R a+rX /var/www/app/ && \
 		rm -rf extracted-$(VERSION) $(DEPLOY_TAR)'
 	@echo "✓ Deployed UI homepage to $(ENV)."
 
