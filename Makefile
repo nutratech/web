@@ -14,6 +14,24 @@ format:	##@ Format code
 build:	##@ Build the project
 	npm run build
 
+.PHONY: clean
+clean:	##@ Clean build artifacts
+	rm -rf build .svelte-kit .vite
+
+.PHONY: serve
+serve: build	##@ Build and serve the project
+	npx serve build || python3 -m http.server -d build
+
+# Default environment is "dev"
+ENV ?= dev
+
+.PHONY: deploy
+deploy: build	##@ Deploy the project
+	@echo "Deploying $${ENV} to /var/www/app..."
+	ssh gg@$${ENV} 'rm -rf /var/www/app/*'
+	scp -r build/* gg@$${ENV}:/var/www/app
+	@echo "✓ Deployed UI homepage to $${ENV}."
+
 # --- WIP SECTION ---
 # TODO: add "PHONY:" tags
 # ~~~~~
