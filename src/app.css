@@ -19,6 +19,11 @@
   --spacing-xl: 4rem;
 
   --width-content: 800px;
+
+  /* Component Variables (Light Default) */
+  --bg-card: #ffffff;
+  --text-muted: #666666;
+  --text-secondary: #4a5568;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,6 +35,11 @@
     --color-secondary: #94a3b8;
     --color-border: #404542;
     --color-code-bg: #363b38;
+
+    /* Component Variables (Dark Auto) */
+    --bg-card: #16213e;
+    --text-muted: #94a3b8;
+    --text-secondary: #cbd5e0;
   }
 }
 
@@ -41,6 +51,11 @@
   --color-secondary: #94a3b8;
   --color-border: #404542;
   --color-code-bg: #363b38;
+
+  /* Component Variables (Dark Manual) */
+  --bg-card: #16213e;
+  --text-muted: #94a3b8;
+  --text-secondary: #cbd5e0;
 }
 
 * {

@@ -132,9 +132,9 @@
 
 <style>
 	footer {
-		margin-top: auto;
+		margin-top: 3rem;
 		text-align: center;
-		padding: 2rem 1rem;
+		padding: 1.5rem 0;
 		font-size: 0.85rem;
 		color: var(--color-secondary);
 		border-top: 1px solid var(--color-border);
@@ -156,12 +156,11 @@
 
 	footer a {
 		color: var(--color-primary);
-		text-decoration: none;
+		text-decoration: underline;
 	}
 
 	footer a:hover {
 		color: var(--color-primary-hover);
-		text-decoration: underline;
 	}
 
 	.commit-hash {
