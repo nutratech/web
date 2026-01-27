@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-01-27T18:18:02.281399",
+  "groups": [
+    {
+      "name": "Core Services",
+      "services": [
+        {
+          "id": "API",
+          "url": "https://api.dev.nutra.tk",
+          "description": "API"
+        },
+        {
+          "id": "Mail Server (Stalwart)",
+          "url": "https://mail.nutra.tk",
+          "description": "Mail Server (Stalwart)"
+        },
+        {
+          "id": "Matrix Chat",
+          "url": "https://matrix.nutra.tk",
+          "description": "Matrix Chat"
+        }
+      ]
+    },
+    {
+      "name": "Git Services",
+      "services": [
+        {
+          "id": "v1",
+          "url": "https://git.nutra.tk/v1",
+          "description": "Original Gitweb (Basic)"
+        },
+        {
+          "id": "v2",
+          "url": "https://git.nutra.tk/v2",
+          "description": "Styled Frontend (Theme, Static)"
+        },
+        {
+          "id": "v3",
+          "url": "https://git.nutra.tk/v3",
+          "description": "Gitea (Full Server with Backend, Main)"
+        }
+      ]
+    }
+  ]
+}

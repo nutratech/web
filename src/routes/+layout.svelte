@@ -59,6 +59,8 @@
 				<li><a href="/portfolio">Portfolio</a></li>
 				<li><a href="https://github.com/gamesguru">GitHub</a></li>
 				<li><a href="https://git.nutra.tk">Gitea</a></li>
+				<li><a href="/services">Services</a></li>
+				<li><a href="https://matrix.nutra.tk">Chat</a></li>
 				<li><a href={PUBLIC_CV_URL}>CV</a></li>
 				<li>
 					<button class="theme-toggle" on:click={toggleTheme} aria-label="Toggle Theme">
