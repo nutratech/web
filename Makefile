@@ -33,6 +33,11 @@ clean:	##@ Clean build artifacts
 	rm -rf build .svelte-kit .vite
 
 
+.PHONY: run
+run:	##@ Run the project
+	pnpm run dev
+
+
 .PHONY: serve
 serve:	##@ Build and serve the project
 	pnpm run serve || python3 -m http.server -d build

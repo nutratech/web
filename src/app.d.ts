@@ -16,6 +16,8 @@ declare global {
   }
 
   const __COMMIT_HASH__: string;
+  const __BUILD_TIMESTAMP__: string;
+  const __SERVICES_COUNT__: number;
 }
 
 export {};
