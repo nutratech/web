@@ -4,9 +4,32 @@
   let status = "Checking...";
   let isOperational = false;
   let homeserverConfig = "nutra.tk";
+
+  /**
+   * @typedef {Object} Check
+   * @property {string} name
+   * @property {string} status
+   */
+
+  /**
+   * @typedef {Object} Results
+   * @property {string|null} config
+   * @property {string|null} version
+   * @property {string|null} serverName
+   * @property {string|null} auth
+   * @property {string|null} registration
+   * @property {string|null} welcome
+   * @property {Check[]} checks
+   */
+
+  /** @type {Results} */
   let results = {
     config: null,
     version: null,
+    serverName: null,
+    auth: null,
+    registration: null,
+    welcome: null,
     checks: [],
   };
   let errorMsg = "";
@@ -27,6 +50,29 @@
       if (!baseUrl) throw new Error("Invalid configuration: Missing base_url");
       updateCheck("Service Discovery", true);
       results.config = baseUrl;
+
+      // Check: Server Welcome Message (Embed) - now using confirmed baseUrl
+      try {
+        // baseUrl usually includes scheme (https://...)
+        const welcomeRes = await fetch(`${baseUrl}/`);
+        if (welcomeRes.ok) {
+          const htmlText = await welcomeRes.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlText, "text/html");
+          const panelContent = doc.querySelector(".panel")?.innerHTML;
+          if (panelContent) {
+            results.welcome = panelContent;
+          }
+        }
+      } catch (e) {
+        // Silence NS_ERROR_INTERCEPTION_FAILED (often caused by ad-blockers/extensions)
+        // and other welcome fetch errors as this is non-critical.
+        if (String(e).includes("NS_ERROR_INTERCEPTION_FAILED")) {
+          // do nothing
+        } else {
+          console.warn("Could not fetch welcome message", e);
+        }
+      }
 
       // Check 2: API Connectivity & Version
       addCheck("Client API", "Pending");
@@ -66,13 +112,16 @@
       const loginRes = await fetch(`${baseUrl}/_matrix/client/v3/login`);
       if (loginRes.ok) {
         const loginData = await loginRes.json();
-        const flows = loginData.flows?.map((f) => {
-          if (f.type === "m.login.password") return "Password";
-          if (f.type === "m.login.token") return "Token";
-          if (f.type === "m.login.sso") return "SSO";
-          if (f.type === "m.login.application_service") return "App Service";
-          return f.type;
-        });
+        /** @type {string[]} */
+        const flows = loginData.flows?.map(
+          (/** @type {{type: string}} */ f) => {
+            if (f.type === "m.login.password") return "Password";
+            if (f.type === "m.login.token") return "Token";
+            if (f.type === "m.login.sso") return "SSO";
+            if (f.type === "m.login.application_service") return "App Service";
+            return f.type;
+          },
+        );
         if (flows) results.auth = flows.join(", ");
       }
 
@@ -89,18 +138,36 @@
           results.registration = "Open";
           const regData = await regRes.json();
 
-          // Add detail if restricted
-          const hasToken = regData.flows?.some((f) =>
-            f.stages?.includes("m.login.registration_token"),
-          );
-          const hasCaptcha =
-            regData.params?.["m.login.recaptcha"] ||
-            regData.flows?.some((f) => f.stages?.includes("m.login.recaptcha"));
+          if (regData.flows) {
+            /** @type {string[]} */
+            const modes = regData.flows.map(
+              (/** @type {{stages: string[]}} */ flow) => {
+                const stages = flow.stages || [];
+                const requirements = [];
 
-          if (hasToken && hasCaptcha)
-            results.registration += " (Token/Captcha)";
-          else if (hasToken) results.registration += " (Token Required)";
-          else if (hasCaptcha) results.registration += " (Captcha Protected)";
+                if (stages.includes("m.login.registration_token"))
+                  requirements.push("Token");
+                if (stages.includes("m.login.recaptcha"))
+                  requirements.push("Captcha");
+                if (stages.includes("m.login.email.identity"))
+                  requirements.push("Email");
+                if (stages.includes("m.login.terms"))
+                  requirements.push("Terms");
+                if (stages.includes("m.login.dummy") && stages.length === 1)
+                  return "Public";
+
+                return requirements.length > 0
+                  ? requirements.join(" + ")
+                  : "Unknown";
+              },
+            );
+
+            // unique modes only
+            const uniqueModes = [...new Set(modes)];
+            if (uniqueModes.length > 0) {
+              results.registration += ` (${uniqueModes.join(" or ")})`;
+            }
+          }
         } else if (regRes.status === 403) {
           results.registration = "Closed";
         }
@@ -115,7 +182,11 @@
       console.error("Connection check failed:", e);
       status = "Error";
       isOperational = false;
-      errorMsg = e.message;
+      if (e instanceof Error) {
+        errorMsg = e.message;
+      } else {
+        errorMsg = String(e);
+      }
       if (results.checks.some((c) => c.status === "Pending")) {
         const pending = results.checks.find((c) => c.status === "Pending");
         if (pending) updateCheck(pending.name, false);
@@ -123,10 +194,20 @@
     }
   });
 
+  /**
+   * @param {string} name
+   * @param {string} status
+   */
   function addCheck(name, status) {
-    results.checks = [...results.checks, { name, status }];
+    if (!results.checks.some((c) => c.name === name)) {
+      results.checks = [...results.checks, { name, status }];
+    }
   }
 
+  /**
+   * @param {string} name
+   * @param {boolean} success
+   */
   function updateCheck(name, success) {
     results.checks = results.checks.map((c) =>
       c.name === name ? { ...c, status: success ? "OK" : "Fail" } : c,
@@ -140,22 +221,11 @@
 
 <section class="chat-page">
   <div class="panel">
-    <h1>
-      Welcome to <span class="project-name">Continuwuity</span> on Nutratech!
-    </h1>
-
-    <p class="intro">
-      Our private Matrix homeserver is successfully installed and working.
-    </p>
-
-    <div class="action-card">
-      <h2>Get Started</h2>
-      <p>You can connect using any Matrix client or use our web client.</p>
-      <a href="https://matrix.nutra.tk" target="_blank" class="button"
-        >Launch Web Client</a
-      >
-      <p class="subtext">Opens in a new tab to avoid security restrictions</p>
-    </div>
+    {#if results.welcome}
+      <div class="welcome-embed">
+        {@html results.welcome}
+      </div>
+    {/if}
 
     <div class="server-info">
       <div class="detailed-checks">
@@ -254,67 +324,36 @@
     text-align: center;
   }
 
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    border-bottom: none;
-  }
-
-  .project-name {
-    background: linear-gradient(
-      130deg,
-      #ff4d4d,
-      #f9cb28
-    ); /* Example warm gradient */
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    font-weight: 800;
-  }
-
-  .intro {
-    font-size: 1.1rem;
-    margin-bottom: 2.5rem;
-    opacity: 0.9;
-  }
-
-  .action-card {
-    background: var(--color-bg);
-    padding: 2rem;
-    border-radius: 12px;
+  .welcome-embed {
     margin-bottom: 2rem;
-    border: 1px solid var(--color-border);
+    text-align: left;
   }
 
-  .button {
-    display: inline-block;
-    background: var(--color-primary);
-    color: white;
-    padding: 0.8rem 2.5rem;
-    border-radius: 50px; /* Pill shape like modern apps */
+  /* Make sure embedded links look good */
+  :global(.welcome-embed a) {
+    color: var(--color-primary);
     text-decoration: none;
-    font-weight: bold;
-    margin: 1rem 0;
-    transition:
-      transform 0.1s,
-      box-shadow 0.2s;
   }
-
-  .button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  :global(.welcome-embed a:hover) {
+    text-decoration: underline;
   }
-
-  .subtext {
-    font-size: 0.85rem;
-    color: var(--text-muted);
+  :global(.welcome-embed h1) {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  :global(.welcome-embed ul) {
+    margin-left: 1.5rem;
+    margin-top: 1rem;
+  }
+  :global(.welcome-embed li) {
+    margin-bottom: 0.5rem;
   }
 
   .server-info {
     text-align: left;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--color-border);
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--color-border);
   }
 
   .server-info h3 {
@@ -324,45 +363,6 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     text-align: center;
-  }
-
-  .server-info ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .server-info li {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-  }
-
-  /* Target the second li (Status) to make it smaller/faded */
-  .server-info li:nth-child(2) {
-    font-size: 0.8rem;
-    opacity: 0.7;
-  }
-
-  code {
-    background: var(--color-code-bg);
-    padding: 0.3em 0.6em;
-    border-radius: 4px;
-    color: var(--color-primary);
-    font-weight: bold;
-  }
-
-  .status-ok {
-    color: #4ade80; /* Green */
-    font-weight: bold;
-  }
-
-  .status-error {
-    color: #f87171; /* Red */
-    font-weight: bold;
   }
 
   /* Detailed Breakdown Styles */
@@ -449,10 +449,5 @@
     text-align: center;
     margin-top: 1rem;
     font-size: 0.9rem;
-  }
-
-  /* Dark mode adjustments for gradient if needed */
-  :global([data-theme="dark"]) .project-name {
-    filter: brightness(1.2);
   }
 </style>
