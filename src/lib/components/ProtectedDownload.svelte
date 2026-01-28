@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
 
-  export let buttonText = "Download Resume";
+  export let buttonText = "View Resume";
   /** @type {string | null} */
   let turnstileToken = null;
   let showCaptcha = false;
@@ -16,6 +16,9 @@
     await fetchResume();
   }
 
+  /** @type {string | null} */
+  let pdfUrl = null;
+
   async function fetchResume() {
     error = "";
     try {
@@ -27,21 +30,14 @@
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to download");
+        throw new Error(data.error || "Failed to load resume");
       }
 
-      // Handle Blob download
+      // Create object URL for embedding
       const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "resume.pdf";
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
+      pdfUrl = window.URL.createObjectURL(blob);
 
-      // Reset
+      // Reset captcha state
       showCaptcha = false;
     } catch (e) {
       console.error(e);
@@ -69,14 +65,21 @@
 </script>
 
 <div class="resume-download">
-  {#if !showCaptcha}
+  {#if pdfUrl}
+    <div class="pdf-container">
+      <iframe src={pdfUrl} title="Resume" width="100%" height="800px"></iframe>
+      <a href={pdfUrl} download="resume.pdf" class="btn-download"
+        >Download PDF</a
+      >
+    </div>
+  {:else if !showCaptcha}
     <button class="btn-download" on:click={startDownload}>
       {buttonText}
     </button>
   {:else}
     <div class="captcha-container">
       <div id="turnstile-widget-resume"></div>
-      <p class="instruction">Please verify to download.</p>
+      <p class="instruction">Please verify to view resume.</p>
     </div>
   {/if}
 
@@ -87,7 +90,19 @@
 
 <style>
   .resume-download {
-    display: inline-block;
+    width: 100%;
+  }
+
+  .pdf-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .pdf-container iframe {
+    border: 1px solid var(--color-border, #ddd);
+    border-radius: 8px;
   }
 
   .btn-download {

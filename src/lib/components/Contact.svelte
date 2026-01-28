@@ -28,6 +28,9 @@
       window.turnstile.render("#cf-turnstile-contact", {
         sitekey: SITE_KEY,
         callback: onTurnstileSuccess,
+        "error-callback": () => {
+          error = "Captcha failed to load. This is expected on localhost.";
+        },
       });
     }
   }
