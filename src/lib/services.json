@@ -1,14 +1,9 @@
 {
-  "generated_at": "2026-01-27T18:18:02.281399",
+  "generated_at": "2026-01-27T21:17:56.195507",
   "groups": [
     {
       "name": "Core Services",
       "services": [
-        {
-          "id": "API",
-          "url": "https://api.dev.nutra.tk",
-          "description": "API"
-        },
         {
           "id": "Mail Server (Stalwart)",
           "url": "https://mail.nutra.tk",
