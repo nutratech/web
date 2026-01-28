@@ -126,7 +126,7 @@
         href="https://heliohost.org"
         target="_blank"
         rel="noopener noreferrer">HelioHost</a
-      >
+      > | <a href="/blocked.html" target="_blank">Transparency Report</a>
     </p>
 
     <p class="commit-hash">
