@@ -1,8 +1,9 @@
 <script>
   import servicesData from "$lib/services.json";
+  import { PUBLIC_BUILD_TIME } from "$env/static/public";
 
   // Format date nicely
-  const generatedDate = new Date(servicesData.generated_at).toLocaleString();
+  const generatedDate = new Date(PUBLIC_BUILD_TIME).toLocaleString();
 </script>
 
 <svelte:head>
