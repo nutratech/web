@@ -9,12 +9,18 @@
   let emailAddress = "";
   let emailSending = false;
   let emailSuccess = "";
+  let showEmailCaptcha = false;
+  /** @type {string | null} */
+  let emailToken = null;
+  let isFetching = false;
 
   // Turnstile callback
   /**
    * @param {string} t
    */
   async function onTurnstileSuccess(t) {
+    if (isFetching || pdfUrl) return;
+    isFetching = true;
     turnstileToken = t;
     await fetchResume();
   }
@@ -23,6 +29,10 @@
   let pdfUrl = null;
 
   async function fetchResume() {
+    if (!turnstileToken) {
+      isFetching = false;
+      return;
+    }
     error = "";
     try {
       const res = await fetch("/api/resume", {
@@ -42,10 +52,13 @@
 
       // Reset captcha state
       showCaptcha = false;
+      // Note: we don't nullify turnstileToken here just in case, but usually we should
     } catch (e) {
       console.error(e);
       // @ts-ignore
       error = e.message;
+    } finally {
+      isFetching = false;
     }
   }
 
@@ -59,8 +72,40 @@
     a.remove();
   }
 
+  function startEmailCaptcha() {
+    if (!emailAddress) return;
+    error = "";
+    emailSuccess = "";
+    showEmailCaptcha = true;
+    setTimeout(() => {
+      // @ts-ignore
+      if (window.turnstile) {
+        // @ts-ignore
+        window.turnstile.render("#turnstile-widget-email", {
+          // @ts-ignore
+          sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+          callback: onEmailCaptchaSuccess,
+        });
+      }
+    }, 50);
+  }
+
+  /**
+   * @param {string} t
+   */
+  async function onEmailCaptchaSuccess(t) {
+    if (emailSending) return;
+    emailSending = true;
+    emailToken = t;
+    showEmailCaptcha = false;
+    await sendEmail();
+  }
+
   async function sendEmail() {
-    if (!emailAddress || !turnstileToken) return;
+    if (!emailAddress || !emailToken) {
+      emailSending = false;
+      return;
+    }
     error = "";
     emailSuccess = "";
     emailSending = true;
@@ -69,7 +114,7 @@
       const res = await fetch("/api/send-resume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: turnstileToken, email: emailAddress }),
+        body: JSON.stringify({ token: emailToken, email: emailAddress }),
       });
 
       const data = await res.json();
@@ -78,6 +123,7 @@
       }
       emailSuccess = data.message;
       emailAddress = "";
+      emailToken = null;
     } catch (e) {
       console.error(e);
       // @ts-ignore
@@ -121,12 +167,18 @@
           />
           <button
             class="btn-email"
-            on:click={sendEmail}
-            disabled={emailSending || !emailAddress}
+            on:click={startEmailCaptcha}
+            disabled={emailSending || !emailAddress || showEmailCaptcha}
           >
             {emailSending ? "Sending..." : "Email me a copy"}
           </button>
         </div>
+        {#if showEmailCaptcha}
+          <div class="captcha-container">
+            <div id="turnstile-widget-email"></div>
+            <p class="instruction">Verify to send email</p>
+          </div>
+        {/if}
         {#if emailSuccess}
           <p class="success">{emailSuccess}</p>
         {/if}

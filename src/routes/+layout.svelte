@@ -80,7 +80,9 @@
     if (!target) return;
 
     const isExternal =
-      target.href && !target.href.startsWith(window.location.origin);
+      target.href &&
+      !target.href.startsWith(window.location.origin) &&
+      !target.href.startsWith("blob:");
 
     if (isExternal) {
       if (!confirm("Are you sure you want to leave the site?")) {
