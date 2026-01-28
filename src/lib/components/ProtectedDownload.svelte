@@ -73,7 +73,7 @@
   }
 
   function startEmailCaptcha() {
-    if (!emailAddress) return;
+    if (!emailAddress || showEmailCaptcha || emailSending) return;
     error = "";
     emailSuccess = "";
     showEmailCaptcha = true;
@@ -134,6 +134,7 @@
   }
 
   function startDownload() {
+    if (showCaptcha || isFetching || pdfUrl) return;
     error = "";
     showCaptcha = true;
     // Short delay to ensure DOM update before rendering widget
