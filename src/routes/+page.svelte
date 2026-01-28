@@ -22,5 +22,3 @@
     <li>Legacy Browser Support Consulting</li>
   </ul>
 </section>
-
-</section>

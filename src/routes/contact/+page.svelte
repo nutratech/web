@@ -9,7 +9,7 @@
 <section class="contact-page">
   <h1>Contact Me</h1>
   <p>Verify to see my contact details.</p>
-  
+
   <Contact />
 </section>
 

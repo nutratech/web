@@ -40,9 +40,9 @@
       a.click();
       window.URL.revokeObjectURL(url);
       a.remove();
-      
+
       // Reset
-      showCaptcha = false; 
+      showCaptcha = false;
     } catch (e) {
       console.error(e);
       // @ts-ignore
@@ -55,15 +55,15 @@
     showCaptcha = true;
     // Short delay to ensure DOM update before rendering widget
     setTimeout(() => {
+      // @ts-ignore
+      if (window.turnstile) {
         // @ts-ignore
-        if (window.turnstile) {
-            // @ts-ignore
-            window.turnstile.render("#turnstile-widget-resume", {
-                // @ts-ignore
-                sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
-                callback: onTurnstileSuccess,
-            });
-        }
+        window.turnstile.render("#turnstile-widget-resume", {
+          // @ts-ignore
+          sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+          callback: onTurnstileSuccess,
+        });
+      }
     }, 50);
   }
 </script>
@@ -89,7 +89,7 @@
   .resume-download {
     display: inline-block;
   }
-  
+
   .btn-download {
     background: var(--color-primary, #007bff);
     color: white;
@@ -113,7 +113,7 @@
     border-radius: 4px;
     border: 1px solid var(--color-border, #ddd);
   }
-  
+
   .instruction {
     margin: 0.25rem 0 0;
     font-size: 0.8rem;
