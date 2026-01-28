@@ -1,5 +1,4 @@
 <script>
-  import Contact from "$lib/components/Contact.svelte";
 </script>
 
 <h1>My Website</h1>
@@ -24,4 +23,4 @@
   </ul>
 </section>
 
-<Contact />
+</section>

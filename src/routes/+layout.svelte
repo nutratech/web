@@ -90,6 +90,7 @@
         <li><a href="/services">Services</a></li>
         <li><a href="/chat">Chat</a></li>
         <li><a href={PUBLIC_CV_URL}>CV</a></li>
+        <li><a href="/contact">Contact</a></li>
         <li><a href="/blog">Blog</a></li>
         <li>
           <button
