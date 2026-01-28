@@ -10,7 +10,7 @@
   let latency = "...";
   let servedTime = "...";
 
-  onMount(() => {
+  onMount(async () => {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
       theme = savedTheme;
@@ -38,12 +38,13 @@
       try {
         const res = await fetch("/api/server-info");
         if (res.ok) {
-            const data = await res.json();
+          const data = await res.json();
+          // @ts-ignore
+          if (data.location) {
             // @ts-ignore
-            if (data.location) {
-                // @ts-ignore
-                document.getElementById("server-location").innerText = data.location;
-            }
+            document.getElementById("server-location").innerText =
+              data.location;
+          }
         }
       } catch (e) {
         console.error("Failed to fetch server info", e);
@@ -105,7 +106,7 @@
         <li><a href="/chat">Chat</a></li>
         <li><a href={PUBLIC_CV_URL}>CV</a></li>
         <li><a href="/contact">Contact</a></li>
-        
+
         <li class="dropdown">
           <button class="dropbtn">TODO ▾</button>
           <div class="dropdown-content">
@@ -136,7 +137,8 @@
       <!-- @ts-ignore -->
       Built: {PUBLIC_BUILD_TIME} |
       <!-- @ts-ignore -->
-      Services: {__SERVICES_COUNT__} | Server: <span id="server-location" class="ssi">Loading...</span>
+      Services: {__SERVICES_COUNT__} | Server:
+      <span id="server-location" class="ssi">Loading...</span>
     </p>
     <p>
       Nginx: <span class="ssi">v1.28.1</span> | Protocol:
@@ -222,7 +224,7 @@
     position: absolute;
     right: 0;
     min-width: 120px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);

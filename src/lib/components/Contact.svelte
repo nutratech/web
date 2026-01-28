@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
+  import { browser } from "$app/environment";
 
-  // Placeholder Site Key (Always strict on local/dev unless configured)
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
   let token = "";
@@ -10,12 +10,30 @@
   let error = "";
   let loading = false;
 
-  // Define window interface for Turnstile callback
-  /** @type {any} */
-  const w = window;
+  onMount(() => {
+    if (browser) {
+      if (window.turnstile) {
+        renderCaptcha();
+      } else {
+        // Retry if script hasn't loaded yet
+        setTimeout(renderCaptcha, 1000);
+      }
+    }
+  });
+
+  function renderCaptcha() {
+    // Check if element exists and not already rendered
+    const el = document.getElementById("cf-turnstile-contact");
+    if (el && !el.hasChildNodes()) {
+      window.turnstile.render("#cf-turnstile-contact", {
+        sitekey: SITE_KEY,
+        callback: onTurnstileSuccess,
+      });
+    }
+  }
 
   // Turnstile Callback
-  w.onTurnstileSuccess = async (/** @type {string} */ t) => {
+  async function onTurnstileSuccess(t) {
     token = t;
     loading = true;
     try {
@@ -34,9 +52,7 @@
     } finally {
       loading = false;
     }
-  };
-
-  
+  }
 </script>
 
 <div class="contact-section">
@@ -59,11 +75,8 @@
     </div>
   {:else}
     <p>Please verify you are human to see contact details.</p>
-    <div
-      class="cf-turnstile"
-      data-sitekey={SITE_KEY}
-      data-callback="onTurnstileSuccess"
-    ></div>
+    <!-- Explicit Render Container -->
+    <div id="cf-turnstile-contact"></div>
     {#if error}
       <p class="error">{error}</p>
     {/if}
