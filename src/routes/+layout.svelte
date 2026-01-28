@@ -88,13 +88,30 @@
       }
     }
   }
+
+  /** @type {string | null} */
+  let activeDropdown = null;
+
+  /** @param {string} name */
+  function toggleDropdown(name) {
+    activeDropdown = activeDropdown === name ? null : name;
+  }
+
+  /** @param {MouseEvent} event */
+  function handleClickOutside(event) {
+    if (!(event.target instanceof Element)) return;
+    // Close dropdown if clicking outside of any dropdown
+    if (!event.target.closest(".dropdown")) {
+      activeDropdown = null;
+    }
+  }
 </script>
 
 <svelte:head>
   <link rel="icon" href={favicon} />
 </svelte:head>
 
-<svelte:window on:click={handleAnchorClick} />
+<svelte:window on:click={handleAnchorClick} on:click={handleClickOutside} />
 
 <div class="container">
   <header>
@@ -104,21 +121,32 @@
         <li><a href="/portfolio">Portfolio</a></li>
         <li><a href="/services">Services</a></li>
 
-        <li class="dropdown">
-          <button class="dropbtn">More ▾</button>
+        <li class="dropdown" class:open={activeDropdown === "more"}>
+          <button class="dropbtn" on:click={() => toggleDropdown("more")}
+            >More ▾</button
+          >
           <div class="dropdown-content">
-            <a href="/contact">Contact</a>
-            <a href="/resume">Resume</a>
-            <a href="/chat">Chat</a>
-            <a href={PUBLIC_CV_URL}>CV (External)</a>
-            <a href="/blocked">Transparency</a>
+            <a href="/contact" on:click={() => (activeDropdown = null)}
+              >Contact</a
+            >
+            <a href="/resume" on:click={() => (activeDropdown = null)}>Resume</a
+            >
+            <a href="/chat" on:click={() => (activeDropdown = null)}>Chat</a>
+            <a href={PUBLIC_CV_URL} on:click={() => (activeDropdown = null)}
+              >CV (External)</a
+            >
+            <a href="/blocked" on:click={() => (activeDropdown = null)}
+              >Transparency</a
+            >
           </div>
         </li>
 
-        <li class="dropdown">
-          <button class="dropbtn">TODO ▾</button>
+        <li class="dropdown" class:open={activeDropdown === "todo"}>
+          <button class="dropbtn" on:click={() => toggleDropdown("todo")}
+            >TODO ▾</button
+          >
           <div class="dropdown-content">
-            <a href="/blog">Blog</a>
+            <a href="/blog" on:click={() => (activeDropdown = null)}>Blog</a>
           </div>
         </li>
 
@@ -252,11 +280,11 @@
     color: var(--color-primary);
   }
 
-  .dropdown:hover .dropdown-content {
+  .dropdown.open .dropdown-content {
     display: block;
   }
 
-  .dropdown:hover .dropbtn {
+  .dropdown.open .dropbtn {
     color: var(--color-primary-hover);
   }
 </style>
