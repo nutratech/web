@@ -6,6 +6,9 @@
   let turnstileToken = null;
   let showCaptcha = false;
   let error = "";
+  let emailAddress = "";
+  let emailSending = false;
+  let emailSuccess = "";
 
   // Turnstile callback
   /**
@@ -56,6 +59,34 @@
     a.remove();
   }
 
+  async function sendEmail() {
+    if (!emailAddress || !turnstileToken) return;
+    error = "";
+    emailSuccess = "";
+    emailSending = true;
+
+    try {
+      const res = await fetch("/api/send-resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: turnstileToken, email: emailAddress }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to send email");
+      }
+      emailSuccess = data.message;
+      emailAddress = "";
+    } catch (e) {
+      console.error(e);
+      // @ts-ignore
+      error = e.message;
+    } finally {
+      emailSending = false;
+    }
+  }
+
   function startDownload() {
     error = "";
     showCaptcha = true;
@@ -78,7 +109,28 @@
   {#if pdfUrl}
     <div class="pdf-container">
       <iframe src={pdfUrl} title="Resume"></iframe>
-      <button class="btn-download" on:click={downloadPdf}>Download PDF</button>
+      <div class="actions">
+        <button class="btn-download" on:click={downloadPdf}>Download PDF</button
+        >
+        <div class="email-form">
+          <input
+            type="email"
+            bind:value={emailAddress}
+            placeholder="your@email.com"
+            class="email-input"
+          />
+          <button
+            class="btn-email"
+            on:click={sendEmail}
+            disabled={emailSending || !emailAddress}
+          >
+            {emailSending ? "Sending..." : "Email me a copy"}
+          </button>
+        </div>
+        {#if emailSuccess}
+          <p class="success">{emailSuccess}</p>
+        {/if}
+      </div>
     </div>
   {:else if !showCaptcha}
     <button class="btn-download" on:click={startDownload}>
@@ -154,5 +206,55 @@
     color: #dc3545;
     font-size: 0.875rem;
     margin-top: 0.25rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .email-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .email-input {
+    padding: 0.5rem;
+    border: 1px solid var(--color-border, #ddd);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    width: 200px;
+  }
+
+  .btn-email {
+    background: var(--color-secondary, #6c757d);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+
+  .btn-email:hover:not(:disabled) {
+    background: var(--color-secondary-dark, #545b62);
+  }
+
+  .btn-email:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .success {
+    color: #28a745;
+    font-size: 0.875rem;
+    margin: 0;
   }
 </style>

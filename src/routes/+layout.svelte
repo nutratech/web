@@ -129,6 +129,9 @@
             >
             <a href="/resume" on:click={() => (activeDropdown = null)}>Resume</a
             >
+            <a href="/contact" on:click={() => (activeDropdown = null)}
+              >Contact</a
+            >
             <a href="/blog" on:click={() => (activeDropdown = null)}>Blog</a>
           </div>
         </li>
@@ -140,9 +143,6 @@
           <div class="dropdown-content">
             <a href="/services" on:click={() => (activeDropdown = null)}
               >Overview</a
-            >
-            <a href="/contact" on:click={() => (activeDropdown = null)}
-              >Contact</a
             >
             <a href="/chat" on:click={() => (activeDropdown = null)}>Chat</a>
             <a href="/blocked" on:click={() => (activeDropdown = null)}
