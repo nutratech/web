@@ -21,7 +21,7 @@
         throw new Error("Failed to fetch blocked list from API");
       }
       const data = await response.json();
-      entries = data.entries;
+      entries = data.nginx_manual?.entries || [];
     } catch (e) {
       if (e instanceof Error) {
         error = e.message;

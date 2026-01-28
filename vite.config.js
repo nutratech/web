@@ -32,8 +32,18 @@ export default defineConfig({
     /** @type {any} */ (sveltekit()),
   ],
   server: {
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:5000",
+        changeOrigin: true,
+      },
+    },
     fs: {
-      allow: [".."],
+      allow: [
+        "..",
+        "/home/shane/repos/nutra/vps-root",
+        "/home/shane/repos/svelte-kit",
+      ],
     },
   },
 });
