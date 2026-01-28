@@ -91,7 +91,14 @@
         <li><a href="/chat">Chat</a></li>
         <li><a href={PUBLIC_CV_URL}>CV</a></li>
         <li><a href="/contact">Contact</a></li>
-        <li><a href="/blog">Blog</a></li>
+        
+        <li class="dropdown">
+          <button class="dropbtn">TODO ▾</button>
+          <div class="dropdown-content">
+            <a href="/blog">Blog</a>
+          </div>
+        </li>
+
         <li>
           <button
             class="theme-toggle"
@@ -178,5 +185,54 @@
   .commit-hash {
     font-size: 0.75rem;
     opacity: 0.7;
+  }
+
+  /* Dropdown Styles */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropbtn {
+    background-color: transparent;
+    color: var(--color-primary);
+    padding: 0;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    top: 100%;
+  }
+
+  .dropdown-content a {
+    color: var(--color-text);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown-content a:hover {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-primary);
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .dropdown:hover .dropbtn {
+    color: var(--color-primary-hover);
   }
 </style>
