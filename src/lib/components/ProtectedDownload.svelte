@@ -46,6 +46,16 @@
     }
   }
 
+  function downloadPdf() {
+    if (!pdfUrl) return;
+    const a = document.createElement("a");
+    a.href = pdfUrl;
+    a.download = "resume.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   function startDownload() {
     error = "";
     showCaptcha = true;
@@ -67,10 +77,8 @@
 <div class="resume-download">
   {#if pdfUrl}
     <div class="pdf-container">
-      <iframe src={pdfUrl} title="Resume" width="100%" height="800px"></iframe>
-      <a href={pdfUrl} download="resume.pdf" class="btn-download"
-        >Download PDF</a
-      >
+      <iframe src={pdfUrl} title="Resume" height="900px"></iframe>
+      <button class="btn-download" on:click={downloadPdf}>Download PDF</button>
     </div>
   {:else if !showCaptcha}
     <button class="btn-download" on:click={startDownload}>
@@ -94,13 +102,16 @@
   }
 
   .pdf-container {
-    width: 100%;
+    width: calc(100vw - 300px);
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
 
   .pdf-container iframe {
+    width: 100%;
     border: 1px solid var(--color-border, #ddd);
     border-radius: 8px;
   }
