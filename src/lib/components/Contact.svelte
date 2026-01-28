@@ -4,15 +4,23 @@
 
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
+  /**
+   * @typedef {Object} Turnstile
+   * @property {function(string, Object): void} render
+   */
+
+  /** @type {Turnstile | undefined} */
+  const turnstile = /** @type {any} */ (window).turnstile;
+
   let token = "";
-  /** @type {{ email: string; matrix: string; gpg: string } | null} */
+  /** @type {{ email: string; matrix: string; gpg_description: string; gpg_public_key: string } | null} */
   let contactData = null;
   let error = "";
   let loading = false;
 
   onMount(() => {
     if (browser) {
-      if (window.turnstile) {
+      if (turnstile) {
         renderCaptcha();
       } else {
         // Retry if script hasn't loaded yet
@@ -24,8 +32,8 @@
   function renderCaptcha() {
     // Check if element exists and not already rendered
     const el = document.getElementById("cf-turnstile-contact");
-    if (el && !el.hasChildNodes()) {
-      window.turnstile.render("#cf-turnstile-contact", {
+    if (el && !el.hasChildNodes() && turnstile) {
+      turnstile.render("#cf-turnstile-contact", {
         sitekey: SITE_KEY,
         callback: onTurnstileSuccess,
         "error-callback": () => {
@@ -36,6 +44,9 @@
   }
 
   // Turnstile Callback
+  /**
+   * @param {string} t
+   */
   async function onTurnstileSuccess(t) {
     token = t;
     loading = true;
@@ -71,9 +82,13 @@
         <span class="label">Matrix:</span>
         <code>{contactData.matrix}</code>
       </div>
-      <div class="item">
-        <span class="label">GPG:</span>
-        <pre>{contactData.gpg}</pre>
+      <div class="item gpg-section">
+        <span class="label">GPG Key Info:</span>
+        <pre class="gpg-block">{contactData.gpg_description}</pre>
+      </div>
+      <div class="item gpg-section">
+        <span class="label">Public Key:</span>
+        <pre class="gpg-block">{contactData.gpg_public_key}</pre>
       </div>
     </div>
   {:else}
@@ -106,6 +121,17 @@
     background: #111;
     padding: 0.5rem;
     overflow-x: auto;
+  }
+  .gpg-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .gpg-block {
+    text-align: left;
+    font-size: 0.75rem;
+    white-space: pre;
+    margin: 0.5rem 0 0 0;
   }
   .error {
     color: #ff5555;
