@@ -1,53 +1,37 @@
 <script>
   import { onMount } from "svelte";
 
+  /**
+   * @typedef {Object} BlockedEntry
+   * @property {string} ip
+   * @property {string} comment
+   */
+
+  /** @type {BlockedEntry[]} */
   let entries = [];
   let loading = true;
+  /** @type {string | null} */
   let error = null;
 
   onMount(async () => {
     try {
-      const response = await fetch("/blocked_ips.txt");
+      // Use the new API endpoint
+      const response = await fetch("/api/blocked");
       if (!response.ok) {
-        throw new Error("Failed to fetch blocked list");
+        throw new Error("Failed to fetch blocked list from API");
       }
-      const text = await response.text();
-      entries = parseBlockedIps(text);
+      const data = await response.json();
+      entries = data.entries;
     } catch (e) {
-      error = e.message;
+      if (e instanceof Error) {
+        error = e.message;
+      } else {
+        error = String(e);
+      }
     } finally {
       loading = false;
     }
   });
-
-  function parseBlockedIps(text) {
-    const lines = text.split("\n");
-    const parsedEntries = [];
-    let currentComment = "";
-
-    const denyRegex = /^deny\s+([\d\.]+);/;
-
-    for (let line of lines) {
-      line = line.trim();
-      if (!line) continue;
-
-      if (line.startsWith("#")) {
-        currentComment = line.replace(/^#\s*/, "").trim();
-        continue;
-      }
-
-      const match = line.match(denyRegex);
-      if (match) {
-        parsedEntries.push({
-          ip: match[1],
-          comment: currentComment,
-        });
-        // We persist the comment for subsequent lines until a new comment appears
-        // but for clean output let's clear it if there's a blank line (logic implied by loop)
-      }
-    }
-    return parsedEntries;
-  }
 </script>
 
 <svelte:head>
@@ -80,7 +64,7 @@
     </div>
 
     <footer>
-      <p>Data fetched live from Nginx configuration.</p>
+      <p>Data fetched live via Nutra API.</p>
       <p>Nutratech Infrastructure Protection</p>
     </footer>
   {/if}
@@ -118,7 +102,7 @@
   .label {
     font-size: 1.2rem;
     color: var(--color-text-muted);
-    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .ip-list {
