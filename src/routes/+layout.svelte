@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import "../app.css";
   import favicon from "$lib/assets/favicon.png";
-  import { PUBLIC_CV_URL } from "$env/static/public";
+  import { PUBLIC_CV_URL, PUBLIC_BUILD_TIME } from "$env/static/public";
 
   let theme = "system";
 
@@ -111,7 +111,8 @@
   <footer>
     <p>
       <!-- @ts-ignore -->
-      Built: {__BUILD_TIMESTAMP__} |
+      <!-- @ts-ignore -->
+      Built: {PUBLIC_BUILD_TIME} |
       <!-- @ts-ignore -->
       Services: {__SERVICES_COUNT__} | Server: San Jose, CA
     </p>
