@@ -77,7 +77,7 @@
 <div class="resume-download">
   {#if pdfUrl}
     <div class="pdf-container">
-      <iframe src={pdfUrl} title="Resume" height="900px"></iframe>
+      <iframe src={pdfUrl} title="Resume"></iframe>
       <button class="btn-download" on:click={downloadPdf}>Download PDF</button>
     </div>
   {:else if !showCaptcha}
@@ -99,19 +99,23 @@
 <style>
   .resume-download {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .pdf-container {
-    width: calc(100vw - 300px);
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 900px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
   }
 
   .pdf-container iframe {
     width: 100%;
+    height: 70vh;
     border: 1px solid var(--color-border, #ddd);
     border-radius: 8px;
   }
