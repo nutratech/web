@@ -36,18 +36,7 @@
     }
   };
 
-  onMount(() => {
-    // Inject script if not present
-    if (!document.getElementById("turnstile-script")) {
-      const script = document.createElement("script");
-      script.src =
-        "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad";
-      script.id = "turnstile-script";
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-    }
-  });
+  
 </script>
 
 <div class="contact-section">

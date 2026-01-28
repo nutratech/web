@@ -34,6 +34,20 @@
         latency =
           Math.round(navEntry.responseStart - navEntry.requestStart) + "ms";
       }
+      // Server Info
+      try {
+        const res = await fetch("/api/server-info");
+        if (res.ok) {
+            const data = await res.json();
+            // @ts-ignore
+            if (data.location) {
+                // @ts-ignore
+                document.getElementById("server-location").innerText = data.location;
+            }
+        }
+      } catch (e) {
+        console.error("Failed to fetch server info", e);
+      }
     }
 
     const now = new Date();
@@ -122,7 +136,7 @@
       <!-- @ts-ignore -->
       Built: {PUBLIC_BUILD_TIME} |
       <!-- @ts-ignore -->
-      Services: {__SERVICES_COUNT__} | Server: San Jose, CA
+      Services: {__SERVICES_COUNT__} | Server: <span id="server-location" class="ssi">Loading...</span>
     </p>
     <p>
       Nginx: <span class="ssi">v1.28.1</span> | Protocol:
@@ -136,7 +150,7 @@
         target="_blank"
         rel="noopener noreferrer">HelioHost</a
       >
-      | <a href="/blocked.html" target="_blank">Transparency Report</a>
+      | <a href="/blocked">Transparency Report</a>
     </p>
 
     <p class="commit-hash">
