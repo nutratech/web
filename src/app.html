@@ -4,12 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script>
-      try {
-        var t = localStorage.getItem("theme");
-        var s = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        var v = t ? t : s ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", v);
-      } catch (e) {}
+      (function () {
+        try {
+          var t = localStorage.getItem("theme");
+          var s = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var v = t ? t : s ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", v);
+
+          // Anti-flash: set background immediately if determinstic
+          if (v === "dark") {
+            document.documentElement.style.backgroundColor = "#2c302e"; // --color-bg dark
+            document.documentElement.style.color = "#e2e8f0"; // --color-text dark
+          }
+        } catch (e) {}
+      })();
     </script>
     %sveltekit.head%
   </head>
