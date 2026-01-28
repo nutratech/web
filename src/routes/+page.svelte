@@ -1,3 +1,7 @@
+<script>
+  import Contact from "$lib/components/Contact.svelte";
+</script>
+
 <h1>My Website</h1>
 <p>Welcome to my personal site.</p>
 
@@ -19,9 +23,5 @@
     <li>Legacy Browser Support Consulting</li>
   </ul>
 </section>
-
-<script>
-  import Contact from '$lib/components/Contact.svelte';
-</script>
 
 <Contact />
