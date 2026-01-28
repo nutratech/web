@@ -19,3 +19,9 @@
     <li>Legacy Browser Support Consulting</li>
   </ul>
 </section>
+
+<script>
+  import Contact from '$lib/components/Contact.svelte';
+</script>
+
+<Contact />
