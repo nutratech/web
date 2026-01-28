@@ -103,9 +103,17 @@
         <li><a href="/">Home</a></li>
         <li><a href="/portfolio">Portfolio</a></li>
         <li><a href="/services">Services</a></li>
-        <li><a href="/chat">Chat</a></li>
-        <li><a href={PUBLIC_CV_URL}>CV</a></li>
-        <li><a href="/contact">Contact</a></li>
+
+        <li class="dropdown">
+          <button class="dropbtn">More ▾</button>
+          <div class="dropdown-content">
+            <a href="/contact">Contact</a>
+            <a href="/resume">Resume</a>
+            <a href="/chat">Chat</a>
+            <a href={PUBLIC_CV_URL}>CV (External)</a>
+            <a href="/blocked">Transparency</a>
+          </div>
+        </li>
 
         <li class="dropdown">
           <button class="dropbtn">TODO ▾</button>
