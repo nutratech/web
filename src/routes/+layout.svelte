@@ -118,35 +118,36 @@
     <nav>
       <ul>
         <li><a href="/">Home</a></li>
-        <li><a href="/portfolio">Portfolio</a></li>
-        <li><a href="/services">Services</a></li>
 
-        <li class="dropdown" class:open={activeDropdown === "more"}>
-          <button class="dropbtn" on:click={() => toggleDropdown("more")}
-            >More ▾</button
+        <li class="dropdown" class:open={activeDropdown === "portfolio"}>
+          <button class="dropbtn" on:click={() => toggleDropdown("portfolio")}
+            >Portfolio ▾</button
           >
           <div class="dropdown-content">
-            <a href="/contact" on:click={() => (activeDropdown = null)}
-              >Contact</a
+            <a href="/portfolio" on:click={() => (activeDropdown = null)}
+              >Projects</a
             >
             <a href="/resume" on:click={() => (activeDropdown = null)}>Resume</a
             >
-            <a href="/chat" on:click={() => (activeDropdown = null)}>Chat</a>
-            <a href={PUBLIC_CV_URL} on:click={() => (activeDropdown = null)}
-              >CV (External)</a
-            >
-            <a href="/blocked" on:click={() => (activeDropdown = null)}
-              >Transparency</a
-            >
+            <a href="/blog" on:click={() => (activeDropdown = null)}>Blog</a>
           </div>
         </li>
 
-        <li class="dropdown" class:open={activeDropdown === "todo"}>
-          <button class="dropbtn" on:click={() => toggleDropdown("todo")}
-            >TODO ▾</button
+        <li class="dropdown" class:open={activeDropdown === "services"}>
+          <button class="dropbtn" on:click={() => toggleDropdown("services")}
+            >Services ▾</button
           >
           <div class="dropdown-content">
-            <a href="/blog" on:click={() => (activeDropdown = null)}>Blog</a>
+            <a href="/services" on:click={() => (activeDropdown = null)}
+              >Overview</a
+            >
+            <a href="/contact" on:click={() => (activeDropdown = null)}
+              >Contact</a
+            >
+            <a href="/chat" on:click={() => (activeDropdown = null)}>Chat</a>
+            <a href="/blocked" on:click={() => (activeDropdown = null)}
+              >Transparency</a
+            >
           </div>
         </li>
 
