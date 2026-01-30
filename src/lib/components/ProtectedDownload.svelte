@@ -78,7 +78,7 @@
     error = "";
     emailSuccess = "";
     showEmailCaptcha = true;
-    
+
     const t = await loadTurnstile();
     if (!t) return;
 
@@ -138,7 +138,7 @@
     if (showCaptcha || isFetching || pdfUrl) return;
     error = "";
     showCaptcha = true;
-    
+
     const t = await loadTurnstile();
     if (!t) return;
 

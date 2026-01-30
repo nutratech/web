@@ -21,9 +21,10 @@
 
   onMount(async () => {
     if (browser) {
-      const t = await loadTurnstile();
-      if (t) {
-        /** @type {Window & { turnstile?: Turnstile }} */ (window).turnstile = t;
+      const _t = await loadTurnstile();
+      if (_t) {
+        /** @type {Window & { turnstile?: Turnstile }} */
+        (window).turnstile = _t;
         renderCaptcha();
       }
     }
