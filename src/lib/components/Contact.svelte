@@ -5,6 +5,7 @@
 
   import { tick } from "svelte";
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+  const BYPASS_TOKEN = import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN;
 
   /**
    * @typedef {Object} Turnstile
@@ -23,6 +24,11 @@
     if (showCaptcha || contactData) return;
     showCaptcha = true;
     error = "";
+
+    if (BYPASS_TOKEN) {
+      // Use mock flow
+      return;
+    }
 
     if (browser) {
       const _t = await loadTurnstile();
@@ -78,6 +84,13 @@
     }
   }
 
+  function handleMockVerify() {
+    // Simulate delay
+    setTimeout(() => {
+      onTurnstileSuccess(BYPASS_TOKEN);
+    }, 500);
+  }
+
   function copyGpg() {
     if (!contactData) return;
     const lines = contactData.gpg_public_key.trim().split("\n").length;
@@ -129,8 +142,21 @@
       >
     {:else}
       <!-- Explicit Render Container -->
-      <div id="cf-turnstile-contact"></div>
-      <p class="instruction">Completing verification...</p>
+      {#if BYPASS_TOKEN}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div
+          class="mock-captcha"
+          on:click={handleMockVerify}
+          role="button"
+          tabindex="0"
+        >
+          <div class="mock-checkbox"></div>
+          <span>Verify Contact (Dev Mock)</span>
+        </div>
+      {:else}
+        <div id="cf-turnstile-contact"></div>
+        <p class="instruction">Completing verification...</p>
+      {/if}
     {/if}
     {#if error}
       <p class="error">{error}</p>
@@ -229,5 +255,31 @@
     margin: 0.5rem 0 0;
     font-size: 0.8rem;
     color: var(--color-text-light, #666);
+  }
+
+  /* Mock Styles */
+  .mock-captcha {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 0.8rem;
+    width: 100%;
+    max-width: 300px;
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    color: #333;
+  }
+  .mock-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #999;
+    border-radius: 2px;
+    background: white;
+  }
+  .mock-captcha:active .mock-checkbox {
+    background: #ccc;
   }
 </style>

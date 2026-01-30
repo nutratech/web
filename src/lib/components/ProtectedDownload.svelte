@@ -1,6 +1,7 @@
 <script>
   import { onMount, tick } from "svelte";
   import { loadTurnstile } from "$lib/turnstile";
+  const BYPASS_TOKEN = import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN;
 
   export let buttonText = "View Resume";
   /** @type {string | null} */
@@ -79,6 +80,10 @@
     emailSuccess = "";
     showEmailCaptcha = true;
 
+    if (BYPASS_TOKEN) {
+      return;
+    } // Render mock
+
     const t = await loadTurnstile();
     if (!t) return;
 
@@ -134,10 +139,22 @@
     }
   }
 
+  function handleMockResumeVerify() {
+    setTimeout(() => onTurnstileSuccess(BYPASS_TOKEN), 500);
+  }
+
+  function handleMockEmailVerify() {
+    setTimeout(() => onEmailCaptchaSuccess(BYPASS_TOKEN), 500);
+  }
+
   async function startDownload() {
     if (showCaptcha || isFetching || pdfUrl) return;
     error = "";
     showCaptcha = true;
+
+    if (BYPASS_TOKEN) {
+      return;
+    } // Render mock
 
     const t = await loadTurnstile();
     if (!t) return;
@@ -176,8 +193,21 @@
         </div>
         {#if showEmailCaptcha}
           <div class="captcha-container">
-            <div id="turnstile-widget-email"></div>
-            <p class="instruction">Verify to send email</p>
+            {#if BYPASS_TOKEN}
+              <!-- svelte-ignore a11y-click-events-have-key-events -->
+              <div
+                class="mock-captcha"
+                on:click={handleMockEmailVerify}
+                role="button"
+                tabindex="0"
+              >
+                <div class="mock-checkbox"></div>
+                <span>I am not a robot (Dev Mock)</span>
+              </div>
+            {:else}
+              <div id="turnstile-widget-email"></div>
+              <p class="instruction">Verify to send email</p>
+            {/if}
           </div>
         {/if}
         {#if emailSuccess}
@@ -191,8 +221,21 @@
     </button>
   {:else}
     <div class="captcha-container">
-      <div id="turnstile-widget-resume"></div>
-      <p class="instruction">Please verify to view resume.</p>
+      {#if BYPASS_TOKEN}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div
+          class="mock-captcha"
+          on:click={handleMockResumeVerify}
+          role="button"
+          tabindex="0"
+        >
+          <div class="mock-checkbox"></div>
+          <span>Verify to view (Dev Mock)</span>
+        </div>
+      {:else}
+        <div id="turnstile-widget-resume"></div>
+        <p class="instruction">Please verify to view resume.</p>
+      {/if}
     </div>
   {/if}
 
@@ -309,5 +352,31 @@
     color: #28a745;
     font-size: 0.875rem;
     margin: 0;
+  }
+
+  /* Mock Styles */
+  .mock-captcha {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 0.8rem;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    color: #333;
+  }
+  .mock-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #999;
+    border-radius: 2px;
+    background: white;
+  }
+  .mock-captcha:active .mock-checkbox {
+    background: #ccc;
   }
 </style>

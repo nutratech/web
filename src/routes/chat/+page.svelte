@@ -1,6 +1,13 @@
 <script>
   import { onMount } from "svelte";
 
+  import { loadTurnstile } from "$lib/turnstile";
+  import { browser } from "$app/environment";
+  import { tick } from "svelte";
+
+  const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+  const BYPASS_TOKEN = import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN;
+
   let status = "Checking...";
   let isOperational = false;
   let homeserverConfig = "nutra.tk";
@@ -19,6 +26,7 @@
    * @property {string|null} auth
    * @property {string|null} registration
    * @property {string|null} welcome
+   * @property {string|null} adminStatus
    * @property {Check[]} checks
    */
 
@@ -30,6 +38,7 @@
     auth: null,
     registration: null,
     welcome: null,
+    adminStatus: null,
     checks: [],
   };
   let errorMsg = "";
@@ -175,6 +184,19 @@
         console.warn("Registration check failed", ignore);
       }
 
+      // Server Status + Admin Presence (from backend)
+      try {
+        const infoRes = await fetch("/api/server-info");
+        if (infoRes.ok) {
+          const infoData = await infoRes.json();
+          if (infoData.admin_presence) {
+            results.adminStatus = infoData.admin_presence;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not fetch server info/presence", e);
+      }
+
       // Success state
       status = "Operational";
       isOperational = true;
@@ -213,6 +235,98 @@
       c.name === name ? { ...c, status: success ? "OK" : "Fail" } : c,
     );
   }
+
+  // Shoutbox Logic
+  let chatName = "";
+  let chatMessage = "";
+  let chatSending = false;
+  let chatStatus = ""; // "success", "error", ""
+  let chatStatusMsg = "";
+
+  let showCaptcha = false;
+  let isMockCaptcha = false;
+
+  async function handleSend() {
+    if (!chatMessage.trim()) return;
+    if (showCaptcha) return; // Already dealing with captcha
+
+    showCaptcha = true;
+    chatStatus = "";
+
+    if (BYPASS_TOKEN) {
+      isMockCaptcha = true;
+      return;
+    }
+
+    if (browser) {
+      const _t = await loadTurnstile();
+      if (_t) {
+        await tick();
+        const win = /** @type {Window & { turnstile?: any }} */ (window);
+        win.turnstile = _t;
+        renderCaptcha(_t);
+      }
+    }
+  }
+
+  /** @param {any} tInstance */
+  function renderCaptcha(tInstance) {
+    const el = document.getElementById("cf-turnstile-chat");
+    if (el && !el.hasChildNodes() && tInstance) {
+      tInstance.render("#cf-turnstile-chat", {
+        sitekey: SITE_KEY,
+        callback: onChatTurnstileSuccess,
+        "error-callback": () => {
+          chatStatus = "error";
+          chatStatusMsg = "Captcha load failed.";
+          showCaptcha = false;
+        },
+      });
+    }
+  }
+
+  function handleMockVerify() {
+    // Simulate network delay
+    setTimeout(() => {
+      onChatTurnstileSuccess(BYPASS_TOKEN);
+    }, 500);
+  }
+
+  /** @param {string} token */
+  async function onChatTurnstileSuccess(token) {
+    chatSending = true;
+    try {
+      const res = await fetch("/api/send-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          name: chatName || "Guest",
+          message: chatMessage,
+        }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        chatStatus = "success";
+        chatStatusMsg = "Message sent!";
+        chatMessage = ""; // Clear message
+        showCaptcha = false; // Reset captcha flow
+      } else {
+        chatStatus = "error";
+        chatStatusMsg = data.error || "Failed to send.";
+        // Keep captcha open? Usually token is one-time use.
+        // We probably need to reset captcha to try again, but let's hide it for retry.
+        showCaptcha = false;
+      }
+    } catch (e) {
+      chatStatus = "error";
+      chatStatusMsg = "Network error.";
+      showCaptcha = false;
+    } finally {
+      chatSending = false;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -220,6 +334,63 @@
 </svelte:head>
 
 <section class="chat-page">
+  <div class="panel shoutbox-panel">
+    <h2>Public Shoutbox</h2>
+    <p class="subtitle">Send a quick message to the public room.</p>
+
+    <div class="chat-form">
+      <div class="form-group">
+        <input
+          type="text"
+          placeholder="Name (Optional)"
+          bind:value={chatName}
+          disabled={chatSending || showCaptcha}
+        />
+      </div>
+      <div class="form-group">
+        <textarea
+          placeholder="Message..."
+          bind:value={chatMessage}
+          rows="3"
+          disabled={chatSending || showCaptcha}
+        ></textarea>
+      </div>
+
+      {#if !showCaptcha && !chatSending}
+        <button
+          class="btn-send"
+          on:click={handleSend}
+          disabled={!chatMessage.trim()}
+        >
+          Send Message
+        </button>
+      {:else}
+        {#if isMockCaptcha}
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <div
+            class="mock-captcha"
+            on:click={handleMockVerify}
+            role="button"
+            tabindex="0"
+          >
+            <div class="mock-checkbox"></div>
+            <span>I am not a robot (Dev Mock)</span>
+          </div>
+        {:else}
+          <div id="cf-turnstile-chat" class="captcha-container"></div>
+        {/if}
+
+        {#if chatSending}
+          <p class="sending-indicator">Sending...</p>
+        {/if}
+      {/if}
+
+      {#if chatStatus}
+        <p class="status-msg {chatStatus}">{chatStatusMsg}</p>
+      {/if}
+    </div>
+  </div>
+
   <div class="panel">
     {#if results.welcome}
       <div class="welcome-embed">
@@ -270,6 +441,15 @@
               <div class="summary-item">
                 <span class="label">Registration</span>
                 <code>{results.registration}</code>
+              </div>
+            {/if}
+            {#if results.adminStatus}
+              <div class="summary-item">
+                <span class="label">Admin (@gg:nutra.tk)</span>
+                <code class="status-indicator {results.adminStatus}">
+                  <span class="dot"></span>
+                  {results.adminStatus}
+                </code>
               </div>
             {/if}
           </div>
@@ -444,10 +624,124 @@
     color: #f87171;
   }
 
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-transform: capitalize;
+  }
+  .status-indicator .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+  .status-indicator.online .dot {
+    background: #4ade80;
+  }
+  .status-indicator.unavailable .dot {
+    background: #fbbf24;
+  }
+  .status-indicator.offline .dot {
+    background: #9ca3af;
+  }
+
   .error-msg {
     color: #f87171;
     text-align: center;
     margin-top: 1rem;
     font-size: 0.9rem;
+  }
+
+  /* Shoutbox Styles */
+  .shoutbox-panel {
+    margin-bottom: 2rem;
+  }
+  .shoutbox-panel h2 {
+    margin-bottom: 0.5rem;
+  }
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .chat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: inherit;
+  }
+  .form-group textarea {
+    resize: vertical;
+  }
+  .btn-send {
+    background: var(--color-primary, #007bff);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-send:hover:not(:disabled) {
+    background: var(--color-primary-dark, #0056b3);
+  }
+  .btn-send:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .status-msg {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .status-msg.success {
+    color: #4ade80;
+  }
+  .status-msg.error {
+    color: #f87171;
+  }
+
+  .captcha-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+    min-height: 65px;
+  }
+
+  .mock-captcha {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    width: 300px;
+    margin: 1rem auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    color: #333;
+  }
+  .mock-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #999;
+    border-radius: 2px;
+    background: white;
+  }
+  .mock-captcha:active .mock-checkbox {
+    background: #ccc;
   }
 </style>
