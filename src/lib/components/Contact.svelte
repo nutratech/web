@@ -17,7 +17,7 @@
   let error = "";
   let loading = false;
   let showCaptcha = false;
-  let copied = false;
+  let copyMessage = "";
 
   async function startVerification() {
     if (showCaptcha || contactData) return;
@@ -80,10 +80,11 @@
 
   function copyGpg() {
     if (!contactData) return;
+    const lines = contactData.gpg_public_key.trim().split("\n").length;
     navigator.clipboard.writeText(contactData.gpg_public_key);
-    copied = true;
+    copyMessage = `✓ Copied ${lines} lines to clipboard`;
     setTimeout(() => {
-      copied = false;
+      copyMessage = "";
     }, 2000);
   }
 </script>
@@ -112,8 +113,8 @@
           on:click={copyGpg}
           title="Click to copy full key"
         >
-          {#if copied}
-            ✓ Copied!
+          {#if copyMessage}
+            {copyMessage}
           {:else}
             📋 Copy Full Public Key Block
           {/if}
