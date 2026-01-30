@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
+  import { loadTurnstile } from "$lib/turnstile";
 
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
@@ -18,13 +19,12 @@
   let error = "";
   let loading = false;
 
-  onMount(() => {
+  onMount(async () => {
     if (browser) {
-      if (turnstile) {
+      const t = await loadTurnstile();
+      if (t) {
+        /** @type {Window & { turnstile?: Turnstile }} */ (window).turnstile = t;
         renderCaptcha();
-      } else {
-        // Retry if script hasn't loaded yet
-        setTimeout(renderCaptcha, 1000);
       }
     }
   });

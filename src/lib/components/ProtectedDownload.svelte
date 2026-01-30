@@ -1,5 +1,6 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
+  import { loadTurnstile } from "$lib/turnstile";
 
   export let buttonText = "View Resume";
   /** @type {string | null} */
@@ -72,22 +73,22 @@
     a.remove();
   }
 
-  function startEmailCaptcha() {
+  async function startEmailCaptcha() {
     if (!emailAddress || showEmailCaptcha || emailSending) return;
     error = "";
     emailSuccess = "";
     showEmailCaptcha = true;
-    setTimeout(() => {
+    
+    const t = await loadTurnstile();
+    if (!t) return;
+
+    await tick(); // Wait for DOM update
+    // @ts-ignore
+    t.render("#turnstile-widget-email", {
       // @ts-ignore
-      if (window.turnstile) {
-        // @ts-ignore
-        window.turnstile.render("#turnstile-widget-email", {
-          // @ts-ignore
-          sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
-          callback: onEmailCaptchaSuccess,
-        });
-      }
-    }, 50);
+      sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+      callback: onEmailCaptchaSuccess,
+    });
   }
 
   /**
@@ -133,22 +134,21 @@
     }
   }
 
-  function startDownload() {
+  async function startDownload() {
     if (showCaptcha || isFetching || pdfUrl) return;
     error = "";
     showCaptcha = true;
-    // Short delay to ensure DOM update before rendering widget
-    setTimeout(() => {
+    
+    const t = await loadTurnstile();
+    if (!t) return;
+
+    await tick(); // Wait for DOM update
+    // @ts-ignore
+    t.render("#turnstile-widget-resume", {
       // @ts-ignore
-      if (window.turnstile) {
-        // @ts-ignore
-        window.turnstile.render("#turnstile-widget-resume", {
-          // @ts-ignore
-          sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
-          callback: onTurnstileSuccess,
-        });
-      }
-    }, 50);
+      sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+      callback: onTurnstileSuccess,
+    });
   }
 </script>
 
