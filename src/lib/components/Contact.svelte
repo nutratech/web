@@ -187,9 +187,9 @@
   }
 
   .btn-copy {
-    background: var(--color-bg-secondary, #f8f9fa);
+    background: var(--color-code-bg, #f8f9fa);
     border: 1px solid var(--color-border, #ddd);
-    color: var(--color-text);
+    color: var(--color-text, inherit);
     padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
@@ -204,7 +204,7 @@
   }
 
   .btn-copy:hover {
-    background: var(--color-bg-hover, #e9ecef);
+    background: var(--color-bg-hover, rgba(0, 0, 0, 0.05));
     border-color: var(--color-border-hover, #ccc);
   }
 
