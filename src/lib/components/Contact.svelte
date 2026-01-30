@@ -105,9 +105,9 @@
   .contact-section {
     margin: 2rem 0;
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-bg-card, #ffffff);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
   }
   .item {
     margin-bottom: 0.5rem;
@@ -115,12 +115,13 @@
   .label {
     font-weight: bold;
     margin-right: 0.5rem;
-    color: #aaa;
+    color: var(--color-text-muted);
   }
   pre {
-    background: #111;
+    background: var(--color-code-bg);
     padding: 0.5rem;
     overflow-x: auto;
+    color: var(--color-text);
   }
   .gpg-section {
     display: flex;
@@ -132,9 +133,10 @@
     font-size: 0.75rem;
     white-space: pre;
     margin: 0.5rem 0 0 0;
+    width: 100%;
   }
   .error {
-    color: #ff5555;
+    color: var(--color-danger, #ef4444);
   }
   .fade-in {
     animation: fadeIn 0.5s ease-in;

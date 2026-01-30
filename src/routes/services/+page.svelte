@@ -49,29 +49,29 @@
   }
 
   h1 {
-    border-bottom: 2px solid var(--border-color, #333);
+    border-bottom: 2px solid var(--color-border);
     padding-bottom: 0.5rem;
     margin-bottom: 0.5rem;
   }
 
   .meta {
     font-size: 0.85em;
-    color: var(--text-muted, #888);
+    color: var(--color-text-muted);
     margin-bottom: 2rem;
   }
 
   .intro {
     margin-bottom: 2rem;
     padding: 1rem;
-    background: var(--bg-card, #16213e);
+    background: var(--color-bg-card);
     border-radius: 8px;
-    border-left: 4px solid var(--primary, #60a5fa);
+    border-left: 4px solid var(--color-primary);
   }
 
   .group-header {
     margin-top: 2rem;
-    border-bottom: 1px solid var(--border-color, #333);
-    color: var(--text-secondary, #aaa);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
   }
 
   .services-grid {
@@ -83,9 +83,9 @@
 
   .service-card {
     padding: 1.5rem;
-    border: 1px solid var(--border-color, #333);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: var(--bg-card, #16213e);
+    background: var(--color-bg-card);
     transition:
       transform 0.2s,
       box-shadow 0.2s;
@@ -93,8 +93,8 @@
 
   .service-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    border-color: var(--primary, #60a5fa);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-primary);
   }
 
   .service-card h3 {
@@ -104,15 +104,16 @@
 
   .service-card a {
     text-decoration: none;
-    color: var(--primary, #60a5fa);
+    color: var(--color-primary);
   }
 
   .service-card a:hover {
     text-decoration: underline;
+    color: var(--color-primary-hover);
   }
 
   .desc {
-    color: var(--text-muted, #b0b0b0);
+    color: var(--color-text-muted);
     margin-bottom: 1rem;
     line-height: 1.5;
   }
@@ -120,7 +121,7 @@
   .url {
     font-family: monospace;
     font-size: 0.8rem;
-    color: var(--text-dim, #666);
+    color: var(--color-secondary);
     word-break: break-all;
   }
 </style>

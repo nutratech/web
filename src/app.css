@@ -21,7 +21,7 @@
   --width-content: 800px;
 
   /* Component Variables (Light Default) */
-  --bg-card: #ffffff;
+  --color-bg-card: #ffffff;
   --text-muted: #666666;
   --text-secondary: #4a5568;
 }
@@ -37,7 +37,7 @@
     --color-code-bg: #363b38;
 
     /* Component Variables (Dark Auto) */
-    --bg-card: #16213e;
+    --color-bg-card: #16213e;
     --text-muted: #94a3b8;
     --text-secondary: #cbd5e0;
   }
@@ -53,7 +53,7 @@
   --color-code-bg: #363b38;
 
   /* Component Variables (Dark Manual) */
-  --bg-card: #16213e;
+  --color-bg-card: #16213e;
   --text-muted: #94a3b8;
   --text-secondary: #cbd5e0;
 }
