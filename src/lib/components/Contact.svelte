@@ -3,6 +3,7 @@
   import { browser } from "$app/environment";
   import { loadTurnstile } from "$lib/turnstile";
 
+  import { tick } from "svelte";
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
   /**
@@ -10,31 +11,39 @@
    * @property {function(string, Object): void} render
    */
 
-  /** @type {Turnstile | undefined} */
-  const turnstile = /** @type {any} */ (window).turnstile;
-
   let token = "";
   /** @type {{ email: string; matrix: string; gpg_description: string; gpg_public_key: string } | null} */
   let contactData = null;
   let error = "";
   let loading = false;
+  let showCaptcha = false;
+  let copied = false;
 
-  onMount(async () => {
+  async function startVerification() {
+    if (showCaptcha || contactData) return;
+    showCaptcha = true;
+    error = "";
+
     if (browser) {
       const _t = await loadTurnstile();
       if (_t) {
-        /** @type {Window & { turnstile?: Turnstile }} */
-        (window).turnstile = _t;
-        renderCaptcha();
+        // Wait for DOM to update with the container
+        await tick();
+        const win = /** @type {Window & { turnstile?: any }} */ (window);
+        win.turnstile = _t;
+        renderCaptcha(_t);
       }
     }
-  });
+  }
 
-  function renderCaptcha() {
+  /**
+   * @param {Turnstile} tInstance
+   */
+  function renderCaptcha(tInstance) {
     // Check if element exists and not already rendered
     const el = document.getElementById("cf-turnstile-contact");
-    if (el && !el.hasChildNodes() && turnstile) {
-      turnstile.render("#cf-turnstile-contact", {
+    if (el && !el.hasChildNodes() && tInstance) {
+      tInstance.render("#cf-turnstile-contact", {
         sitekey: SITE_KEY,
         callback: onTurnstileSuccess,
         "error-callback": () => {
@@ -68,6 +77,15 @@
       loading = false;
     }
   }
+
+  function copyGpg() {
+    if (!contactData) return;
+    navigator.clipboard.writeText(contactData.gpg_public_key);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 2000);
+  }
 </script>
 
 <div class="contact-section">
@@ -89,13 +107,30 @@
       </div>
       <div class="item gpg-section">
         <span class="label">Public Key:</span>
-        <pre class="gpg-block">{contactData.gpg_public_key}</pre>
+        <button
+          class="btn-copy"
+          on:click={copyGpg}
+          title="Click to copy full key"
+        >
+          {#if copied}
+            ✓ Copied!
+          {:else}
+            📋 Copy Full Public Key Block
+          {/if}
+        </button>
       </div>
     </div>
   {:else}
-    <p>Please verify you are human to see contact details.</p>
-    <!-- Explicit Render Container -->
-    <div id="cf-turnstile-contact"></div>
+    {#if !showCaptcha}
+      <p>Please verify you are human to see contact details.</p>
+      <button class="btn-verify" on:click={startVerification}
+        >View Contact Details</button
+      >
+    {:else}
+      <!-- Explicit Render Container -->
+      <div id="cf-turnstile-contact"></div>
+      <p class="instruction">Completing verification...</p>
+    {/if}
     {#if error}
       <p class="error">{error}</p>
     {/if}
@@ -149,5 +184,49 @@
     to {
       opacity: 1;
     }
+  }
+
+  .btn-copy {
+    background: var(--color-bg-secondary, #f8f9fa);
+    border: 1px solid var(--color-border, #ddd);
+    color: var(--color-text);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: left;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-copy:hover {
+    background: var(--color-bg-hover, #e9ecef);
+    border-color: var(--color-border-hover, #ccc);
+  }
+
+  .btn-verify {
+    background: var(--color-primary, #007bff);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+
+  .btn-verify:hover {
+    background: var(--color-primary-dark, #0056b3);
+  }
+
+  .instruction {
+    margin: 0.5rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-light, #666);
   }
 </style>
