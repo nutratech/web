@@ -46,8 +46,7 @@
   };
   let errorMsg = "";
 
-  /** @param {string} token */
-  async function loadServerInfo(token) {
+  async function loadServerInfo() {
     try {
       // Check 1: Client Discovery
       addCheck("Service Discovery", "Pending");
@@ -182,9 +181,7 @@
       }
 
       // Fetch Server Info (Authenticated)
-      const infoRes = await fetch(
-        `/api/server-info?token=${encodeURIComponent(token)}`,
-      );
+      const infoRes = await fetch(`/api/server-info`);
 
       if (infoRes.ok) {
         const info = await infoRes.json();
@@ -381,179 +378,177 @@
 </svelte:head>
 
 <section class="chat-page">
-  <TurnstileProtection onVerify={loadServerInfo} action="access chat tools">
-    <div class="panel shoutbox-panel">
-      <h2>Public Shoutbox</h2>
-      <p class="subtitle">Send a quick message to the public room.</p>
+  <div class="panel shoutbox-panel">
+    <h2>Public Shoutbox</h2>
+    <p class="subtitle">Send a quick message to the public room.</p>
 
-      {#if $serverInfo.adminStatus}
-        <div class="admin-presence-badge">
-          <span class="label">Admin:</span>
-          <code class="status-indicator {$serverInfo.adminStatus}">
-            <span class="dot"></span>
-            {#if $serverInfo.adminStatus === "unknown"}
-              Unknown
-            {:else if $serverInfo.adminStatus === "error" || $serverInfo.adminStatus === "unavailable"}
-              Error
-            {:else}
-              {$serverInfo.adminStatus}
-            {/if}
-          </code>
-        </div>
+    {#if $serverInfo.adminStatus}
+      <div class="admin-presence-badge">
+        <span class="label">Admin:</span>
+        <code class="status-indicator {$serverInfo.adminStatus}">
+          <span class="dot"></span>
+          {#if $serverInfo.adminStatus === "unknown"}
+            Unknown
+          {:else if $serverInfo.adminStatus === "error" || $serverInfo.adminStatus === "unavailable"}
+            Error
+          {:else}
+            {$serverInfo.adminStatus}
+          {/if}
+        </code>
+      </div>
+    {/if}
+
+    <div class="chat-form">
+      <div class="form-group">
+        <input
+          type="text"
+          placeholder="Name or title (Optional)"
+          bind:value={chatName}
+          disabled={chatSending || showCaptcha}
+        />
+      </div>
+      <div class="form-group">
+        <textarea
+          placeholder="Message..."
+          bind:value={chatMessage}
+          rows="3"
+          disabled={chatSending || showCaptcha}
+        ></textarea>
+      </div>
+
+      {#if !showCaptcha && !chatSending}
+        <button
+          class="btn-send"
+          on:click={handleSend}
+          disabled={!chatMessage.trim()}
+        >
+          Send Message
+        </button>
+      {:else}
+        {#if isMockCaptcha}
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <div
+            class="mock-captcha"
+            on:click={handleMockVerify}
+            role="button"
+            tabindex="0"
+          >
+            <div class="mock-checkbox"></div>
+            <span>I am not a robot (Dev Mock)</span>
+          </div>
+        {:else}
+          <div id="cf-turnstile-chat" class="captcha-container"></div>
+        {/if}
+
+        {#if chatSending}
+          <p class="sending-indicator">Sending...</p>
+        {/if}
       {/if}
 
-      <div class="chat-form">
-        <div class="form-group">
-          <input
-            type="text"
-            placeholder="Name or title (Optional)"
-            bind:value={chatName}
-            disabled={chatSending || showCaptcha}
-          />
-        </div>
-        <div class="form-group">
-          <textarea
-            placeholder="Message..."
-            bind:value={chatMessage}
-            rows="3"
-            disabled={chatSending || showCaptcha}
-          ></textarea>
-        </div>
+      {#if chatStatus}
+        <p class="status-msg {chatStatus}">{chatStatusMsg}</p>
+      {/if}
 
-        {#if !showCaptcha && !chatSending}
-          <button
-            class="btn-send"
-            on:click={handleSend}
-            disabled={!chatMessage.trim()}
-          >
-            Send Message
-          </button>
-        {:else}
-          {#if isMockCaptcha}
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <div
-              class="mock-captcha"
-              on:click={handleMockVerify}
-              role="button"
-              tabindex="0"
-            >
-              <div class="mock-checkbox"></div>
-              <span>I am not a robot (Dev Mock)</span>
-            </div>
-          {:else}
-            <div id="cf-turnstile-chat" class="captcha-container"></div>
-          {/if}
-
-          {#if chatSending}
-            <p class="sending-indicator">Sending...</p>
-          {/if}
-        {/if}
-
-        {#if chatStatus}
-          <p class="status-msg {chatStatus}">{chatStatusMsg}</p>
-        {/if}
-
-        {#if replies.length > 0}
-          <div class="replies-section">
-            <h3>Replies</h3>
-            <div class="replies-list">
-              {#each replies as reply}
-                <div class="reply-item">
-                  <span class="sender"
-                    >{reply.sender.replace("@", "").split(":")[0]}</span
-                  >
-                  <p>{@html reply.body}</p>
-                </div>
-              {/each}
-            </div>
-          </div>
-        {/if}
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="server-info">
-        <div class="detailed-checks">
-          <div class="status-header">
-            <h3
-              class:status-ok={isOperational}
-              class:status-error={!isOperational && status !== "Checking..."}
-            >
-              {status === "Checking..."
-                ? "Connecting..."
-                : isOperational
-                  ? "System Operational"
-                  : "Connection Error"}
-            </h3>
-          </div>
-
-          {#if results.config}
-            <div class="report-summary">
-              <div class="summary-item">
-                <span class="label">Host</span>
-                <code>{results.config.replace("https://", "")}</code>
-              </div>
-              {#if results.serverName}
-                <div class="summary-item">
-                  <span class="label">Server Name (Homeserver)</span>
-                  <code>{results.serverName}</code>
-                </div>
-              {/if}
-              {#if results.version}
-                <div class="summary-item">
-                  <span class="label">Version</span>
-                  <code>{results.version}</code>
-                </div>
-              {/if}
-              {#if results.auth}
-                <div class="summary-item">
-                  <span class="label">Authentication</span>
-                  <code>{results.auth}</code>
-                </div>
-              {/if}
-              {#if results.registration}
-                <div class="summary-item">
-                  <span class="label">Registration</span>
-                  <code>{results.registration}</code>
-                </div>
-              {/if}
-            </div>
-          {/if}
-
-          <div class="check-grid">
-            {#each results.checks as check}
-              <div class="check-item">
-                <span class="label">{check.name}</span>
-                <span
-                  class="value status-icon {check.status === 'OK'
-                    ? 'ok'
-                    : check.status === 'Fail'
-                      ? 'fail'
-                      : 'pending'}"
+      {#if replies.length > 0}
+        <div class="replies-section">
+          <h3>Replies</h3>
+          <div class="replies-list">
+            {#each replies as reply}
+              <div class="reply-item">
+                <span class="sender"
+                  >{reply.sender.replace("@", "").split(":")[0]}</span
                 >
-                  {check.status === "OK"
-                    ? "✓"
-                    : check.status === "Fail"
-                      ? "✗"
-                      : "..."}
-                </span>
+                <p>{@html reply.body}</p>
               </div>
             {/each}
           </div>
         </div>
-
-        {#if errorMsg}
-          <p class="error-msg">{errorMsg}</p>
-        {/if}
-      </div>
-
-      {#if results.welcome}
-        <div class="welcome-embed">
-          {@html results.welcome}
-        </div>
       {/if}
     </div>
-  </TurnstileProtection>
+  </div>
+
+  <div class="panel">
+    <div class="server-info">
+      <div class="detailed-checks">
+        <div class="status-header">
+          <h3
+            class:status-ok={isOperational}
+            class:status-error={!isOperational && status !== "Checking..."}
+          >
+            {status === "Checking..."
+              ? "Connecting..."
+              : isOperational
+                ? "System Operational"
+                : "Connection Error"}
+          </h3>
+        </div>
+
+        {#if results.config}
+          <div class="report-summary">
+            <div class="summary-item">
+              <span class="label">Host</span>
+              <code>{results.config.replace("https://", "")}</code>
+            </div>
+            {#if results.serverName}
+              <div class="summary-item">
+                <span class="label">Server Name (Homeserver)</span>
+                <code>{results.serverName}</code>
+              </div>
+            {/if}
+            {#if results.version}
+              <div class="summary-item">
+                <span class="label">Version</span>
+                <code>{results.version}</code>
+              </div>
+            {/if}
+            {#if results.auth}
+              <div class="summary-item">
+                <span class="label">Authentication</span>
+                <code>{results.auth}</code>
+              </div>
+            {/if}
+            {#if results.registration}
+              <div class="summary-item">
+                <span class="label">Registration</span>
+                <code>{results.registration}</code>
+              </div>
+            {/if}
+          </div>
+        {/if}
+
+        <div class="check-grid">
+          {#each results.checks as check}
+            <div class="check-item">
+              <span class="label">{check.name}</span>
+              <span
+                class="value status-icon {check.status === 'OK'
+                  ? 'ok'
+                  : check.status === 'Fail'
+                    ? 'fail'
+                    : 'pending'}"
+              >
+                {check.status === "OK"
+                  ? "✓"
+                  : check.status === "Fail"
+                    ? "✗"
+                    : "..."}
+              </span>
+            </div>
+          {/each}
+        </div>
+      </div>
+
+      {#if errorMsg}
+        <p class="error-msg">{errorMsg}</p>
+      {/if}
+    </div>
+
+    {#if results.welcome}
+      <div class="welcome-embed">
+        {@html results.welcome}
+      </div>
+    {/if}
+  </div>
 </section>
 
 <style>

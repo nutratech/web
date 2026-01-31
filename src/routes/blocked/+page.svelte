@@ -1,5 +1,5 @@
 <script>
-  import TurnstileProtection from "$lib/components/TurnstileProtection.svelte";
+  import { onMount } from "svelte";
 
   /** @type {any} */
   let manualEntries = [];
@@ -19,11 +19,8 @@
   /** @type {string | null} */
   let error = null;
 
-  /** @param {string} token */
-  async function loadData(token) {
-    const response = await fetch(
-      `/api/blocked?token=${encodeURIComponent(token)}`,
-    );
+  async function loadData() {
+    const response = await fetch("/api/blocked");
 
     if (!response.ok) {
       throw new Error("Failed to verify/fetch data");
@@ -66,96 +63,94 @@
 <div class="page-container">
   <h1>🛡️ Global Ban List</h1>
 
-  <TurnstileProtection onVerify={loadData} action="view ban list">
-    {#if error}
-      <p class="status error">Error: {error}</p>
-    {:else}
-      <!-- Summary Stats -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="big-number">{manualEntries.length}</div>
-          <div class="label">Manual Bans</div>
-        </div>
-        <div class="stat-card">
-          <div class="big-number">{sshStats?.currently_banned || 0}</div>
-          <div class="label">SSH Stalkers</div>
-        </div>
-        <div class="stat-card">
-          <div class="big-number">{gitStats?.currently_banned || 0}</div>
-          <div class="label">Git Scrapers</div>
-        </div>
-        <div class="stat-card blue-card">
-          <div class="big-number blue-text">
-            {matrixStats?.active_count || matrixStats?.active_servers || 0}
-          </div>
-          <div class="label">Active Peers</div>
-        </div>
+  {#if error}
+    <p class="status error">Error: {error}</p>
+  {:else}
+    <!-- Summary Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="big-number">{manualEntries.length}</div>
+        <div class="label">Manual Bans</div>
       </div>
-
-      <!-- Manual Bans Section -->
-      {#if manualEntries.length > 0}
-        <h2>Manual Nginx Bans</h2>
-        <div class="ip-list">
-          {#each manualEntries as entry}
-            <div class="ip-item">
-              <span>{entry.ip}</span>
-              {#if entry.comment}
-                <span class="comment">{entry.comment}</span>
-              {/if}
-            </div>
-          {/each}
+      <div class="stat-card">
+        <div class="big-number">{sshStats?.currently_banned || 0}</div>
+        <div class="label">SSH Stalkers</div>
+      </div>
+      <div class="stat-card">
+        <div class="big-number">{gitStats?.currently_banned || 0}</div>
+        <div class="label">Git Scrapers</div>
+      </div>
+      <div class="stat-card blue-card">
+        <div class="big-number blue-text">
+          {matrixStats?.active_count || matrixStats?.active_servers || 0}
         </div>
-      {/if}
+        <div class="label">Active Peers</div>
+      </div>
+    </div>
 
-      <!-- SSH Bans Section -->
-      {#if sshIps.length > 0}
-        <h2>SSH Stalkers (Fail2Ban)</h2>
-        <p class="subtitle">Caught attempting unauthorized SSH access.</p>
-        <div class="ip-list compact">
-          {#each sshIps as ip}
-            <span class="bad-ip">{ip}</span>
-          {/each}
-        </div>
-      {/if}
-
-      <!-- Git Scraper Bans Section -->
-      {#if gitIps.length > 0}
-        <h2>Git Scrapers</h2>
-        <p class="subtitle">Caught scanning for .git config files.</p>
-        <div class="ip-list compact">
-          {#each gitIps as ip}
-            <span class="bad-ip">{ip}</span>
-          {/each}
-        </div>
-      {:else if gitStats?.total_banned > 0}
-        <h2>Git Scrapers</h2>
-        <p class="subtitle">
-          No active bans, but {gitStats.total_banned} historical bans.
-        </p>
-      {/if}
-
-      <!-- Matrix Friendly Section -->
-      {#if matrixIps.length > 0}
-        <h2 class="blue-header">Verified Matrix Peers</h2>
-        <p class="subtitle">Friendly servers actively federating with us.</p>
-        <div class="ip-list compact">
-          {#each matrixIps as peer}
-            <span class="good-ip" title={peer.hostname || "Resolving..."}>
-              {peer.ip}
-              {#if peer.hostname && peer.hostname !== "Unknown" && peer.hostname !== peer.ip}
-                <span class="dns-name">({peer.hostname})</span>
-              {/if}
-            </span>
-          {/each}
-        </div>
-      {/if}
-
-      <footer>
-        <p>Data fetched live via Nutra API.</p>
-        <p>Nutratech Infrastructure Protection</p>
-      </footer>
+    <!-- Manual Bans Section -->
+    {#if manualEntries.length > 0}
+      <h2>Manual Nginx Bans</h2>
+      <div class="ip-list">
+        {#each manualEntries as entry}
+          <div class="ip-item">
+            <span>{entry.ip}</span>
+            {#if entry.comment}
+              <span class="comment">{entry.comment}</span>
+            {/if}
+          </div>
+        {/each}
+      </div>
     {/if}
-  </TurnstileProtection>
+
+    <!-- SSH Bans Section -->
+    {#if sshIps.length > 0}
+      <h2>SSH Stalkers (Fail2Ban)</h2>
+      <p class="subtitle">Caught attempting unauthorized SSH access.</p>
+      <div class="ip-list compact">
+        {#each sshIps as ip}
+          <span class="bad-ip">{ip}</span>
+        {/each}
+      </div>
+    {/if}
+
+    <!-- Git Scraper Bans Section -->
+    {#if gitIps.length > 0}
+      <h2>Git Scrapers</h2>
+      <p class="subtitle">Caught scanning for .git config files.</p>
+      <div class="ip-list compact">
+        {#each gitIps as ip}
+          <span class="bad-ip">{ip}</span>
+        {/each}
+      </div>
+    {:else if gitStats?.total_banned > 0}
+      <h2>Git Scrapers</h2>
+      <p class="subtitle">
+        No active bans, but {gitStats.total_banned} historical bans.
+      </p>
+    {/if}
+
+    <!-- Matrix Friendly Section -->
+    {#if matrixIps.length > 0}
+      <h2 class="blue-header">Verified Matrix Peers</h2>
+      <p class="subtitle">Friendly servers actively federating with us.</p>
+      <div class="ip-list compact">
+        {#each matrixIps as peer}
+          <span class="good-ip" title={peer.hostname || "Resolving..."}>
+            {peer.ip}
+            {#if peer.hostname && peer.hostname !== "Unknown" && peer.hostname !== peer.ip}
+              <span class="dns-name">({peer.hostname})</span>
+            {/if}
+          </span>
+        {/each}
+      </div>
+    {/if}
+
+    <footer>
+      <p>Data fetched live via Nutra API.</p>
+      <p>Nutratech Infrastructure Protection</p>
+    </footer>
+  {/if}
 </div>
 
 <style>
