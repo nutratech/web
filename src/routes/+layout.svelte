@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import "../app.css";
-  import favicon from "$lib/assets/favicon.png";
   import { PUBLIC_BUILD_TIME } from "$env/static/public";
   import { serverInfo } from "$lib/stores";
 
@@ -51,24 +50,36 @@
     // @ts-ignore
     servedTime = now.toLocaleDateString("en-GB", options).replace(",", "");
 
-    // Defer server info fetch
-    setTimeout(async () => {
-      try {
-        const res = await fetch("/api/server-info");
-        if (res.ok) {
-          const data = await res.json();
-          serverInfo.set({
-            location: data.location || "Unknown",
-            time: data.time || "...",
-            adminStatus: data.admin_presence || "unknown",
-          });
-        }
-      } catch (e) {
-        console.warn("Failed to fetch server info", e);
-        serverInfo.update((s) => ({ ...s, adminStatus: "unavailable" }));
-      }
-    }, 500);
+    // Server info is now fetched manually on interaction
   });
+
+  async function fetchServerInfo() {
+    if ($serverInfo.location !== "Unknown") return; // Already fetched?
+
+    // Set temporary loading state if desired, or just fetch
+    serverInfo.update((s) => ({ ...s, location: "Loading..." }));
+
+    try {
+      const res = await fetch("/api/server-info");
+      if (res.ok) {
+        const data = await res.json();
+        serverInfo.set({
+          location: data.location || "Unknown",
+          time: data.time || "...",
+          adminStatus: data.admin_presence || "unknown",
+        });
+      } else {
+        serverInfo.update((s) => ({ ...s, location: "Error" }));
+      }
+    } catch (e) {
+      console.warn("Failed to fetch server info", e);
+      serverInfo.update((s) => ({
+        ...s,
+        adminStatus: "unavailable",
+        location: "Error",
+      }));
+    }
+  }
 
   function toggleTheme() {
     const newTheme = theme === "dark" ? "light" : "dark";
@@ -113,9 +124,7 @@
   }
 </script>
 
-<svelte:head>
-  <link rel="icon" href={favicon} />
-</svelte:head>
+<svelte:head></svelte:head>
 
 <svelte:window on:click={handleAnchorClick} on:click={handleClickOutside} />
 
@@ -181,7 +190,15 @@
       Built: {PUBLIC_BUILD_TIME} |
       <!-- @ts-ignore -->
       Services: {__SERVICES_COUNT__} | Server:
-      <span id="server-location" class="ssi">{$serverInfo.location}</span>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <span
+        id="server-location"
+        class="ssi clickable"
+        role="button"
+        tabindex="0"
+        title="Click to show server location"
+        on:click={fetchServerInfo}>{$serverInfo.location}</span
+      >
     </p>
     <p>
       Nginx: <span class="ssi">v1.28.1</span> | Protocol:
@@ -230,6 +247,16 @@
     border-radius: 3px;
     color: var(--color-text);
     font-size: 0.9em;
+  }
+
+  .ssi.clickable {
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .ssi.clickable:hover {
+    opacity: 0.8;
+    text-decoration: underline;
   }
 
   footer a {
