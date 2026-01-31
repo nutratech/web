@@ -1,8 +1,12 @@
 <script>
-  import { tick, onDestroy } from "svelte";
+  import { tick, onDestroy, onMount } from "svelte";
   import { loadTurnstile } from "$lib/turnstile";
   import { browser } from "$app/environment";
   import { serverInfo } from "$lib/stores";
+
+  onMount(() => {
+    loadServerInfo();
+  });
 
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
   // Security: Only allow bypass in development mode
