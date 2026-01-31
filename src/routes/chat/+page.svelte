@@ -1,6 +1,5 @@
 <script>
-  import { onMount, tick, onDestroy } from "svelte";
-  import TurnstileProtection from "$lib/components/TurnstileProtection.svelte";
+  import { tick, onDestroy } from "svelte";
   import { loadTurnstile } from "$lib/turnstile";
   import { browser } from "$app/environment";
   import { serverInfo } from "$lib/stores";
@@ -11,7 +10,7 @@
     ? import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN
     : null;
 
-  let status = "Checking...";
+  let status = "Idle";
   let isOperational = false;
   let homeserverConfig = "nutra.tk";
 
@@ -47,6 +46,18 @@
   let errorMsg = "";
 
   async function loadServerInfo() {
+    status = "Checking...";
+    errorMsg = ""; // Clear previous errors
+    results.checks = []; // Clear previous checks
+    results.config = null; // Clear previous results
+    results.version = null;
+    results.serverName = null;
+    results.auth = null;
+    results.registration = null;
+    results.welcome = null;
+    results.adminStatus = null;
+    isOperational = false; // Reset operational status
+
     try {
       // Check 1: Client Discovery
       addCheck("Service Discovery", "Pending");
@@ -383,7 +394,14 @@
     <p class="subtitle">Send a quick message to the public room.</p>
 
     {#if $serverInfo.adminStatus}
-      <div class="admin-presence-badge">
+      <div
+        class="admin-presence-badge"
+        on:click={loadServerInfo}
+        role="button"
+        tabindex="0"
+        on:keydown={(e) => e.key === "Enter" && loadServerInfo()}
+        title="Click to Refresh Server Info"
+      >
         <span class="label">Admin:</span>
         <code class="status-indicator {$serverInfo.adminStatus}">
           <span class="dot"></span>
@@ -473,13 +491,19 @@
         <div class="status-header">
           <h3
             class:status-ok={isOperational}
-            class:status-error={!isOperational && status !== "Checking..."}
+            class:status-error={!isOperational &&
+              status !== "Idle" &&
+              status !== "Checking..."}
           >
-            {status === "Checking..."
-              ? "Connecting..."
-              : isOperational
-                ? "System Operational"
-                : "Connection Error"}
+            {#if status === "Idle"}
+              Server Info: Not Loaded
+            {:else if status === "Checking..."}
+              Connecting...
+            {:else if isOperational}
+              System Operational
+            {:else}
+              Connection Error
+            {/if}
           </h3>
         </div>
 
@@ -739,7 +763,14 @@
     gap: 0.5rem;
     margin-bottom: 1rem;
     font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s;
   }
+  .admin-presence-badge:hover {
+    opacity: 0.8;
+  }
+
   .status-indicator {
     display: inline-flex;
     align-items: center;
