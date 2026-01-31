@@ -243,6 +243,69 @@
     );
   }
 
+  // Page Gating
+  let verified = false;
+  let gateError = "";
+  let showGateCaptcha = false;
+
+  onMount(() => {
+    // Check if we have a valid session/bypass?
+    // For now, always require verify on load just like Contact page
+  });
+
+  async function startGateVerification() {
+    if (showGateCaptcha || verified) return;
+    showGateCaptcha = true;
+    gateError = "";
+
+    if (BYPASS_TOKEN) {
+      // Dev Mock
+      return;
+    }
+
+    if (browser) {
+      const _t = await loadTurnstile();
+      if (_t) {
+        await tick();
+        const win = /** @type {Window & { turnstile?: any }} */ (window);
+        win.turnstile = _t;
+        renderGateCaptcha(_t);
+      }
+    }
+  }
+
+  /** @param {any} tInstance */
+  function renderGateCaptcha(tInstance) {
+    const el = document.getElementById("cf-turnstile-gate");
+    if (el && !el.hasChildNodes() && tInstance) {
+      tInstance.render("#cf-turnstile-gate", {
+        sitekey: SITE_KEY,
+        callback: onGateSuccess,
+        "error-callback": () => {
+          gateError = "Captcha load failed.";
+          showGateCaptcha = false;
+        },
+      });
+    }
+  }
+
+  /** @param {string} token */
+  function onGateSuccess(token) {
+    // For page access, we treat valid captcha as "entry granted"
+    // We don't necessarily need to send it to backend unless backend enforces it on data fetch.
+    // Currently api.py server-info is public.
+    // So client-side gate is sufficient to stop simple scrapers/spam viewing.
+    verified = true;
+    showGateCaptcha = false;
+    loadServerInfo();
+  }
+
+  function handleGateMockVerify() {
+    setTimeout(() => {
+      onGateSuccess(BYPASS_TOKEN || "mock-token");
+    }, 500);
+  }
+
   // Shoutbox Logic
   let chatName = "";
   let chatMessage = "";
@@ -393,190 +456,220 @@
 </svelte:head>
 
 <section class="chat-page">
-  <div class="panel shoutbox-panel">
-    <h2>Public Shoutbox</h2>
-    <p class="subtitle">Send a quick message to the public room.</p>
+  {#if !verified}
+    <div class="panel gate-panel">
+      <h2>Chat & Status</h2>
+      <p>Please verify you are human to access the chat and server status.</p>
 
-    {#if $serverInfo.adminStatus}
-      <div
-        class="admin-presence-badge"
-        on:click={loadServerInfo}
-        role="button"
-        tabindex="0"
-        on:keydown={(e) => e.key === "Enter" && loadServerInfo()}
-        title="Click to Refresh Server Info"
-      >
-        <span class="label">Admin:</span>
-        <code class="status-indicator {$serverInfo.adminStatus}">
-          <span class="dot"></span>
-          {#if $serverInfo.adminStatus === "unknown"}
-            Unknown
-          {:else if $serverInfo.adminStatus === "error" || $serverInfo.adminStatus === "unavailable"}
-            Error
-          {:else}
-            {$serverInfo.adminStatus}
-          {/if}
-        </code>
-      </div>
-    {/if}
-
-    <div class="chat-form">
-      <div class="form-group">
-        <input
-          type="text"
-          placeholder="Name or title (Optional)"
-          bind:value={chatName}
-          disabled={chatSending || showCaptcha}
-        />
-      </div>
-      <div class="form-group">
-        <textarea
-          placeholder="Message..."
-          bind:value={chatMessage}
-          rows="3"
-          disabled={chatSending || showCaptcha}
-        ></textarea>
-      </div>
-
-      {#if !showCaptcha && !chatSending}
-        <button
-          class="btn-send"
-          on:click={handleSend}
-          disabled={!chatMessage.trim()}
-        >
-          Send Message
+      {#if !showGateCaptcha}
+        <button class="btn-verify" on:click={startGateVerification}>
+          Enter Chat
         </button>
+      {:else if BYPASS_TOKEN}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div
+          class="mock-captcha"
+          on:click={handleGateMockVerify}
+          role="button"
+          tabindex="0"
+        >
+          <div class="mock-checkbox"></div>
+          <span>Verify Access (Dev Mock)</span>
+        </div>
       {:else}
-        {#if isMockCaptcha}
-          <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <div
-            class="mock-captcha"
-            on:click={handleMockVerify}
-            role="button"
-            tabindex="0"
+        <div id="cf-turnstile-gate" class="captcha-container"></div>
+      {/if}
+
+      {#if gateError}
+        <p class="error-msg">{gateError}</p>
+      {/if}
+    </div>
+  {:else}
+    <div class="panel shoutbox-panel">
+      <h2>Public Shoutbox</h2>
+      <p class="subtitle">Send a quick message to the public room.</p>
+
+      {#if $serverInfo.adminStatus}
+        <div
+          class="admin-presence-badge"
+          on:click={loadServerInfo}
+          role="button"
+          tabindex="0"
+          on:keydown={(e) => e.key === "Enter" && loadServerInfo()}
+          title="Click to Refresh Server Info"
+        >
+          <span class="label">Admin:</span>
+          <code class="status-indicator {$serverInfo.adminStatus}">
+            <span class="dot"></span>
+            {#if $serverInfo.adminStatus === "unknown"}
+              Unknown
+            {:else if $serverInfo.adminStatus === "error" || $serverInfo.adminStatus === "unavailable"}
+              Error
+            {:else}
+              {$serverInfo.adminStatus}
+            {/if}
+          </code>
+        </div>
+      {/if}
+
+      <div class="chat-form">
+        <div class="form-group">
+          <input
+            type="text"
+            placeholder="Name or title (Optional)"
+            bind:value={chatName}
+            disabled={chatSending || showCaptcha}
+          />
+        </div>
+        <div class="form-group">
+          <textarea
+            placeholder="Message..."
+            bind:value={chatMessage}
+            rows="3"
+            disabled={chatSending || showCaptcha}
+          ></textarea>
+        </div>
+
+        {#if !showCaptcha && !chatSending}
+          <button
+            class="btn-send"
+            on:click={handleSend}
+            disabled={!chatMessage.trim()}
           >
-            <div class="mock-checkbox"></div>
-            <span>I am not a robot (Dev Mock)</span>
-          </div>
+            Send Message
+          </button>
         {:else}
-          <div id="cf-turnstile-chat" class="captcha-container"></div>
+          {#if isMockCaptcha}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <div
+              class="mock-captcha"
+              on:click={handleMockVerify}
+              role="button"
+              tabindex="0"
+            >
+              <div class="mock-checkbox"></div>
+              <span>I am not a robot (Dev Mock)</span>
+            </div>
+          {:else}
+            <div id="cf-turnstile-chat" class="captcha-container"></div>
+          {/if}
+
+          {#if chatSending}
+            <p class="sending-indicator">Sending...</p>
+          {/if}
         {/if}
 
-        {#if chatSending}
-          <p class="sending-indicator">Sending...</p>
+        {#if chatStatus}
+          <p class="status-msg {chatStatus}">{chatStatusMsg}</p>
         {/if}
-      {/if}
 
-      {#if chatStatus}
-        <p class="status-msg {chatStatus}">{chatStatusMsg}</p>
-      {/if}
+        {#if replies.length > 0}
+          <div class="replies-section">
+            <h3>Replies</h3>
+            <div class="replies-list">
+              {#each replies as reply}
+                <div class="reply-item">
+                  <span class="sender"
+                    >{reply.sender.replace("@", "").split(":")[0]}</span
+                  >
+                  <p>{@html reply.body}</p>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
+      </div>
+    </div>
 
-      {#if replies.length > 0}
-        <div class="replies-section">
-          <h3>Replies</h3>
-          <div class="replies-list">
-            {#each replies as reply}
-              <div class="reply-item">
-                <span class="sender"
-                  >{reply.sender.replace("@", "").split(":")[0]}</span
+    <div class="panel">
+      <div class="server-info">
+        <div class="detailed-checks">
+          <div class="status-header">
+            <h3
+              class:status-ok={isOperational}
+              class:status-error={!isOperational &&
+                status !== "Idle" &&
+                status !== "Checking..."}
+            >
+              {#if status === "Idle"}
+                Server Info: Not Loaded
+              {:else if status === "Checking..."}
+                Connecting...
+              {:else if isOperational}
+                System Operational
+              {:else}
+                Connection Error
+              {/if}
+            </h3>
+          </div>
+
+          {#if results.config}
+            <div class="report-summary">
+              <div class="summary-item">
+                <span class="label">Host</span>
+                <code>{results.config.replace("https://", "")}</code>
+              </div>
+              {#if results.serverName}
+                <div class="summary-item">
+                  <span class="label">Server Name (Homeserver)</span>
+                  <code>{results.serverName}</code>
+                </div>
+              {/if}
+              {#if results.version}
+                <div class="summary-item">
+                  <span class="label">Version</span>
+                  <code>{results.version}</code>
+                </div>
+              {/if}
+              {#if results.auth}
+                <div class="summary-item">
+                  <span class="label">Authentication</span>
+                  <code>{results.auth}</code>
+                </div>
+              {/if}
+              {#if results.registration}
+                <div class="summary-item">
+                  <span class="label">Registration</span>
+                  <code>{results.registration}</code>
+                </div>
+              {/if}
+            </div>
+          {/if}
+
+          <div class="check-grid">
+            {#each results.checks as check}
+              <div class="check-item">
+                <span class="label">{check.name}</span>
+                <span
+                  class="value status-icon {check.status === 'OK'
+                    ? 'ok'
+                    : check.status === 'Fail'
+                      ? 'fail'
+                      : 'pending'}"
                 >
-                <p>{@html reply.body}</p>
+                  {check.status === "OK"
+                    ? "✓"
+                    : check.status === "Fail"
+                      ? "✗"
+                      : "..."}
+                </span>
               </div>
             {/each}
           </div>
         </div>
-      {/if}
-    </div>
-  </div>
 
-  <div class="panel">
-    <div class="server-info">
-      <div class="detailed-checks">
-        <div class="status-header">
-          <h3
-            class:status-ok={isOperational}
-            class:status-error={!isOperational &&
-              status !== "Idle" &&
-              status !== "Checking..."}
-          >
-            {#if status === "Idle"}
-              Server Info: Not Loaded
-            {:else if status === "Checking..."}
-              Connecting...
-            {:else if isOperational}
-              System Operational
-            {:else}
-              Connection Error
-            {/if}
-          </h3>
-        </div>
-
-        {#if results.config}
-          <div class="report-summary">
-            <div class="summary-item">
-              <span class="label">Host</span>
-              <code>{results.config.replace("https://", "")}</code>
-            </div>
-            {#if results.serverName}
-              <div class="summary-item">
-                <span class="label">Server Name (Homeserver)</span>
-                <code>{results.serverName}</code>
-              </div>
-            {/if}
-            {#if results.version}
-              <div class="summary-item">
-                <span class="label">Version</span>
-                <code>{results.version}</code>
-              </div>
-            {/if}
-            {#if results.auth}
-              <div class="summary-item">
-                <span class="label">Authentication</span>
-                <code>{results.auth}</code>
-              </div>
-            {/if}
-            {#if results.registration}
-              <div class="summary-item">
-                <span class="label">Registration</span>
-                <code>{results.registration}</code>
-              </div>
-            {/if}
-          </div>
+        {#if errorMsg}
+          <p class="error-msg">{errorMsg}</p>
         {/if}
-
-        <div class="check-grid">
-          {#each results.checks as check}
-            <div class="check-item">
-              <span class="label">{check.name}</span>
-              <span
-                class="value status-icon {check.status === 'OK'
-                  ? 'ok'
-                  : check.status === 'Fail'
-                    ? 'fail'
-                    : 'pending'}"
-              >
-                {check.status === "OK"
-                  ? "✓"
-                  : check.status === "Fail"
-                    ? "✗"
-                    : "..."}
-              </span>
-            </div>
-          {/each}
-        </div>
       </div>
 
-      {#if errorMsg}
-        <p class="error-msg">{errorMsg}</p>
+      {#if results.welcome}
+        <div class="welcome-embed">
+          {@html results.welcome}
+        </div>
       {/if}
     </div>
-
-    {#if results.welcome}
-      <div class="welcome-embed">
-        {@html results.welcome}
-      </div>
-    {/if}
-  </div>
+  {/if}
 </section>
 
 <style>
