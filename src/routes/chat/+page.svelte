@@ -3,7 +3,7 @@
 
   import { loadTurnstile } from "$lib/turnstile";
   import { browser } from "$app/environment";
-  import { tick } from "svelte";
+  import { tick, onDestroy } from "svelte";
 
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
   const BYPASS_TOKEN = import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN;
@@ -189,12 +189,13 @@
         const infoRes = await fetch("/api/server-info");
         if (infoRes.ok) {
           const infoData = await infoRes.json();
-          if (infoData.admin_presence) {
-            results.adminStatus = infoData.admin_presence;
-          }
+          results.adminStatus = infoData.admin_presence || "unknown"; // Default to unknown if missing key
+        } else {
+          results.adminStatus = "error"; // API reachable but returned error
         }
       } catch (e) {
         console.warn("Could not fetch server info/presence", e);
+        results.adminStatus = "unavailable"; // Network error / API down
       }
 
       // Success state
@@ -242,6 +243,14 @@
   let chatSending = false;
   let chatStatus = ""; // "success", "error", ""
   let chatStatusMsg = "";
+
+  // Private Reply System
+  /** @type {string|null} */
+  let myEventId = null;
+  /** @type {any} */
+  let replyPollInterval = null;
+  /** @type {Array<{sender: string, body: string, timestamp: number}>} */
+  let replies = [];
 
   let showCaptcha = false;
   let isMockCaptcha = false;
@@ -309,9 +318,16 @@
 
       if (res.ok && data.success) {
         chatStatus = "success";
-        chatStatusMsg = "Message sent!";
+        chatStatusMsg = "Message sent! Waiting for replies...";
         chatMessage = ""; // Clear message
         showCaptcha = false; // Reset captcha flow
+
+        // Start polling for replies
+        if (data.event_id) {
+          myEventId = data.event_id;
+          replies = []; // Clear old replies
+          startPolling();
+        }
       } else {
         chatStatus = "error";
         chatStatusMsg = data.error || "Failed to send.";
@@ -327,6 +343,43 @@
       chatSending = false;
     }
   }
+
+  function startPolling() {
+    stopPolling();
+    // Poll every 5 seconds
+    replyPollInterval = setInterval(checkReplies, 5000);
+  }
+
+  function stopPolling() {
+    if (replyPollInterval) {
+      clearInterval(replyPollInterval);
+      replyPollInterval = null;
+    }
+  }
+
+  async function checkReplies() {
+    if (!myEventId) return;
+    try {
+      const res = await fetch("/api/check-reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ original_event_id: myEventId }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.replies && data.replies.length > 0) {
+          // Update replies if changed (simple replace for now)
+          replies = data.replies;
+        }
+      }
+    } catch (e) {
+      console.error("Polling error", e);
+    }
+  }
+
+  onDestroy(() => {
+    stopPolling();
+  });
 </script>
 
 <svelte:head>
@@ -338,11 +391,27 @@
     <h2>Public Shoutbox</h2>
     <p class="subtitle">Send a quick message to the public room.</p>
 
+    {#if results.adminStatus}
+      <div class="admin-presence-badge">
+        <span class="label">Admin:</span>
+        <code class="status-indicator {results.adminStatus}">
+          <span class="dot"></span>
+          {#if results.adminStatus === "unknown"}
+            Unknown
+          {:else if results.adminStatus === "error" || results.adminStatus === "unavailable"}
+            Error
+          {:else}
+            {results.adminStatus}
+          {/if}
+        </code>
+      </div>
+    {/if}
+
     <div class="chat-form">
       <div class="form-group">
         <input
           type="text"
-          placeholder="Name (Optional)"
+          placeholder="Name or title (Optional)"
           bind:value={chatName}
           disabled={chatSending || showCaptcha}
         />
@@ -388,16 +457,26 @@
       {#if chatStatus}
         <p class="status-msg {chatStatus}">{chatStatusMsg}</p>
       {/if}
+
+      {#if replies.length > 0}
+        <div class="replies-section">
+          <h3>Replies</h3>
+          <div class="replies-list">
+            {#each replies as reply}
+              <div class="reply-item">
+                <span class="sender"
+                  >{reply.sender.replace("@", "").split(":")[0]}</span
+                >
+                <p>{@html reply.body}</p>
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/if}
     </div>
   </div>
 
   <div class="panel">
-    {#if results.welcome}
-      <div class="welcome-embed">
-        {@html results.welcome}
-      </div>
-    {/if}
-
     <div class="server-info">
       <div class="detailed-checks">
         <div class="status-header">
@@ -443,15 +522,6 @@
                 <code>{results.registration}</code>
               </div>
             {/if}
-            {#if results.adminStatus}
-              <div class="summary-item">
-                <span class="label">Admin (@gg:nutra.tk)</span>
-                <code class="status-indicator {results.adminStatus}">
-                  <span class="dot"></span>
-                  {results.adminStatus}
-                </code>
-              </div>
-            {/if}
           </div>
         {/if}
 
@@ -481,6 +551,12 @@
         <p class="error-msg">{errorMsg}</p>
       {/if}
     </div>
+
+    {#if results.welcome}
+      <div class="welcome-embed">
+        {@html results.welcome}
+      </div>
+    {/if}
   </div>
 </section>
 
@@ -507,6 +583,9 @@
   .welcome-embed {
     margin-bottom: 1rem;
     text-align: left;
+    padding-top: 2rem;
+    margin-top: 1rem;
+    border-top: 1px dashed var(--color-border);
   }
 
   /* Make sure embedded links look good */
@@ -532,8 +611,6 @@
 
   .server-info {
     text-align: left;
-    padding-top: 1rem;
-    border-top: 1px dashed var(--color-border);
   }
 
   .server-info h3 {
@@ -646,6 +723,14 @@
   .status-indicator.offline .dot {
     background: #9ca3af;
   }
+  .status-indicator.unknown .dot {
+    background: #9ca3af; /* Grey for unknown */
+    opacity: 0.5;
+  }
+  .status-indicator.error .dot,
+  .status-indicator.unavailable .dot {
+    background: #f87171; /* Red for service error */
+  }
 
   .error-msg {
     color: #f87171;
@@ -664,7 +749,22 @@
   .subtitle {
     color: var(--text-muted);
     font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .admin-presence-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-bg);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    font-size: 0.85rem;
     margin-bottom: 1.5rem;
+  }
+  .admin-presence-badge .label {
+    font-weight: bold;
+    color: var(--text-muted);
   }
   .chat-form {
     display: flex;
@@ -743,5 +843,35 @@
   }
   .mock-captcha:active .mock-checkbox {
     background: #ccc;
+  }
+
+  .replies-section {
+    margin-top: 2rem;
+    text-align: left;
+    border-top: 1px solid var(--color-border);
+    padding-top: 1rem;
+  }
+  .replies-section h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+  }
+  .reply-item {
+    background: var(--color-bg-secondary, #f9f9f9);
+    padding: 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 0.8rem;
+    border-left: 3px solid var(--color-primary);
+  }
+  .reply-item .sender {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .reply-item p {
+    margin: 0;
+    font-size: 0.95rem;
   }
 </style>
