@@ -54,6 +54,9 @@
         .map((/** @type {string} */ ip) => ({ ip, hostname: "Unknown" }));
     }
   }
+  onMount(() => {
+    loadData();
+  });
 </script>
 
 <svelte:head>
