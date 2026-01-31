@@ -17,6 +17,10 @@
   let gitStats = null;
   /** @type {string[]} */
   let gitIps = [];
+  /** @type {any} */
+  let matrixStats = null;
+  /** @type {{ip: string, hostname: string}[]} */
+  let matrixIps = [];
 
   let loading = true;
   /** @type {string | null} */
@@ -43,6 +47,18 @@
       gitStats = data.git_scrapers || {};
       if (gitStats.banned_ips && typeof gitStats.banned_ips === "string") {
         gitIps = gitStats.banned_ips.split(/\s+/).filter(Boolean);
+      }
+
+      // Matrix Federation (Friendly)
+      matrixStats = data.matrix_federation || {};
+      if (Array.isArray(matrixStats.peers)) {
+        matrixIps = matrixStats.peers;
+      } else if (matrixStats.ips && typeof matrixStats.ips === "string") {
+        // Fallback for old cache
+        matrixIps = matrixStats.ips
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((/** @type {string} */ ip) => ({ ip, hostname: "Unknown" }));
       }
     } catch (e) {
       if (e instanceof Error) {
@@ -81,6 +97,12 @@
       <div class="stat-card">
         <div class="big-number">{gitStats?.currently_banned || 0}</div>
         <div class="label">Git Scrapers</div>
+      </div>
+      <div class="stat-card blue-card">
+        <div class="big-number blue-text">
+          {matrixStats?.active_count || matrixStats?.active_servers || 0}
+        </div>
+        <div class="label">Active Peers</div>
       </div>
     </div>
 
@@ -126,6 +148,22 @@
       </p>
     {/if}
 
+    <!-- Matrix Friendly Section -->
+    {#if matrixIps.length > 0}
+      <h2 class="blue-header">Verified Matrix Peers</h2>
+      <p class="subtitle">Friendly servers actively federating with us.</p>
+      <div class="ip-list compact">
+        {#each matrixIps as peer}
+          <span class="good-ip" title={peer.hostname || "Resolving..."}>
+            {peer.ip}
+            {#if peer.hostname && peer.hostname !== "Unknown" && peer.hostname !== peer.ip}
+              <span class="dns-name">({peer.hostname})</span>
+            {/if}
+          </span>
+        {/each}
+      </div>
+    {/if}
+
     <footer>
       <p>Data fetched live via Nutra API.</p>
       <p>Nutratech Infrastructure Protection</p>
@@ -154,6 +192,31 @@
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
     border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .good-ip {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6; /* Blue-500 */
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .dns-name {
+    font-size: 0.8em;
+    opacity: 0.8;
+    color: var(--color-text-muted);
+  }
+
+  .blue-text {
+    color: #3b82f6 !important;
+  }
+
+  .blue-header {
+    border-color: #3b82f6;
   }
 
   .subtitle {
