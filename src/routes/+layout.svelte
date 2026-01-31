@@ -54,7 +54,7 @@
     // Defer server info fetch
     setTimeout(async () => {
       try {
-        const res = await fetch("/api/server-info");
+        const res = await fetch("https://api.nutra.tk/server-info");
         if (res.ok) {
           const data = await res.json();
           serverInfo.set({
