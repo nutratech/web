@@ -5,7 +5,10 @@
 
   import { tick } from "svelte";
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
-  const BYPASS_TOKEN = import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN;
+  // Security: Only allow bypass in development mode
+  const BYPASS_TOKEN = import.meta.env.DEV
+    ? import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN
+    : null;
 
   /**
    * @typedef {Object} Turnstile

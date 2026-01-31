@@ -1,7 +1,10 @@
 <script>
   import { onMount, tick } from "svelte";
   import { loadTurnstile } from "$lib/turnstile";
-  const BYPASS_TOKEN = import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN;
+  // Security: Only allow bypass in development mode
+  const BYPASS_TOKEN = import.meta.env.DEV
+    ? import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN
+    : null;
   console.warn("ProtectedDownload: Mock Token =", BYPASS_TOKEN);
 
   export let buttonText = "View Resume";
