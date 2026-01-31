@@ -34,21 +34,6 @@
         latency =
           Math.round(navEntry.responseStart - navEntry.requestStart) + "ms";
       }
-      // Server Info
-      try {
-        const res = await fetch("/api/server-info");
-        if (res.ok) {
-          const data = await res.json();
-          // @ts-ignore
-          if (data.location) {
-            // @ts-ignore
-            document.getElementById("server-location").innerText =
-              data.location;
-          }
-        }
-      } catch (e) {
-        console.error("Failed to fetch server info", e);
-      }
     }
 
     const now = new Date();
@@ -64,6 +49,23 @@
     };
     // @ts-ignore
     servedTime = now.toLocaleDateString("en-GB", options).replace(",", "");
+
+    // Defer server info fetch
+    setTimeout(async () => {
+      try {
+        const res = await fetch("/api/server-info");
+        if (res.ok) {
+          const data = await res.json();
+          // @ts-ignore
+          if (data.location) {
+            const el = document.getElementById("server-location");
+            if (el) el.innerText = data.location;
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to fetch server info", e);
+      }
+    }, 500);
   });
 
   function toggleTheme() {
@@ -177,7 +179,7 @@
       Built: {PUBLIC_BUILD_TIME} |
       <!-- @ts-ignore -->
       Services: {__SERVICES_COUNT__} | Server:
-      <span id="server-location" class="ssi">Loading...</span>
+      <span id="server-location" class="ssi">Unknown</span>
     </p>
     <p>
       Nginx: <span class="ssi">v1.28.1</span> | Protocol:
