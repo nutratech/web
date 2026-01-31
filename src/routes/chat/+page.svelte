@@ -182,11 +182,9 @@
       }
 
       // Fetch Server Info (Authenticated)
-      const infoRes = await fetch("/api/server-info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
+      const infoRes = await fetch(
+        `/api/server-info?token=${encodeURIComponent(token)}`,
+      );
 
       if (infoRes.ok) {
         const info = await infoRes.json();

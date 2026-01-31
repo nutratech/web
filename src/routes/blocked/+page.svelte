@@ -21,11 +21,9 @@
 
   /** @param {string} token */
   async function loadData(token) {
-    const response = await fetch("/api/blocked", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
+    const response = await fetch(
+      `/api/blocked?token=${encodeURIComponent(token)}`,
+    );
 
     if (!response.ok) {
       throw new Error("Failed to verify/fetch data");
