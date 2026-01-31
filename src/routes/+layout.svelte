@@ -193,10 +193,14 @@
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <span
         id="server-location"
-        class="ssi clickable"
+        class="ssi"
+        class:clickable={$serverInfo.location === "Unknown" ||
+          $serverInfo.location === "Error"}
         role="button"
         tabindex="0"
-        title="Click to show server location"
+        title={$serverInfo.location === "Unknown"
+          ? "Click to show server location"
+          : ""}
         on:click={fetchServerInfo}>{$serverInfo.location}</span
       >
     </p>
