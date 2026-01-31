@@ -7,21 +7,43 @@
    * @property {string} comment
    */
 
-  /** @type {BlockedEntry[]} */
-  let entries = [];
+  /** @type {any} */
+  let manualEntries = [];
+  /** @type {any} */
+  let sshStats = null;
+  /** @type {string[]} */
+  let sshIps = [];
+  /** @type {any} */
+  let gitStats = null;
+  /** @type {string[]} */
+  let gitIps = [];
+
   let loading = true;
   /** @type {string | null} */
   let error = null;
 
   onMount(async () => {
     try {
-      // Use the new API endpoint
       const response = await fetch("/api/blocked");
       if (!response.ok) {
         throw new Error("Failed to fetch blocked list from API");
       }
       const data = await response.json();
-      entries = data.nginx_manual?.entries || [];
+
+      // Manual Nginx Bans
+      manualEntries = data.nginx_manual?.entries || [];
+
+      // SSH Stalkers (Fail2Ban)
+      sshStats = data.ssh_stalkers || {};
+      if (sshStats.banned_ips && typeof sshStats.banned_ips === "string") {
+        sshIps = sshStats.banned_ips.split(/\s+/).filter(Boolean);
+      }
+
+      // Git Scrapers (Fail2Ban)
+      gitStats = data.git_scrapers || {};
+      if (gitStats.banned_ips && typeof gitStats.banned_ips === "string") {
+        gitIps = gitStats.banned_ips.split(/\s+/).filter(Boolean);
+      }
     } catch (e) {
       if (e instanceof Error) {
         error = e.message;
@@ -46,22 +68,63 @@
   {:else if error}
     <p class="status error">Error: {error}</p>
   {:else}
-    <div class="stat-card">
-      <div class="big-number">{entries.length}</div>
-      <div class="label">Total Blocked IP Addresses</div>
+    <!-- Summary Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="big-number">{manualEntries.length}</div>
+        <div class="label">Manual Bans</div>
+      </div>
+      <div class="stat-card">
+        <div class="big-number">{sshStats?.currently_banned || 0}</div>
+        <div class="label">SSH Stalkers</div>
+      </div>
+      <div class="stat-card">
+        <div class="big-number">{gitStats?.currently_banned || 0}</div>
+        <div class="label">Git Scrapers</div>
+      </div>
     </div>
 
-    <h2>Blocked Entries</h2>
-    <div class="ip-list">
-      {#each entries as entry}
-        <div class="ip-item">
-          <span>{entry.ip}</span>
-          {#if entry.comment}
-            <span class="comment">{entry.comment}</span>
-          {/if}
-        </div>
-      {/each}
-    </div>
+    <!-- Manual Bans Section -->
+    {#if manualEntries.length > 0}
+      <h2>Manual Nginx Bans</h2>
+      <div class="ip-list">
+        {#each manualEntries as entry}
+          <div class="ip-item">
+            <span>{entry.ip}</span>
+            {#if entry.comment}
+              <span class="comment">{entry.comment}</span>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    {/if}
+
+    <!-- SSH Bans Section -->
+    {#if sshIps.length > 0}
+      <h2>SSH Stalkers (Fail2Ban)</h2>
+      <p class="subtitle">Caught attempting unauthorized SSH access.</p>
+      <div class="ip-list compact">
+        {#each sshIps as ip}
+          <span class="bad-ip">{ip}</span>
+        {/each}
+      </div>
+    {/if}
+
+    <!-- Git Scraper Bans Section -->
+    {#if gitIps.length > 0}
+      <h2>Git Scrapers</h2>
+      <p class="subtitle">Caught scanning for .git config files.</p>
+      <div class="ip-list compact">
+        {#each gitIps as ip}
+          <span class="bad-ip">{ip}</span>
+        {/each}
+      </div>
+    {:else if gitStats?.total_banned > 0}
+      <h2>Git Scrapers</h2>
+      <p class="subtitle">
+        No active bans, but {gitStats.total_banned} historical bans.
+      </p>
+    {/if}
 
     <footer>
       <p>Data fetched live via Nutra API.</p>
@@ -71,6 +134,34 @@
 </div>
 
 <style>
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .bad-ip {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger, #ef4444);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .subtitle {
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
   .page-container {
     max-width: 800px;
     margin: 0 auto;
