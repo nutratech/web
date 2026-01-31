@@ -1,9 +1,8 @@
 <script>
-  import { onMount } from "svelte";
-
+  import { onMount, tick, onDestroy } from "svelte";
+  import TurnstileProtection from "$lib/components/TurnstileProtection.svelte";
   import { loadTurnstile } from "$lib/turnstile";
   import { browser } from "$app/environment";
-  import { tick, onDestroy } from "svelte";
   import { serverInfo } from "$lib/stores";
 
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
@@ -44,7 +43,8 @@
   };
   let errorMsg = "";
 
-  onMount(async () => {
+  /** @param {string} token */
+  async function loadServerInfo(token) {
     try {
       // Check 1: Client Discovery
       addCheck("Service Discovery", "Pending");
@@ -61,9 +61,8 @@
       updateCheck("Service Discovery", true);
       results.config = baseUrl;
 
-      // Check: Server Welcome Message (Embed) - now using confirmed baseUrl
+      // Check: Server Welcome Message (Embed)
       try {
-        // baseUrl usually includes scheme (https://...)
         const welcomeRes = await fetch(`${baseUrl}/`);
         if (welcomeRes.ok) {
           const htmlText = await welcomeRes.text();
@@ -75,8 +74,6 @@
           }
         }
       } catch (e) {
-        // Silence NS_ERROR_INTERCEPTION_FAILED (often caused by ad-blockers/extensions)
-        // and other welcome fetch errors as this is non-critical.
         if (String(e).includes("NS_ERROR_INTERCEPTION_FAILED")) {
           // do nothing
         } else {
@@ -92,7 +89,6 @@
 
       // Check 3: Server Implementation (Federation Version)
       addCheck("Federation API", "Pending");
-      // Note: This endpoint is usually restricted, but we verified it has CORS enabled on this server.
       try {
         const fedRes = await fetch(`${baseUrl}/_matrix/federation/v1/version`);
         if (fedRes.ok) {
@@ -107,7 +103,6 @@
       updateCheck("Federation API", !!results.version);
 
       // Check 4: Identity / Server Keys
-      // Fetches the authoritative server_name
       addCheck("Server Key", "Pending");
       const keyRes = await fetch(`${baseUrl}/_matrix/key/v2/server`);
       if (keyRes.ok) {
@@ -144,7 +139,6 @@
         });
 
         if (regRes.status === 401) {
-          // 401 + flows means registration is open but requires steps (captcha/token/dummy)
           results.registration = "Open";
           const regData = await regRes.json();
 
@@ -172,7 +166,6 @@
               },
             );
 
-            // unique modes only
             const uniqueModes = [...new Set(modes)];
             if (uniqueModes.length > 0) {
               results.registration += ` (${uniqueModes.join(" or ")})`;
@@ -183,6 +176,19 @@
         }
       } catch (ignore) {
         console.warn("Registration check failed", ignore);
+      }
+
+      // Fetch Server Info (Authenticated)
+      const infoRes = await fetch("/api/server-info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      if (infoRes.ok) {
+        const info = await infoRes.json();
+        // Update admin status etc if needed
+        // $serverInfo.adminStatus = info.admin_presence; // Assuming store update
       }
 
       // Success state
@@ -202,7 +208,7 @@
         if (pending) updateCheck(pending.name, false);
       }
     }
-  });
+  }
 
   /**
    * @param {string} name
@@ -374,452 +380,326 @@
 </svelte:head>
 
 <section class="chat-page">
-  <div class="panel shoutbox-panel">
-    <h2>Public Shoutbox</h2>
-    <p class="subtitle">Send a quick message to the public room.</p>
+  <TurnstileProtection onVerify={loadServerInfo} action="access chat tools">
+    <div class="panel shoutbox-panel">
+      <h2>Public Shoutbox</h2>
+      <p class="subtitle">Send a quick message to the public room.</p>
 
-    {#if $serverInfo.adminStatus}
-      <div class="admin-presence-badge">
-        <span class="label">Admin:</span>
-        <code class="status-indicator {$serverInfo.adminStatus}">
-          <span class="dot"></span>
-          {#if $serverInfo.adminStatus === "unknown"}
-            Unknown
-          {:else if $serverInfo.adminStatus === "error" || $serverInfo.adminStatus === "unavailable"}
-            Error
-          {:else}
-            {$serverInfo.adminStatus}
-          {/if}
-        </code>
-      </div>
-    {/if}
+      {#if $serverInfo.adminStatus}
+        <div class="admin-presence-badge">
+          <span class="label">Admin:</span>
+          <code class="status-indicator {$serverInfo.adminStatus}">
+            <span class="dot"></span>
+            {#if $serverInfo.adminStatus === "unknown"}
+              Unknown
+            {:else if $serverInfo.adminStatus === "error" || $serverInfo.adminStatus === "unavailable"}
+              Error
+            {:else}
+              {$serverInfo.adminStatus}
+            {/if}
+          </code>
+        </div>
+      {/if}
 
-    <div class="chat-form">
-      <div class="form-group">
-        <input
-          type="text"
-          placeholder="Name or title (Optional)"
-          bind:value={chatName}
-          disabled={chatSending || showCaptcha}
-        />
-      </div>
-      <div class="form-group">
-        <textarea
-          placeholder="Message..."
-          bind:value={chatMessage}
-          rows="3"
-          disabled={chatSending || showCaptcha}
-        ></textarea>
-      </div>
+      <div class="chat-form">
+        <div class="form-group">
+          <input
+            type="text"
+            placeholder="Name or title (Optional)"
+            bind:value={chatName}
+            disabled={chatSending || showCaptcha}
+          />
+        </div>
+        <div class="form-group">
+          <textarea
+            placeholder="Message..."
+            bind:value={chatMessage}
+            rows="3"
+            disabled={chatSending || showCaptcha}
+          ></textarea>
+        </div>
 
-      {#if !showCaptcha && !chatSending}
-        <button
-          class="btn-send"
-          on:click={handleSend}
-          disabled={!chatMessage.trim()}
-        >
-          Send Message
-        </button>
-      {:else}
-        {#if isMockCaptcha}
-          <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <div
-            class="mock-captcha"
-            on:click={handleMockVerify}
-            role="button"
-            tabindex="0"
+        {#if !showCaptcha && !chatSending}
+          <button
+            class="btn-send"
+            on:click={handleSend}
+            disabled={!chatMessage.trim()}
           >
-            <div class="mock-checkbox"></div>
-            <span>I am not a robot (Dev Mock)</span>
-          </div>
+            Send Message
+          </button>
         {:else}
-          <div id="cf-turnstile-chat" class="captcha-container"></div>
+          {#if isMockCaptcha}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <div
+              class="mock-captcha"
+              on:click={handleMockVerify}
+              role="button"
+              tabindex="0"
+            >
+              <div class="mock-checkbox"></div>
+              <span>I am not a robot (Dev Mock)</span>
+            </div>
+          {:else}
+            <div id="cf-turnstile-chat" class="captcha-container"></div>
+          {/if}
+
+          {#if chatSending}
+            <p class="sending-indicator">Sending...</p>
+          {/if}
         {/if}
 
-        {#if chatSending}
-          <p class="sending-indicator">Sending...</p>
+        {#if chatStatus}
+          <p class="status-msg {chatStatus}">{chatStatusMsg}</p>
         {/if}
-      {/if}
 
-      {#if chatStatus}
-        <p class="status-msg {chatStatus}">{chatStatusMsg}</p>
-      {/if}
+        {#if replies.length > 0}
+          <div class="replies-section">
+            <h3>Replies</h3>
+            <div class="replies-list">
+              {#each replies as reply}
+                <div class="reply-item">
+                  <span class="sender"
+                    >{reply.sender.replace("@", "").split(":")[0]}</span
+                  >
+                  <p>{@html reply.body}</p>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
+      </div>
+    </div>
 
-      {#if replies.length > 0}
-        <div class="replies-section">
-          <h3>Replies</h3>
-          <div class="replies-list">
-            {#each replies as reply}
-              <div class="reply-item">
-                <span class="sender"
-                  >{reply.sender.replace("@", "").split(":")[0]}</span
+    <div class="panel">
+      <div class="server-info">
+        <div class="detailed-checks">
+          <div class="status-header">
+            <h3
+              class:status-ok={isOperational}
+              class:status-error={!isOperational && status !== "Checking..."}
+            >
+              {status === "Checking..."
+                ? "Connecting..."
+                : isOperational
+                  ? "System Operational"
+                  : "Connection Error"}
+            </h3>
+          </div>
+
+          {#if results.config}
+            <div class="report-summary">
+              <div class="summary-item">
+                <span class="label">Host</span>
+                <code>{results.config.replace("https://", "")}</code>
+              </div>
+              {#if results.serverName}
+                <div class="summary-item">
+                  <span class="label">Server Name (Homeserver)</span>
+                  <code>{results.serverName}</code>
+                </div>
+              {/if}
+              {#if results.version}
+                <div class="summary-item">
+                  <span class="label">Version</span>
+                  <code>{results.version}</code>
+                </div>
+              {/if}
+              {#if results.auth}
+                <div class="summary-item">
+                  <span class="label">Authentication</span>
+                  <code>{results.auth}</code>
+                </div>
+              {/if}
+              {#if results.registration}
+                <div class="summary-item">
+                  <span class="label">Registration</span>
+                  <code>{results.registration}</code>
+                </div>
+              {/if}
+            </div>
+          {/if}
+
+          <div class="check-grid">
+            {#each results.checks as check}
+              <div class="check-item">
+                <span class="label">{check.name}</span>
+                <span
+                  class="value status-icon {check.status === 'OK'
+                    ? 'ok'
+                    : check.status === 'Fail'
+                      ? 'fail'
+                      : 'pending'}"
                 >
-                <p>{@html reply.body}</p>
+                  {check.status === "OK"
+                    ? "✓"
+                    : check.status === "Fail"
+                      ? "✗"
+                      : "..."}
+                </span>
               </div>
             {/each}
           </div>
         </div>
-      {/if}
-    </div>
-  </div>
 
-  <div class="panel">
-    <div class="server-info">
-      <div class="detailed-checks">
-        <div class="status-header">
-          <h3
-            class:status-ok={isOperational}
-            class:status-error={!isOperational && status !== "Checking..."}
-          >
-            {status === "Checking..."
-              ? "Connecting..."
-              : isOperational
-                ? "System Operational"
-                : "Connection Error"}
-          </h3>
-        </div>
-
-        {#if results.config}
-          <div class="report-summary">
-            <div class="summary-item">
-              <span class="label">Host</span>
-              <code>{results.config.replace("https://", "")}</code>
-            </div>
-            {#if results.serverName}
-              <div class="summary-item">
-                <span class="label">Server Name (Homeserver)</span>
-                <code>{results.serverName}</code>
-              </div>
-            {/if}
-            {#if results.version}
-              <div class="summary-item">
-                <span class="label">Version</span>
-                <code>{results.version}</code>
-              </div>
-            {/if}
-            {#if results.auth}
-              <div class="summary-item">
-                <span class="label">Authentication</span>
-                <code>{results.auth}</code>
-              </div>
-            {/if}
-            {#if results.registration}
-              <div class="summary-item">
-                <span class="label">Registration</span>
-                <code>{results.registration}</code>
-              </div>
-            {/if}
-          </div>
+        {#if errorMsg}
+          <p class="error-msg">{errorMsg}</p>
         {/if}
-
-        <div class="check-grid">
-          {#each results.checks as check}
-            <div class="check-item">
-              <span class="label">{check.name}</span>
-              <span
-                class="value status-icon {check.status === 'OK'
-                  ? 'ok'
-                  : check.status === 'Fail'
-                    ? 'fail'
-                    : 'pending'}"
-              >
-                {check.status === "OK"
-                  ? "✓"
-                  : check.status === "Fail"
-                    ? "✗"
-                    : "..."}
-              </span>
-            </div>
-          {/each}
-        </div>
       </div>
 
-      {#if errorMsg}
-        <p class="error-msg">{errorMsg}</p>
+      {#if results.welcome}
+        <div class="welcome-embed">
+          {@html results.welcome}
+        </div>
       {/if}
     </div>
-
-    {#if results.welcome}
-      <div class="welcome-embed">
-        {@html results.welcome}
-      </div>
-    {/if}
-  </div>
+  </TurnstileProtection>
 </section>
 
 <style>
   .chat-page {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 2rem 1rem;
-    display: grid;
-    place-items: center;
-    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
 
   .panel {
-    background: var(--bg-card);
-    padding: 2.5rem;
-    border-radius: 15px;
+    background: var(--color-bg-card, #1e293b);
     border: 1px solid var(--color-border);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    text-align: center;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 
-  .welcome-embed {
-    margin-bottom: 1rem;
-    text-align: left;
-    padding-top: 2rem;
-    margin-top: 1rem;
-    border-top: 1px dashed var(--color-border);
+  .shoutbox-panel {
+    border-left: 4px solid var(--color-primary, #3b82f6);
   }
 
-  /* Make sure embedded links look good */
-  :global(.welcome-embed a) {
-    color: var(--color-primary);
-    text-decoration: none;
-  }
-  :global(.welcome-embed a:hover) {
-    text-decoration: underline;
-  }
-  :global(.welcome-embed h1) {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-  :global(.welcome-embed ul) {
-    margin-left: 1.5rem;
-    margin-top: 1rem;
-  }
-  :global(.welcome-embed li) {
+  h2 {
+    font-size: 1.5rem;
     margin-bottom: 0.5rem;
   }
 
-  .server-info {
-    text-align: left;
+  .subtitle {
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text);
+    font-family: inherit;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .btn-send {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-send:hover {
+    background: var(--color-primary-dark, #2563eb);
+  }
+
+  .btn-send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .server-info h3 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: center;
-  }
-
-  /* Detailed Breakdown Styles */
-  .detailed-checks {
-    margin-top: 0.5rem;
-  }
-
-  .status-header h3 {
-    text-align: center;
     margin-bottom: 1.5rem;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+    font-size: 1.25rem;
+  }
+
+  .status-ok {
+    color: #22c55e;
+  }
+  .status-error {
+    color: #ef4444;
   }
 
   .report-summary {
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    text-align: left;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .summary-item {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .summary-item .label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .summary-item code {
-    font-size: 0.95rem;
-    background: transparent;
-    padding: 0;
-    color: var(--color-text);
-    text-align: left;
+    gap: 0.25rem;
   }
 
   .check-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
   }
 
   .check-item {
-    background: var(--color-bg);
-    padding: 1rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid var(--color-border);
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
   }
 
-  .check-item .label {
-    color: var(--text-muted);
-  }
-
-  .check-item .value {
+  .status-icon {
     font-weight: bold;
-    font-family: var(--font-mono);
+  }
+  .ok {
+    color: #22c55e;
+  }
+  .fail {
+    color: #ef4444;
+  }
+  .pending {
+    color: var(--color-text-muted);
   }
 
-  .status-icon.ok {
-    color: #4ade80;
-  }
-  .status-icon.fail {
-    color: #f87171;
-  }
-
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-transform: capitalize;
-  }
-  .status-indicator .dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #ccc;
-  }
-  .status-indicator.online .dot {
-    background: #4ade80;
-  }
-  .status-indicator.unavailable .dot {
-    background: #fbbf24;
-  }
-  .status-indicator.offline .dot {
-    background: #9ca3af;
-  }
-  .status-indicator.unknown .dot {
-    background: #9ca3af; /* Grey for unknown */
-    opacity: 0.5;
-  }
-  .status-indicator.error .dot,
-  .status-indicator.unavailable .dot {
-    background: #f87171; /* Red for service error */
+  .welcome-embed {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
   }
 
-  .error-msg {
-    color: #f87171;
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-  }
-
-  /* Shoutbox Styles */
-  .shoutbox-panel {
-    margin-bottom: 2rem;
-  }
-  .shoutbox-panel h2 {
-    margin-bottom: 0.5rem;
-  }
-  .subtitle {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-  .admin-presence-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--color-bg);
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    border: 1px solid var(--color-border);
-    font-size: 0.85rem;
-    margin-bottom: 1.5rem;
-  }
-  .admin-presence-badge .label {
-    font-weight: bold;
-    color: var(--text-muted);
-  }
-  .chat-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    background: var(--color-bg);
-    color: var(--color-text);
-    font-family: inherit;
-  }
-  .form-group textarea {
-    resize: vertical;
-  }
-  .btn-send {
-    background: var(--color-primary, #007bff);
-    color: white;
-    border: none;
-    padding: 0.8rem;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn-send:hover:not(:disabled) {
-    background: var(--color-primary-dark, #0056b3);
-  }
-  .btn-send:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  .status-msg {
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-  }
-  .status-msg.success {
-    color: #4ade80;
-  }
-  .status-msg.error {
-    color: #f87171;
-  }
-
-  .captcha-container {
-    display: flex;
-    justify-content: center;
-    margin: 1rem 0;
-    min-height: 65px;
-  }
-
+  /* Captcha & Mock */
   .mock-captcha {
-    background: #f0f0f0;
-    border: 1px solid #ccc;
-    padding: 1rem;
-    width: 300px;
-    margin: 1rem auto;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 1rem;
+    background: #f9f9f9;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     cursor: pointer;
-    user-select: none;
     color: #333;
+    max-width: 300px;
   }
   .mock-checkbox {
     width: 24px;
@@ -828,37 +708,60 @@
     border-radius: 2px;
     background: white;
   }
-  .mock-captcha:active .mock-checkbox {
-    background: #ccc;
-  }
 
   .replies-section {
     margin-top: 2rem;
-    text-align: left;
     border-top: 1px solid var(--color-border);
     padding-top: 1rem;
   }
-  .replies-section h3 {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    color: var(--text-secondary);
-  }
   .reply-item {
-    background: var(--color-bg-secondary, #f9f9f9);
+    background: rgba(0, 0, 0, 0.2);
     padding: 0.8rem;
-    border-radius: 6px;
     margin-bottom: 0.8rem;
+    border-radius: 4px;
     border-left: 3px solid var(--color-primary);
   }
-  .reply-item .sender {
+  .sender {
     font-size: 0.8rem;
     font-weight: bold;
     color: var(--color-primary);
     display: block;
     margin-bottom: 0.3rem;
   }
-  .reply-item p {
-    margin: 0;
-    font-size: 0.95rem;
+
+  .admin-presence-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    text-transform: capitalize;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #9ca3af;
+  }
+  .online .dot {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+  }
+  .offline .dot {
+    background: #ef4444;
+  }
+  .unavailable .dot {
+    background: #f59e0b;
+  }
+  .error .dot {
+    background: #ef4444;
   }
 </style>
