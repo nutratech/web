@@ -667,9 +667,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    padding: 1rem;
+    background: var(--color-bg-secondary, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .check-item:hover {
+    background: var(--color-bg-hover, rgba(255, 255, 255, 0.05));
+    border-color: var(--color-primary-muted, rgba(59, 130, 246, 0.3));
+    transform: translateY(-1px);
   }
 
   .status-icon {
