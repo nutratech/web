@@ -2,7 +2,8 @@
   import { onMount } from "svelte";
   import "../app.css";
   import favicon from "$lib/assets/favicon.png";
-  import { PUBLIC_CV_URL, PUBLIC_BUILD_TIME } from "$env/static/public";
+  import { PUBLIC_BUILD_TIME } from "$env/static/public";
+  import { serverInfo } from "$lib/stores";
 
   let theme = "system";
 
@@ -56,14 +57,15 @@
         const res = await fetch("/api/server-info");
         if (res.ok) {
           const data = await res.json();
-          // @ts-ignore
-          if (data.location) {
-            const el = document.getElementById("server-location");
-            if (el) el.innerText = data.location;
-          }
+          serverInfo.set({
+            location: data.location || "Unknown",
+            time: data.time || "...",
+            adminStatus: data.admin_presence || "unknown",
+          });
         }
       } catch (e) {
         console.warn("Failed to fetch server info", e);
+        serverInfo.update((s) => ({ ...s, adminStatus: "unavailable" }));
       }
     }, 500);
   });
@@ -179,7 +181,7 @@
       Built: {PUBLIC_BUILD_TIME} |
       <!-- @ts-ignore -->
       Services: {__SERVICES_COUNT__} | Server:
-      <span id="server-location" class="ssi">Unknown</span>
+      <span id="server-location" class="ssi">{$serverInfo.location}</span>
     </p>
     <p>
       Nginx: <span class="ssi">v1.28.1</span> | Protocol:

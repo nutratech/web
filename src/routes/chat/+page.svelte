@@ -4,6 +4,7 @@
   import { loadTurnstile } from "$lib/turnstile";
   import { browser } from "$app/environment";
   import { tick, onDestroy } from "svelte";
+  import { serverInfo } from "$lib/stores";
 
   const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
   const BYPASS_TOKEN = import.meta.env.VITE_CAPTCHA_BYPASS_TOKEN;
@@ -182,20 +183,6 @@
         }
       } catch (ignore) {
         console.warn("Registration check failed", ignore);
-      }
-
-      // Server Status + Admin Presence (from backend)
-      try {
-        const infoRes = await fetch("/api/server-info");
-        if (infoRes.ok) {
-          const infoData = await infoRes.json();
-          results.adminStatus = infoData.admin_presence || "unknown"; // Default to unknown if missing key
-        } else {
-          results.adminStatus = "error"; // API reachable but returned error
-        }
-      } catch (e) {
-        console.warn("Could not fetch server info/presence", e);
-        results.adminStatus = "unavailable"; // Network error / API down
       }
 
       // Success state
@@ -391,17 +378,17 @@
     <h2>Public Shoutbox</h2>
     <p class="subtitle">Send a quick message to the public room.</p>
 
-    {#if results.adminStatus}
+    {#if $serverInfo.adminStatus}
       <div class="admin-presence-badge">
         <span class="label">Admin:</span>
-        <code class="status-indicator {results.adminStatus}">
+        <code class="status-indicator {$serverInfo.adminStatus}">
           <span class="dot"></span>
-          {#if results.adminStatus === "unknown"}
+          {#if $serverInfo.adminStatus === "unknown"}
             Unknown
-          {:else if results.adminStatus === "error" || results.adminStatus === "unavailable"}
+          {:else if $serverInfo.adminStatus === "error" || $serverInfo.adminStatus === "unavailable"}
             Error
           {:else}
-            {results.adminStatus}
+            {$serverInfo.adminStatus}
           {/if}
         </code>
       </div>
