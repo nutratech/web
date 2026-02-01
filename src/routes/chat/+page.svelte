@@ -290,14 +290,31 @@
   }
 
   /** @param {string} token */
-  function onGateSuccess(token) {
+  async function onGateSuccess(token) {
     // For page access, we treat valid captcha as "entry granted"
-    // We don't necessarily need to send it to backend unless backend enforces it on data fetch.
-    // Currently api.py server-info is public.
-    // So client-side gate is sufficient to stop simple scrapers/spam viewing.
     verified = true;
     showGateCaptcha = false;
     loadServerInfo();
+
+    // Authenticated: Fetch admin status
+    try {
+      const res = await fetch("/api/chat/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.admin_presence) {
+          serverInfo.update((s) => ({
+            ...s,
+            adminStatus: data.admin_presence,
+          }));
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch admin status", e);
+    }
   }
 
   function handleGateMockVerify() {
