@@ -627,6 +627,14 @@
           <h3>Element</h3>
           <p>Advanced</p>
         </a>
+        <a
+          href="https://schil.nutra.tk"
+          target="_blank"
+          class="client-card schildichat"
+        >
+          <h3>SchildiChat</h3>
+          <p>Bubble Layout</p>
+        </a>
       </div>
     </div>
 
