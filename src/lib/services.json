@@ -12,6 +12,16 @@
           "id": "Matrix Chat",
           "url": "https://matrix.nutra.tk",
           "description": "Matrix Chat"
+        },
+        {
+          "id": "Matrix Chat",
+          "url": "https://mdev.nutra.tk",
+          "description": "Matrix Chat"
+        },
+        {
+          "id": "Matrix Chat",
+          "url": "https://minimat.nutra.tk",
+          "description": "Matrix Chat"
         }
       ]
     },
