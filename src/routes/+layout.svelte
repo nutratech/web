@@ -1,8 +1,10 @@
 <script>
   import { onMount } from "svelte";
   import "../app.css";
-  import { PUBLIC_BUILD_TIME } from "$env/static/public";
+  import { env } from "$env/dynamic/public";
   import { serverInfo } from "$lib/stores";
+
+  const PUBLIC_BUILD_TIME = env.PUBLIC_BUILD_TIME || "Unknown";
 
   let theme = "system";
 
@@ -112,6 +114,7 @@
   /** @param {string} name */
   function toggleDropdown(name) {
     activeDropdown = activeDropdown === name ? null : name;
+    console.log("activeDropdown is now:", activeDropdown);
   }
 
   /** @param {MouseEvent} event */

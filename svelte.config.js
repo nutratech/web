@@ -1,6 +1,10 @@
 import adapter from "@tg-svelte/adapter-static";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { mdsvex } from "mdsvex";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('@tg-svelte/kit').Config} */
 const config = {
@@ -11,6 +15,7 @@ const config = {
     vitePreprocess(),
     mdsvex({
       extensions: [".md"],
+      layout: join(__dirname, "./src/routes/blog/posts/BlogLayout.svelte"),
     }),
   ],
 

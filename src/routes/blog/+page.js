@@ -1,6 +1,7 @@
 /** @type {import('./$types').PageLoad} */
-export const load = async ({ fetch }) => {
-  const allPostFiles = import.meta.glob("/src/lib/posts/*.md", { eager: true });
+export const load = async () => {
+  const CONTENT_DIR = "posts";
+  const allPostFiles = import.meta.glob("./posts/**/*.md", { eager: true });
   const iterablePostFiles = Object.entries(allPostFiles);
 
   const allPosts = await Promise.all(
@@ -8,12 +9,13 @@ export const load = async ({ fetch }) => {
       /** @type {{ metadata: App.BlogPost }} */
       // @ts-expect-error - dynamic import type is unknown
       const { metadata } = resolver;
-      const parts = path.split("/");
-      const slug = parts.pop()?.slice(0, -3);
+      // path looks like './posts/2026/07/matrix-set-reconciliation/+page.md'
+      const prefixLength = 3 + CONTENT_DIR.length; // "./posts/".length === 8
+      const postPath = path.slice(prefixLength, -9); // subtract "/+page.md"
 
       return {
         meta: metadata,
-        path: `/blog/${slug}`,
+        path: `/blog/${CONTENT_DIR}/${postPath}`,
       };
     }),
   );

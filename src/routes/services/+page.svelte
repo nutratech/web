@@ -1,7 +1,8 @@
 <script>
   import servicesData from "$lib/services.json";
-  import { PUBLIC_BUILD_TIME } from "$env/static/public";
+  import { env } from "$env/dynamic/public";
 
+  const PUBLIC_BUILD_TIME = env.PUBLIC_BUILD_TIME || new Date().toISOString();
   // Format date nicely
   const generatedDate = new Date(PUBLIC_BUILD_TIME).toLocaleString();
 </script>
