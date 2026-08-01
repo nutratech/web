@@ -291,6 +291,10 @@
     margin-bottom: 0.75rem;
   }
 
+  :global(.footnotes li > p:first-of-type) {
+    display: inline;
+  }
+
   :global(.footnote-index-link) {
     font-weight: 700;
     margin-right: 0.4rem;
