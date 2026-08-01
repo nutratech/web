@@ -506,7 +506,8 @@
       <h2>Public Shoutbox</h2>
       <p class="subtitle">Send a quick message to the public room.</p>
 
-      {#if $serverInfo.adminStatus}
+      {#if false && $serverInfo.adminStatus}
+        <!-- hidden -->
         <div
           class="admin-presence-badge"
           on:click={loadServerInfo}
@@ -595,6 +596,45 @@
             </div>
           </div>
         {/if}
+      </div>
+    </div>
+
+    <div class="panel clients-panel">
+      <h2>Web Clients</h2>
+      <p class="subtitle">Launch a Matrix client to chat.</p>
+      <div class="client-grid">
+        <a
+          href="https://fluffy.nutra.tk"
+          target="_blank"
+          class="client-card fluffy"
+        >
+          <h3>FluffyChat</h3>
+          <p>Simple & Cute</p>
+        </a>
+        <a
+          href="https://cinny.nutra.tk"
+          target="_blank"
+          class="client-card cinny"
+        >
+          <h3>Cinny</h3>
+          <p>Clean & Modern</p>
+        </a>
+        <a
+          href="https://element.nutra.tk"
+          target="_blank"
+          class="client-card element"
+        >
+          <h3>Element</h3>
+          <p>Advanced</p>
+        </a>
+        <a
+          href="https://schil.nutra.tk"
+          target="_blank"
+          class="client-card schildichat"
+        >
+          <h3>SchildiChat</h3>
+          <p>Bubble Layout</p>
+        </a>
       </div>
     </div>
 
@@ -912,5 +952,39 @@
   }
   .error .dot {
     background: #ef4444;
+  }
+  .clients-panel {
+    border-left: 4px solid var(--color-primary-dark, #2563eb);
+  }
+  .client-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .client-card {
+    display: block;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+  }
+  .client-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--color-primary);
+  }
+  .client-card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--color-primary);
+  }
+  .client-card p {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
   }
 </style>
