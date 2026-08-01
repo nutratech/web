@@ -59,14 +59,35 @@
     };
 
     const footnoteRefs = document.querySelectorAll("a.footnote-ref");
+    /** @type {Map<string, number>} */
+    const footnoteNumbers = new Map();
+    let nextFootnoteNumber = 1;
+
     for (const ref of footnoteRefs) {
       if (!(ref instanceof HTMLElement)) continue;
 
       const href = ref.getAttribute("href");
       if (!href?.startsWith("#")) continue;
 
+      if (!footnoteNumbers.has(href)) {
+        footnoteNumbers.set(href, nextFootnoteNumber++);
+      }
+
+      ref.textContent = String(footnoteNumbers.get(href));
+
       const footnote = document.querySelector(href);
       if (!footnote) continue;
+      if (footnote instanceof HTMLElement && !footnote.dataset.numbered) {
+        footnote.dataset.numbered = "true";
+
+        const numberLink = document.createElement("a");
+        numberLink.href = `#${ref.parentElement?.id || ""}`;
+        numberLink.className = "footnote-index-link";
+        numberLink.textContent = `${footnoteNumbers.get(href)}.`;
+
+        footnote.prepend(document.createTextNode(" "));
+        footnote.prepend(numberLink);
+      }
 
       const previewNode = footnote.cloneNode(true);
       if (!(previewNode instanceof HTMLElement)) continue;
@@ -217,5 +238,19 @@
     line-height: 1.45;
     font-size: 0.95rem;
     pointer-events: auto;
+  }
+
+  :global(.footnotes ol) {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  :global(.footnotes li) {
+    margin-bottom: 0.75rem;
+  }
+
+  :global(.footnote-index-link) {
+    font-weight: 700;
+    margin-right: 0.4rem;
   }
 </style>
