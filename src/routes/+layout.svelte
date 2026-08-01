@@ -137,17 +137,7 @@
       <ul>
         <li><a href="/">Home</a></li>
 
-        <li class="dropdown" class:open={activeDropdown === "portfolio"}>
-          <button class="dropbtn" on:click={() => toggleDropdown("portfolio")}
-            >Portfolio ▾</button
-          >
-          <div class="dropdown-content">
-            <a href="/portfolio" on:click={() => (activeDropdown = null)}
-              >Projects</a
-            >
-            <a href="/blog" on:click={() => (activeDropdown = null)}>Blog</a>
-          </div>
-        </li>
+        <li><a href="/blog">Blog</a></li>
 
         <li class="dropdown" class:open={activeDropdown === "services"}>
           <button class="dropbtn" on:click={() => toggleDropdown("services")}

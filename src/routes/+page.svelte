@@ -18,7 +18,7 @@
   <h2>What I Offer</h2>
   <ul>
     <li>Full Stack Development</li>
-    <li>Performance Optimization</li>
-    <li>Legacy Browser Support Consulting</li>
+    <li>High-performance C++/Rust</li>
+    <li>Legacy tooling support</li>
   </ul>
 </section>

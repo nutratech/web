@@ -4,6 +4,8 @@
   export let title;
   export let subtitle = "";
   export let date;
+  /** @type {string[]} */
+  export let tags = [];
   export let author = "";
   export let draft = false;
 
@@ -180,6 +182,13 @@
       {#if subtitle}
         <p class="post-subtitle">{subtitle}</p>
       {/if}
+      {#if tags.length}
+        <div class="post-tags">
+          {#each tags as tag}
+            <span class="tag">{tag}</span>
+          {/each}
+        </div>
+      {/if}
       <div class="post-meta">
         <span>Published: {date}</span>
         {#if author}
@@ -219,6 +228,23 @@
     margin: 0 0 0.75rem;
     color: var(--color-secondary);
     font-size: 1.1rem;
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 0.75rem;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.12rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-secondary);
   }
 
   :global(a.footnote-ref) {
