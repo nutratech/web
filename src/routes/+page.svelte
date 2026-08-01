@@ -1,24 +1,9 @@
 <script>
 </script>
 
-<h1>My Website</h1>
-<p>Welcome to my personal site.</p>
+<h1>Homepage</h1>
+<p>Welcome to my personal site. Down to mostly just a blog, now 🙂.</p>
 
-<section>
-  <h2>About Me</h2>
-  <p>I am a developer passionate about building things.</p>
-</section>
+<p>Developer. Puzzle enthusiast (math/chess/logic).</p>
 
-<section>
-  <h2>What I Do</h2>
-  <p>I build web applications, optimize builds, and solve complex problems.</p>
-</section>
-
-<section>
-  <h2>What I Offer</h2>
-  <ul>
-    <li>Full Stack Development</li>
-    <li>High-performance C++/Rust</li>
-    <li>Legacy tooling support</li>
-  </ul>
-</section>
+<p>I intend to add some more resources and interactive materials in the Fall.</p>
