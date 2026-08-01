@@ -7,32 +7,125 @@
   export let author = "";
   export let draft = false;
 
-  onMount(async () => {
-    // Dynamically load Mermaid to avoid SSR issues
-    const loadMermaid = new Function(
-      'return import("https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs")',
-    );
-    const mermaid = (await loadMermaid()).default;
-    mermaid.initialize({ startOnLoad: false });
+  onMount(() => {
+    /** @type {number | undefined} */
+    let hideTooltipTimeout;
+    const tooltip = document.createElement("div");
+    tooltip.className = "footnote-tooltip";
+    tooltip.hidden = true;
+    document.body.appendChild(tooltip);
 
-    // mdsvex wraps code blocks in <pre><code class="language-mermaid">
-    // We need to unwrap them so the CSS/background of <pre> doesn't ruin the diagram
-    const blocks = document.querySelectorAll("code.language-mermaid");
-    for (const block of blocks) {
-      const pre = block.parentElement;
-      if (!pre) continue;
+    const cancelHide = () => {
+      window.clearTimeout(hideTooltipTimeout);
+    };
 
-      const mermaidDiv = document.createElement("div");
-      mermaidDiv.className = "mermaid";
-      mermaidDiv.textContent = block.textContent;
-      mermaidDiv.style.display = "flex";
-      mermaidDiv.style.justifyContent = "center";
-      pre.replaceWith(mermaidDiv);
+    const hideTooltip = () => {
+      tooltip.hidden = true;
+      tooltip.textContent = "";
+    };
+
+    const scheduleHide = () => {
+      cancelHide();
+      hideTooltipTimeout = window.setTimeout(hideTooltip, 120);
+    };
+
+    /** @param {HTMLElement} ref */
+    const positionTooltip = (ref) => {
+      const rect = ref.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const top = window.scrollY + rect.bottom + 10;
+      const maxLeft =
+        window.scrollX + window.innerWidth - tooltipRect.width - 12;
+      const centeredLeft =
+        window.scrollX + rect.left + rect.width / 2 - tooltipRect.width / 2;
+      const left = Math.max(
+        window.scrollX + 12,
+        Math.min(centeredLeft, maxLeft),
+      );
+
+      tooltip.style.top = `${top}px`;
+      tooltip.style.left = `${left}px`;
+    };
+
+    /**
+     * @param {HTMLElement} ref
+     * @param {string} previewHtml
+     */
+    const showTooltip = (ref, previewHtml) => {
+      cancelHide();
+      tooltip.innerHTML = previewHtml;
+      tooltip.hidden = false;
+      positionTooltip(ref);
+    };
+
+    const footnoteRefs = document.querySelectorAll("a.footnote-ref");
+    for (const ref of footnoteRefs) {
+      if (!(ref instanceof HTMLElement)) continue;
+
+      const href = ref.getAttribute("href");
+      if (!href?.startsWith("#")) continue;
+
+      const footnote = document.querySelector(href);
+      if (!footnote) continue;
+
+      const previewNode = footnote.cloneNode(true);
+      if (!(previewNode instanceof HTMLElement)) continue;
+
+      for (const backref of previewNode.querySelectorAll(
+        "a.footnote-backref",
+      )) {
+        backref.remove();
+      }
+
+      const previewHtml = previewNode.innerHTML.trim();
+      if (!previewHtml) continue;
+
+      ref.setAttribute(
+        "aria-label",
+        previewNode.textContent?.replace(/\s+/g, " ").trim() ||
+          "Footnote preview",
+      );
+      ref.addEventListener("mouseenter", () => showTooltip(ref, previewHtml));
+      ref.addEventListener("focus", () => showTooltip(ref, previewHtml));
+      ref.addEventListener("mouseleave", scheduleHide);
+      ref.addEventListener("blur", scheduleHide);
     }
 
-    if (blocks.length > 0) {
-      mermaid.run({ querySelector: ".mermaid" });
-    }
+    tooltip.addEventListener("mouseenter", cancelHide);
+    tooltip.addEventListener("mouseleave", scheduleHide);
+
+    (async () => {
+      // Dynamically load Mermaid to avoid SSR issues
+      const loadMermaid = new Function(
+        'return import("https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs")',
+      );
+      const mermaid = (await loadMermaid()).default;
+      mermaid.initialize({ startOnLoad: false });
+
+      // mdsvex wraps code blocks in <pre><code class="language-mermaid">
+      // We need to unwrap them so the CSS/background of <pre> doesn't ruin the diagram
+      const blocks = document.querySelectorAll("code.language-mermaid");
+      for (const block of blocks) {
+        const pre = block.parentElement;
+        if (!pre) continue;
+
+        const mermaidDiv = document.createElement("div");
+        mermaidDiv.className = "mermaid";
+        mermaidDiv.textContent = block.textContent;
+        mermaidDiv.style.display = "flex";
+        mermaidDiv.style.justifyContent = "center";
+        pre.replaceWith(mermaidDiv);
+      }
+
+      if (blocks.length > 0) {
+        mermaid.run({ querySelector: ".mermaid" });
+      }
+    })();
+
+    return () => {
+      cancelHide();
+      tooltip.remove();
+    };
   });
 </script>
 
@@ -105,5 +198,24 @@
     margin: 0 0 0.75rem;
     color: var(--color-secondary);
     font-size: 1.1rem;
+  }
+
+  :global(a.footnote-ref) {
+    cursor: help;
+  }
+
+  :global(.footnote-tooltip) {
+    position: absolute;
+    z-index: 1000;
+    max-width: min(34rem, calc(100vw - 24px));
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    line-height: 1.45;
+    font-size: 0.95rem;
+    pointer-events: auto;
   }
 </style>
