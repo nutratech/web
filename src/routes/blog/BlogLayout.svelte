@@ -82,17 +82,32 @@
       if (footnote instanceof HTMLElement && !footnote.dataset.numbered) {
         footnote.dataset.numbered = "true";
 
+        const originalChildren = Array.from(footnote.childNodes);
+        const bodyWrapper = document.createElement("span");
+        bodyWrapper.className = "footnote-body";
+        bodyWrapper.append(...originalChildren);
+
         const numberLink = document.createElement("a");
         numberLink.href = `#${ref.parentElement?.id || ""}`;
         numberLink.className = "footnote-index-link";
         numberLink.textContent = `${footnoteNumbers.get(href)}.`;
 
-        footnote.prepend(document.createTextNode(" "));
-        footnote.prepend(numberLink);
+        footnote.replaceChildren(
+          numberLink,
+          document.createTextNode(" "),
+          bodyWrapper,
+        );
       }
 
       const previewNode = footnote.cloneNode(true);
       if (!(previewNode instanceof HTMLElement)) continue;
+
+      const previewIndexLink = previewNode.querySelector(
+        ".footnote-index-link",
+      );
+      if (previewIndexLink instanceof HTMLElement) {
+        previewIndexLink.remove();
+      }
 
       for (const backref of previewNode.querySelectorAll(
         "a.footnote-backref",
@@ -112,6 +127,12 @@
       ref.addEventListener("focus", () => showTooltip(ref, previewHtml));
       ref.addEventListener("mouseleave", scheduleHide);
       ref.addEventListener("blur", scheduleHide);
+    }
+
+    for (const backref of document.querySelectorAll("a.footnote-backref")) {
+      if (!(backref instanceof HTMLElement)) continue;
+      if (backref.previousSibling?.nodeType === Node.TEXT_NODE) continue;
+      backref.before(document.createTextNode(" "));
     }
 
     tooltip.addEventListener("mouseenter", cancelHide);
@@ -291,12 +312,33 @@
     margin-bottom: 0.75rem;
   }
 
-  :global(.footnotes li > p:first-of-type) {
-    display: inline;
+  :global(.footnotes li) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.4rem;
+    align-items: start;
   }
 
   :global(.footnote-index-link) {
     font-weight: 700;
-    margin-right: 0.4rem;
+  }
+
+  :global(.footnote-body) {
+    min-width: 0;
+  }
+
+  :global(.footnote-body > p:first-child) {
+    display: inline;
+  }
+
+  :global(.footnote-body > :not(:first-child)) {
+    display: block;
+    margin-top: 0.5rem;
+  }
+
+  :global(.footnote-backref) {
+    margin-left: 0.2rem;
+    white-space: nowrap;
+    text-decoration: none;
   }
 </style>
