@@ -11,6 +11,7 @@ declare global {
       title: string;
       date: string;
       description?: string;
+      subtitle?: string;
       author?: string;
       draft?: boolean;
     }

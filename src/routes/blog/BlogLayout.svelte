@@ -1,8 +1,8 @@
 <script>
-  import { dev } from "$app/environment";
   import { onMount } from "svelte";
 
   export let title;
+  export let subtitle = "";
   export let date;
   export let author = "";
   export let draft = false;
@@ -50,12 +50,12 @@
   />
 </svelte:head>
 
-{#if draft && !dev}
+{#if draft}
   <article>
     <div class="blog-header">
       <h1 style="margin-top: 0;">Not Found</h1>
       <div class="post-meta">
-        <span>This draft is not published in production.</span>
+        <span>This draft is not published.</span>
       </div>
     </div>
   </article>
@@ -63,6 +63,9 @@
   <article>
     <div class="blog-header">
       <h1 style="margin-top: 0;">{title}</h1>
+      {#if subtitle}
+        <p class="post-subtitle">{subtitle}</p>
+      {/if}
       <div class="post-meta">
         <span>Published: {date}</span>
         {#if author}
@@ -96,5 +99,11 @@
   .draft-badge {
     color: var(--color-primary);
     font-weight: 700;
+  }
+
+  .post-subtitle {
+    margin: 0 0 0.75rem;
+    color: var(--color-secondary);
+    font-size: 1.1rem;
   }
 </style>
