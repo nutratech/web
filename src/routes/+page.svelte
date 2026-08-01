@@ -6,4 +6,6 @@
 
 <p>Developer. Puzzle enthusiast (math/chess/logic).</p>
 
-<p>I intend to add some more resources and interactive materials in the Fall.</p>
+<p>
+  I intend to add some more resources and interactive materials in the Fall.
+</p>
