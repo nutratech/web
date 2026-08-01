@@ -1,3 +1,5 @@
+import { dev } from "$app/environment";
+
 /** @type {import('./$types').PageLoad} */
 export const load = async () => {
   const CONTENT_DIR = "posts";
@@ -25,6 +27,6 @@ export const load = async () => {
   });
 
   return {
-    posts: sortedPosts,
+    posts: sortedPosts.filter((post) => dev || !post.meta.draft),
   };
 };

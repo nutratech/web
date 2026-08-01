@@ -3,6 +3,9 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { mdsvex } from "mdsvex";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import remarkFootnotes from "remark-footnotes";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -15,7 +18,9 @@ const config = {
     vitePreprocess(),
     mdsvex({
       extensions: [".md"],
-      layout: join(__dirname, "./src/routes/blog/posts/BlogLayout.svelte"),
+      layout: join(__dirname, "./src/routes/blog/BlogLayout.svelte"),
+      remarkPlugins: [remarkMath, remarkFootnotes],
+      rehypePlugins: [rehypeKatex],
     }),
   ],
 

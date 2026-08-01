@@ -12,6 +12,7 @@ declare global {
       date: string;
       description?: string;
       author?: string;
+      draft?: boolean;
     }
   }
 

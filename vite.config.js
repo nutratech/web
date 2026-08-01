@@ -1,10 +1,17 @@
 import { sveltekit } from "@tg-svelte/kit/vite";
 import { defineConfig } from "vite";
 import legacy from "@vitejs/plugin-legacy";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
-const commitHash = execSync("git rev-parse --short HEAD").toString().trim();
+let commitHash = "unknown";
+try {
+  commitHash = execFileSync("git", ["rev-parse", "--short", "HEAD"], {
+    encoding: "utf-8",
+  }).trim();
+} catch {
+  // Keep local checks/builds working when git is unavailable or shelling out is restricted.
+}
 
 // Read services count
 /** @type {{ groups: { services: any[] }[] }} */
