@@ -223,6 +223,22 @@
 
   :global(a.footnote-ref) {
     cursor: help;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  :global(a.footnote-ref::before) {
+    content: "[";
+  }
+
+  :global(a.footnote-ref::after) {
+    content: "]";
+  }
+
+  :global(sup[id^="fnref-"]) {
+    margin-left: 0.1em;
+    line-height: 0;
   }
 
   :global(.footnote-tooltip) {
