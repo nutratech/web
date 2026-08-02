@@ -1,8 +1,10 @@
 <script>
+  import { page } from "$app/state";
   import { resolve } from "$app/paths";
   import { onMount } from "svelte";
 
-  const OG_IMAGE_URL = "https://nutratech.github.io/web/favicon.png";
+  const SITE_URL = "https://nutratech.github.io/web";
+  const OG_IMAGE_URL = `${SITE_URL}/favicon.png`;
 
   export let title;
   export let description = "";
@@ -12,6 +14,12 @@
   export let tags = [];
   export let author = "";
   export let draft = false;
+
+  $: metaDescription =
+    description && subtitle
+      ? `${description} ${subtitle}`
+      : description || subtitle || title;
+  $: canonicalUrl = `${SITE_URL}${page.url.pathname}`;
 
   onMount(() => {
     /** @type {number | undefined} */
@@ -187,15 +195,23 @@
 
 <svelte:head>
   <title>{title}</title>
-  <meta name="description" content={description || subtitle || title} />
+  <meta name="description" content={metaDescription} />
+  <link rel="canonical" href={canonicalUrl} />
   <meta property="og:title" content={title} />
-  <meta property="og:description" content={description || subtitle || title} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:description" content={metaDescription} />
   <meta property="og:image" content={OG_IMAGE_URL} />
+  <meta property="og:image:secure_url" content={OG_IMAGE_URL} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={title} />
   <meta property="og:type" content="article" />
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content={canonicalUrl} />
   <meta name="twitter:title" content={title} />
-  <meta name="twitter:description" content={description || subtitle || title} />
+  <meta name="twitter:description" content={metaDescription} />
   <meta name="twitter:image" content={OG_IMAGE_URL} />
+  <meta name="twitter:image:alt" content={title} />
   {#if draft}
     <meta name="robots" content="noindex" />
   {/if}
