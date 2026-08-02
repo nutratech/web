@@ -15,10 +15,7 @@
   export let author = "";
   export let draft = false;
 
-  $: metaDescription =
-    description && subtitle
-      ? `${description} ${subtitle}`
-      : description || subtitle || title;
+  $: metaDescription = subtitle || description || title;
   $: canonicalUrl = `${SITE_URL}${page.url.pathname}`;
 
   onMount(() => {
