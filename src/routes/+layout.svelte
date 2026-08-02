@@ -1,4 +1,5 @@
 <script>
+  import { base } from "$app/paths";
   import { onMount } from "svelte";
   import "../app.css";
   import { env } from "$env/dynamic/public";
@@ -135,19 +136,20 @@
   <header>
     <nav>
       <ul>
-        <li><a href="/">Home</a></li>
+        <li><a href={`${base}/`}>Home</a></li>
 
-        <li><a href="/blog">Blog</a></li>
+        <li><a href={`${base}/blog`}>Blog</a></li>
 
         <li class="dropdown" class:open={activeDropdown === "services"}>
           <button class="dropbtn" on:click={() => toggleDropdown("services")}
             >Services ▾</button
           >
           <div class="dropdown-content">
-            <a href="/services" on:click={() => (activeDropdown = null)}
-              >Overview</a
+            <a
+              href={`${base}/services`}
+              on:click={() => (activeDropdown = null)}>Overview</a
             >
-            <a href="/blocked" on:click={() => (activeDropdown = null)}
+            <a href={`${base}/blocked`} on:click={() => (activeDropdown = null)}
               >Transparency</a
             >
           </div>
@@ -203,7 +205,7 @@
         target="_blank"
         rel="noopener noreferrer">HelioHost</a
       >
-      | <a href="/blocked">Transparency Report</a>
+      | <a href={`${base}/blocked`}>Transparency Report</a>
     </p>
 
     <p class="commit-hash">

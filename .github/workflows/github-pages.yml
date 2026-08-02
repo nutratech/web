@@ -42,6 +42,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build site
+        env:
+          BASE_PATH: /web
         run: pnpm build
 
       - name: Upload Pages artifact
