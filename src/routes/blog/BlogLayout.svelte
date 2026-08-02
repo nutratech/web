@@ -2,7 +2,10 @@
   import { resolve } from "$app/paths";
   import { onMount } from "svelte";
 
+  const OG_IMAGE_URL = "https://nutratech.github.io/web/favicon.png";
+
   export let title;
+  export let description = "";
   export let subtitle = "";
   export let date;
   /** @type {string[]} */
@@ -184,7 +187,15 @@
 
 <svelte:head>
   <title>{title}</title>
+  <meta name="description" content={description || subtitle || title} />
   <meta property="og:title" content={title} />
+  <meta property="og:description" content={description || subtitle || title} />
+  <meta property="og:image" content={OG_IMAGE_URL} />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description || subtitle || title} />
+  <meta name="twitter:image" content={OG_IMAGE_URL} />
   {#if draft}
     <meta name="robots" content="noindex" />
   {/if}
