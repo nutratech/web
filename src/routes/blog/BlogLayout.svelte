@@ -84,7 +84,7 @@
         footnote.dataset.numbered = "true";
 
         const originalChildren = Array.from(footnote.childNodes);
-        const bodyWrapper = document.createElement("span");
+        const bodyWrapper = document.createElement("div");
         bodyWrapper.className = "footnote-body";
         bodyWrapper.append(...originalChildren);
 
@@ -132,7 +132,15 @@
 
     for (const backref of document.querySelectorAll("a.footnote-backref")) {
       if (!(backref instanceof HTMLElement)) continue;
-      if (backref.previousSibling?.nodeType === Node.TEXT_NODE) continue;
+
+      const prev = backref.previousSibling;
+      if (
+        prev?.nodeType === Node.TEXT_NODE &&
+        /\s$/.test(prev.textContent || "")
+      ) {
+        continue;
+      }
+
       backref.before(document.createTextNode(" "));
     }
 
@@ -328,17 +336,24 @@
     min-width: 0;
   }
 
-  :global(.footnote-body > p:first-child) {
+  :global(.footnote-body > p) {
+    margin: 0;
     display: inline;
   }
 
-  :global(.footnote-body > :not(:first-child)) {
+  :global(.footnote-body > p:not(:first-child)),
+  :global(.footnote-body > ul),
+  :global(.footnote-body > ol),
+  :global(.footnote-body > pre),
+  :global(.footnote-body > blockquote),
+  :global(.footnote-body > div) {
     display: block;
     margin-top: 0.5rem;
   }
 
   :global(.footnote-backref) {
-    margin-left: 0.2rem;
+    display: inline;
+    margin-left: 0;
     white-space: nowrap;
     text-decoration: none;
   }
