@@ -1,5 +1,5 @@
 <script>
-  import { base } from "$app/paths";
+  import { resolve } from "$app/paths";
   import { onMount } from "svelte";
 
   export let title;
@@ -231,7 +231,7 @@
 <div
   style="margin-top: 4rem; border-top: 1px solid var(--color-border); padding-top: 2rem;"
 >
-  <a href={`${base}/blog`}>← Back to Blog</a>
+  <a href={resolve("/blog")}>← Back to Blog</a>
 </div>
 
 <style>

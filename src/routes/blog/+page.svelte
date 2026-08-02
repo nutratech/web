@@ -1,5 +1,5 @@
 <script>
-  import { base } from "$app/paths";
+  import { resolve } from "$app/paths";
 
   export let data;
 </script>
@@ -9,7 +9,9 @@
 <ul class="post-list">
   {#each data.posts as post, index}
     <li class="post-item">
-      <h2><a href={`${base}${post.path}`}>{post.meta.title}</a></h2>
+      <h2>
+        <a href={resolve(/** @type {any} */ (post.path))}>{post.meta.title}</a>
+      </h2>
       <div class="post-meta">
         <span>{post.meta.date}</span>
         {#if post.meta.author}
