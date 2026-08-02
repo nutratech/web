@@ -211,7 +211,7 @@
 
     <p class="commit-hash">
       Built statically with SvelteJS | Ref: <a
-        href="https://gitlab.com/gamesguru/my-website/commit/{__COMMIT_HASH__}"
+        href={`https://github.com/nutratech/web/commit/${__COMMIT_HASH__}`}
         target="_blank"
         rel="noopener noreferrer">{__COMMIT_HASH__}</a
       >
