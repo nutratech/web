@@ -2,6 +2,7 @@
   import { page } from "$app/state";
   import { resolve } from "$app/paths";
   import { onMount } from "svelte";
+  import "katex/dist/katex.min.css";
 
   const SITE_URL = "https://nutratech.github.io/web";
   const OG_IMAGE_URL = `${SITE_URL}/favicon.png`;
@@ -212,12 +213,6 @@
   {#if draft}
     <meta name="robots" content="noindex" />
   {/if}
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
-    integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn"
-    crossorigin="anonymous"
-  />
 </svelte:head>
 
 {#if draft}

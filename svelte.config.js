@@ -24,9 +24,15 @@ const config = {
       // mdsvex ships its own Prism-based highlighter and runs it before any
       // rehype plugin sees the tree; Prism's core build doesn't know Rust
       // (or most other languages we use), so it silently emits unhighlighted
-      // markup. Disable it so rehype-pretty-code/Shiki gets the raw
-      // `<pre><code class="language-x">` node instead.
-      highlight: false,
+      // markup. `highlight: false` looks like the obvious way to disable it,
+      // but mdsvex treats that as "no highlighter is coming", so it
+      // pre-escapes `<`, `>`, `{`, `}` in code blocks defensively — text
+      // Shiki then escapes *again* on the way out, doubling entities
+      // (`&amp;lt;`, `&amp;#123;`). Passing an explicit `highlighter:
+      // undefined` instead skips both mdsvex's raw-HTML shortcut and that
+      // pre-escape step, leaving a normal hast `<pre><code class="language-x">`
+      // node for rehype-pretty-code/Shiki to highlight and escape exactly once.
+      highlight: { highlighter: undefined },
       remarkPlugins: [remarkMath, remarkFootnotes],
       rehypePlugins: [
         rehypeKatex,
