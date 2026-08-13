@@ -136,6 +136,22 @@ pre code {
   font-size: 0.9rem;
 }
 
+/* Shiki (via rehype-pretty-code) emits dual-theme tokens as CSS variables
+   on each span rather than a fixed color, so we pick which one applies. */
+pre code span {
+  color: var(--shiki-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) pre code span {
+    color: var(--shiki-dark);
+  }
+}
+
+:root[data-theme="dark"] pre code span {
+  color: var(--shiki-dark);
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

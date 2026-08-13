@@ -1,3 +1,6 @@
+import { dev } from "$app/environment";
+import { env } from "$env/dynamic/public";
+
 /** @type {import('./$types').PageLoad} */
 export const load = async () => {
   const CONTENT_DIR = "posts";
@@ -24,7 +27,9 @@ export const load = async () => {
     return new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime();
   });
 
+  const showDrafts = dev || env.PUBLIC_SHOW_DRAFTS === "true";
+
   return {
-    posts: sortedPosts.filter((post) => !post.meta.draft),
+    posts: sortedPosts.filter((post) => showDrafts || !post.meta.draft),
   };
 };

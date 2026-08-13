@@ -6,6 +6,7 @@ import { dirname, join } from "path";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import remarkFootnotes from "remark-footnotes";
+import rehypePrettyCode from "rehype-pretty-code";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const base = process.env.BASE_PATH || "";
@@ -20,8 +21,23 @@ const config = {
     mdsvex({
       extensions: [".md"],
       layout: join(__dirname, "./src/routes/blog/BlogLayout.svelte"),
+      // mdsvex ships its own Prism-based highlighter and runs it before any
+      // rehype plugin sees the tree; Prism's core build doesn't know Rust
+      // (or most other languages we use), so it silently emits unhighlighted
+      // markup. Disable it so rehype-pretty-code/Shiki gets the raw
+      // `<pre><code class="language-x">` node instead.
+      highlight: false,
       remarkPlugins: [remarkMath, remarkFootnotes],
-      rehypePlugins: [rehypeKatex],
+      rehypePlugins: [
+        rehypeKatex,
+        [
+          rehypePrettyCode,
+          {
+            theme: { light: "github-light", dark: "github-dark" },
+            keepBackground: false,
+          },
+        ],
+      ],
     }),
   ],
 
