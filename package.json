@@ -20,7 +20,7 @@
     "@tg-svelte/kit": "^2.50.1-tg.1",
     "@types/node": "^25.0.10",
     "@vitejs/plugin-legacy": "^6.1.1",
-    "katex": "0.16.8",
+    "katex": "0.16.21",
     "mdsvex": "^0.12.6",
     "prettier": "^3.8.0",
     "prettier-plugin-svelte": "^3.4.1",
