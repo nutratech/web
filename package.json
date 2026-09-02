@@ -34,5 +34,9 @@
     "terser": "^5.4.0",
     "typescript": "^5.0.0",
     "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0"
   }
 }
