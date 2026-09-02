@@ -164,9 +164,11 @@
       const mermaid = (await loadMermaid()).default;
       mermaid.initialize({ startOnLoad: false });
 
-      // mdsvex wraps code blocks in <pre><code class="language-mermaid">
+      // rehype-pretty-code (Shiki) wraps code blocks as
+      // <pre><code data-language="mermaid"> — a data attribute, not the
+      // `language-mermaid` class mdsvex's own highlighter used to emit.
       // We need to unwrap them so the CSS/background of <pre> doesn't ruin the diagram
-      const blocks = document.querySelectorAll("code.language-mermaid");
+      const blocks = document.querySelectorAll('code[data-language="mermaid"]');
       for (const block of blocks) {
         const pre = block.parentElement;
         if (!pre) continue;
