@@ -7,8 +7,6 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import remarkFootnotes from "remark-footnotes";
 import rehypePrettyCode from "rehype-pretty-code";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const base = process.env.BASE_PATH || "";
@@ -115,12 +113,18 @@ const config = {
             keepBackground: false,
           },
         ],
-        rehypeSlug,
-        [rehypeAutolinkHeadings, { behavior: "wrap" }],
         rehypeEscapeSvelteText,
       ],
     }),
   ],
+
+  // TODO: rehype-pretty-code (Shiki) adds tabindex="0" to <pre> elements for
+  // keyboard scrolling. Svelte 5's a11y checker flags this. Remove once upstream
+  // adds a per-warning suppress option or rehype-pretty-code stops adding tabindex.
+  onwarn(warning, defaultHandler) {
+    if (warning.code === "a11y_no_noninteractive_tabindex") return;
+    defaultHandler(warning);
+  },
 
   kit: {
     appDir: "app",
