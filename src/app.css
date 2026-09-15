@@ -185,9 +185,20 @@ pre code span {
 }
 
 table {
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1.5rem;
+  margin: 0 auto 1.5rem;
+}
+
+/* Wide tables exceed the 800px article column; center their overflow on desktop
+   rather than pinning it to the article's left edge. */
+@media (min-width: 1400px) {
+  article table {
+    left: 50%;
+    position: relative;
+    transform: translateX(-50%);
+  }
 }
 
 th,
