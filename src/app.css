@@ -194,11 +194,27 @@ table {
 /* Wide tables exceed the 800px article column; center their overflow on desktop
    rather than pinning it to the article's left edge. */
 @media (min-width: 1400px) {
-  article table {
+  article:has(#external-engine-benchmark) h4 + table {
     left: 50%;
     position: relative;
     transform: translateX(-50%);
   }
+}
+
+/* Benchmark tables have fourteen columns. Keep the two label columns readable,
+   but give every measurement a tabular monospace treatment for comparison. */
+article:has(#external-engine-benchmark) h4 + table td {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+article:has(#external-engine-benchmark) h4 + table td:nth-child(n + 3) {
+  text-align: right;
+}
+
+/* The first three rows are mtxdb checksum modes; separate external engines. */
+article:has(#external-engine-benchmark) h4 + table tbody tr:nth-child(4) td {
+  border-top: 3px solid var(--color-border);
 }
 
 th,
